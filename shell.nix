@@ -17,6 +17,7 @@ pkgs.mkShell {
 
   shellHook = ''
     # expose them to clangd
-    export CPATH=$(printf "%s:" ${pkgs.esp-idf-full}/components/*/include | sed 's/:$//')
+    #export CPATH=$(printf "%s:" ${pkgs.esp-idf-full}/components/*/include | sed 's/:$//')
+    # FIXME: this brings in `bsd/sys/cdefs.h` and breaks compilation!
   '';
 }
