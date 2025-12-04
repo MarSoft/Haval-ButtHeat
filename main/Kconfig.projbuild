@@ -1,0 +1,53 @@
+menu "ButtHeat config"
+
+  config TX_GPIO_NUM
+    int "TX GPIO number"
+    default 21 if IDF_TARGET_ESP32
+	default 0
+	help
+	  Select GPIO pin for CAN TX
+
+  config RX_GPIO_NUM
+    int "RX GPIO number"
+    default 22 if IDF_TARGET_ESP32
+	default 2
+	help
+	  Select GPIO pin for CAN RX
+
+  config BTN_LEFT
+    int "Left Seat Button GPIO"
+    default 5
+
+  config BTN_RIGHT
+    int "Right Seat Button GPIO"
+    default 6
+
+  config LED_LEFT1
+    int "Left Seat LED Low"
+    default 7
+
+  config LED_LEFT2
+    int "Left Seat LED High"
+    default 8
+
+  config LED_LEFT3
+    int "Left Seat LED Medium (if any)"
+    default -1
+
+  config LED_RIGHT1
+    int "Right Seat LED Low"
+    default 9
+
+  config LED_RIGHT2
+    int "Right Seat LED High"
+    default 10
+
+  config LED_RIGHT3
+    int "Right Seat LED Medium (if any)"
+    default -1
+
+  config TX_SETTLE_TIMEOUT_MS
+    int "How many ms to wait for acceptance after sending change command"
+    default 250
+
+endmenu
