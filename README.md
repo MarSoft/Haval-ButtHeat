@@ -24,3 +24,13 @@ Tasks:
 
 1. Bus RX. Also responsible for bus reconnects?
 2. Button input. Also sends CAN msgs?
+3. LED output task.
+4. Control task - do we need it?
+
+Communication:
+Button -> LED
+Button -> TX (or just send directly?)
+RX -> LED
+
+States:
+1. Loading, or bus error. Spinner. Denoted by spinner_sem taken by non-LED task.

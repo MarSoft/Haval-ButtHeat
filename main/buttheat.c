@@ -26,11 +26,11 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "driver/twai.h"
+#include "portmacro.h"
 
 /* --------------------- Definitions and static variables ------------------ */
 //Example Configuration
 #define DATA_PERIOD_MS                  50
-#define NO_OF_ITERS                     3
 #define ITER_DELAY_MS                   1000
 #define RX_TASK_PRIO                    8       //Receiving task priority
 #define TX_TASK_PRIO                    9       //Sending task priority
@@ -60,10 +60,17 @@ typedef enum {
     RX_TASK_EXIT,
 } rx_task_action_t;
 
+// values: 0xff = spinner; 0 = off; left half for left leds, right half for right leds. I.e. 0x31 == "left seat 3, right seat 1".
+typedef uint8_t led_task_action_t;
+#define LED_SPINNER 0xff
+
+#define CAN_ID_HEATER_STATUS 0x2D1
+#define CAN_ID_HEATER_CONTROL 0x36D
+
 static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_GPIO_NUM, RX_GPIO_NUM, TWAI_MODE_NO_ACK);
 static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
 static const twai_filter_config_t f_config = {
-    .acceptance_code = 0x2D1,
+    .acceptance_code = CAN_ID_HEATER_STATUS,
     .acceptance_mask = 0xfffff800,  // only standard 11-bit ID matters
     .single_filter = true,
 };
@@ -110,8 +117,10 @@ static twai_message_t data_message = {
 
 static QueueHandle_t tx_task_queue;
 static QueueHandle_t rx_task_queue;
+static QueueHandle_t led_from_can_queue;
 static SemaphoreHandle_t ctrl_task_sem;
 static SemaphoreHandle_t stop_data_sem;
+static SemaphoreHandle_t spinner_sem;
 static SemaphoreHandle_t done_sem;
 
 /* --------------------------- Tasks and Functions -------------------------- */
@@ -120,41 +129,33 @@ static void twai_receive_task(void *arg)
 {
     while (1) {
         rx_task_action_t action;
-        xQueueReceive(rx_task_queue, &action, portMAX_DELAY);
-        if (action == RX_RECEIVE_PING) {
-            //Listen for pings from master
-            twai_message_t rx_msg;
-            while (1) {
-                twai_receive(&rx_msg, portMAX_DELAY);
-                if (rx_msg.identifier == ID_MASTER_PING) {
-                    xSemaphoreGive(ctrl_task_sem);
-                    break;
-                }
+        if(xQueueReceive(rx_task_queue, &action, 0) != errQUEUE_EMPTY) {
+            if(action) == RX_TASK_EXIT {
+                break;
             }
-        } else if (action == RX_RECEIVE_START_CMD) {
-            //Listen for start command from master
-            twai_message_t rx_msg;
-            while (1) {
-                twai_receive(&rx_msg, portMAX_DELAY);
-                if (rx_msg.identifier == ID_MASTER_START_CMD) {
-                    xSemaphoreGive(ctrl_task_sem);
-                    break;
-                }
-            }
-        } else if (action == RX_RECEIVE_STOP_CMD) {
-            //Listen for stop command from master
-            twai_message_t rx_msg;
-            while (1) {
-                twai_receive(&rx_msg, portMAX_DELAY);
-                if (rx_msg.identifier == ID_MASTER_STOP_CMD) {
-                    xSemaphoreGive(stop_data_sem);
-                    xSemaphoreGive(ctrl_task_sem);
-                    break;
-                }
-            }
-        } else if (action == RX_TASK_EXIT) {
-            break;
         }
+
+        twai_message_t rx_msg;
+        twai_receive(&rx_msg, portMAX_DELAY);
+        if (rx_msg.identifier != CAN_ID_HEATER_STATUS) {  // safeguard
+            // TODO log
+            continue;
+        }
+        if (rx_msg.data_length_code != 8) {
+            // TODO log
+            continue;
+        }
+
+        xSemaphoreGive(spinner_sem); // mark that we received valid data
+
+        // parse message
+        uint8_t b = rx_msg.data[1];  // the only meaningful byte
+        uint8_t left = b >> 6;
+        uint8_t right = (b >> 4) & 3;
+
+        led_task_action_t newled = (left << 4) | right;
+        // send to the queue, overwrite any stale value
+        xQueueOverwrite(led_from_can_queue, &newled);
     }
     vTaskDelete(NULL);
 }
@@ -203,8 +204,14 @@ static void twai_control_task(void *arg)
     xSemaphoreTake(ctrl_task_sem, portMAX_DELAY);
     tx_task_action_t tx_action;
     rx_task_action_t rx_action;
+    led_task_action_t led_action;
 
-    for (int iter = 0; iter < NO_OF_ITERS; iter++) {
+    for (;;) {
+        // Show spinner
+        led_action = LED_SPINNER;
+        xQueueSend(led_from_can_queue, &led_action, portMAX_DELAY);
+        xSemaphoreTake(ctrl_task_sem, portMAX_DELAY);
+
         ESP_ERROR_CHECK(twai_start());
         ESP_LOGI(TAG, "Driver started");
 
@@ -270,9 +277,12 @@ void app_main(void)
     //Create semaphores and tasks
     tx_task_queue = xQueueCreate(1, sizeof(tx_task_action_t));
     rx_task_queue = xQueueCreate(1, sizeof(rx_task_action_t));
+    led_from_can_queue = xQueueCreate(1, sizeof(led_task_action_t));
     ctrl_task_sem = xSemaphoreCreateBinary();
     stop_data_sem  = xSemaphoreCreateBinary();
+    spinner_sem  = xSemaphoreCreateBinary();
     done_sem  = xSemaphoreCreateBinary();
+    xSemaphoreTake(spinner_sem, 0);  // mark that we are loading
     xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, RX_TASK_PRIO, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, TX_TASK_PRIO, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_control_task, "TWAI_ctrl", 4096, NULL, CTRL_TSK_PRIO, NULL, tskNO_AFFINITY);
@@ -291,7 +301,9 @@ void app_main(void)
     //Cleanup
     vSemaphoreDelete(ctrl_task_sem);
     vSemaphoreDelete(stop_data_sem);
+    vSemaphoreDelete(spinner_sem);
     vSemaphoreDelete(done_sem);
     vQueueDelete(tx_task_queue);
     vQueueDelete(rx_task_queue);
+    vQueueDelete(led_from_can_queue);
 }
