@@ -16,8 +16,7 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    # expose them to clangd
-    #export CPATH=$(printf "%s:" ${pkgs.esp-idf-full}/components/*/include | sed 's/:$//')
-    # FIXME: this brings in `bsd/sys/cdefs.h` and breaks compilation!
+    export PATH=$(echo $PATH | tr : '\n' | sort -u | grep riscv32-esp-elf-esp-idf | sed s:bin:riscv32-esp-elf/bin: | tr '\n' :):"$PATH"
+    # FIXME: drop this after #110 is merged
   '';
 }
