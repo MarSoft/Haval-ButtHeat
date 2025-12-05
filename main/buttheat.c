@@ -60,9 +60,13 @@ typedef enum {
     RX_TASK_EXIT,
 } rx_task_action_t;
 
-static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_GPIO_NUM, RX_GPIO_NUM, TWAI_MODE_NORMAL);
-static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_25KBITS();
-static const twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
+static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_GPIO_NUM, RX_GPIO_NUM, TWAI_MODE_NO_ACK);
+static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
+static const twai_filter_config_t f_config = {
+    .acceptance_code = 0x2D1,
+    .acceptance_mask = 0xfffff800,  // only standard 11-bit ID matters
+    .single_filter = true,
+};
 
 static const twai_message_t ping_resp = {
     // Message type and format settings

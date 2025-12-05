@@ -23,4 +23,4 @@ Logic
 Tasks:
 
 1. Bus RX. Also responsible for bus reconnects?
-2. 
+2. Button input. Also sends CAN msgs?
