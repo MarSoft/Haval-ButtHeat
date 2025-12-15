@@ -22,14 +22,6 @@ menu "ButtHeat config"
     int "Right Seat Button GPIO"
     default 6
 
-  config SDA_GPIO
-    int "Display (SSD1306) I2C SDA"
-    default 8
-
-  config SCL_GPIO
-    int "Display (SSD1306) I2C SDA"
-    default 9
-
   config TX_SETTLE_TIMEOUT_MS
     int "How many ms to wait for acceptance after sending change command"
     default 250

@@ -10,7 +10,7 @@ This shall run on ESP32C3 board with TJA1050 or similar module
 Connect to 5V supply and BD-CAN-1 (see the schematics).
 
 Controls: two tact buttons (left and right seat)
-and 4 or 6 LEDs to show current state.
+and SSD1306 0.91" 128x32 tiny display which fits above the "MODE" knob in the car.
 
 Logic
 -----

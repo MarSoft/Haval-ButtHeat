@@ -133,7 +133,7 @@ static void twai_receive_task(void *arg)
     while (1) {
         rx_task_action_t action;
         if(xQueueReceive(rx_task_queue, &action, 0) != errQUEUE_EMPTY) {
-            if(action) == RX_TASK_EXIT {
+            if(action == RX_TASK_EXIT) {
                 break;
             }
         }
