@@ -1,3 +1,6 @@
-[submodule "esp-idf-ssd1306"]
-	path = esp-idf-ssd1306
+[submodule "libs/ssd1306"]
+	path = libs/ssd1306
 	url = https://github.com/nopnop2002/esp-idf-ssd1306
+[submodule "libs/RotaryEncoder"]
+	path = libs/RotaryEncoder
+	url = https://github.com/nopnop2002/esp-idf-RotaryEncoder
