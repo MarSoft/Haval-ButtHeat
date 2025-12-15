@@ -3,7 +3,6 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(EXTRA_COMPONENT_DIRS libs/ssd1306/components/ssd1306)
-set(EXTRA_COMPONENT_DIRS libs/RotaryEncoder/components/RotaryEncoder)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(buttheat)
