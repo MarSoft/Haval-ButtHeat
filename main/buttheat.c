@@ -269,24 +269,19 @@ static void twai_control_task(void *arg)
     vTaskDelete(NULL);
 }
 
-SSD1306_t display;
-void display_init(void) {
-    i2c_master_init(&display, CONFIG_SDA_GPIO, CONFIG_SCL_GPIO, -1);
-    ssd1306_init(&display, 128, 32);
-    ssd1306_clear_screen(&display, false);
-    ssd1306_contrast(&display, 0xff);
+static void display_task(void *arg) {
+    SSD1306_t dev;
+    i2c_master_init(&dev, CONFIG_SDA_GPIO, CONFIG_SCL_GPIO, -1);
+    ssd1306_init(&dev, 128, 32);
+    ssd1306_clear_screen(&dev, false);
+    ssd1306_contrast(&dev, 0xff);
+    // below is debug stuff
+    ssd1306_display_text(&dev, 1, "Hello Haval Dargo", 18, false);
+    ssd1306_hardware_scroll(&dev, SCROLL_LEFT);
 }
 
 void app_main(void)
 {
-    display_init();
-
-    //Add short delay to allow master it to initialize first
-    for (int i = 3; i > 0; i--) {
-        printf("Slave starting in %d\n", i);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-
     //Create semaphores and tasks
     tx_task_queue = xQueueCreate(1, sizeof(tx_task_action_t));
     rx_task_queue = xQueueCreate(1, sizeof(rx_task_action_t));
@@ -299,6 +294,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, RX_TASK_PRIO, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, TX_TASK_PRIO, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_control_task, "TWAI_ctrl", 4096, NULL, CTRL_TSK_PRIO, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(display_task, "DISP", 4096, NULL, CTRL_TSK_PRIO, NULL, tskNO_AFFINITY);
 
     //Install TWAI driver, trigger tasks to start
     ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
