@@ -14,13 +14,29 @@ menu "ButtHeat config"
 	help
 	  Select GPIO pin for CAN RX
 
+  config ENCODER_LEFT_A
+    int "Left Seat Encoder Pin A GPIO"
+    default 2
+
+  config ENCODER_LEFT_B
+    int "Left Seat Encoder Pin B GPIO"
+    default 3
+
   config BTN_LEFT
     int "Left Seat Button GPIO"
+    default 4
+
+  config ENCODER_RIGHT_A
+    int "Right Seat Encoder Pin A GPIO"
     default 5
+
+  config ENCODER_RIGHT_B
+    int "Right Seat Encoder Pin B GPIO"
+    default 6
 
   config BTN_RIGHT
     int "Right Seat Button GPIO"
-    default 6
+    default 7
 
   config TX_SETTLE_TIMEOUT_MS
     int "How many ms to wait for acceptance after sending change command"
