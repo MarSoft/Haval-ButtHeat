@@ -34,3 +34,5 @@ RX -> LED
 
 States:
 1. Loading, or bus error. Spinner. Denoted by spinner_sem taken by non-LED task.
+2. Normal: show info based on led_from_can_queue.
+3. Input (250ms after button press): show info based on led_from_btn_queue

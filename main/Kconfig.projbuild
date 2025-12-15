@@ -22,29 +22,13 @@ menu "ButtHeat config"
     int "Right Seat Button GPIO"
     default 6
 
-  config LED_LEFT1
-    int "Left Seat LED Low"
-    default 7
-
-  config LED_LEFT2
-    int "Left Seat LED High"
+  config SDA_GPIO
+    int "Display (SSD1306) I2C SDA"
     default 8
 
-  config LED_LEFT3
-    int "Left Seat LED Medium (if any)"
-    default -1
-
-  config LED_RIGHT1
-    int "Right Seat LED Low"
+  config SCL_GPIO
+    int "Display (SSD1306) I2C SDA"
     default 9
-
-  config LED_RIGHT2
-    int "Right Seat LED High"
-    default 10
-
-  config LED_RIGHT3
-    int "Right Seat LED Medium (if any)"
-    default -1
 
   config TX_SETTLE_TIMEOUT_MS
     int "How many ms to wait for acceptance after sending change command"

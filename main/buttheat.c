@@ -28,6 +28,9 @@
 #include "driver/twai.h"
 #include "portmacro.h"
 
+#include "ssd1306.h"
+#include "font8x8_basic.h"
+
 /* --------------------- Definitions and static variables ------------------ */
 //Example Configuration
 #define DATA_PERIOD_MS                  50
@@ -266,8 +269,18 @@ static void twai_control_task(void *arg)
     vTaskDelete(NULL);
 }
 
+SSD1306_t display;
+void display_init(void) {
+    i2c_master_init(&display, CONFIG_SDA_GPIO, CONFIG_SCL_GPIO, -1);
+    ssd1306_init(&display, 128, 32);
+    ssd1306_clear_screen(&display, false);
+    ssd1306_contrast(&display, 0xff);
+}
+
 void app_main(void)
 {
+    display_init();
+
     //Add short delay to allow master it to initialize first
     for (int i = 3; i > 0; i--) {
         printf("Slave starting in %d\n", i);
