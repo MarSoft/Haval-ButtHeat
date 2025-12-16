@@ -229,6 +229,8 @@ static void display_task(void *arg) {
     while(1) {
         if(active) {
             ESP_LOGI(TAG, "Disp loop active");
+            ssd1306_hardware_scroll(&dev, SCROLL_STOP);
+            ssd1306_clear_screen(&dev, false);
             // show status - for now only heaters
             _ssd1306_circle(&dev, 16, 16, 16, OLED_DRAW_UPPER_LEFT, false);
             for(int i=0; i<butt_left_temp; i++) {
@@ -236,6 +238,7 @@ static void display_task(void *arg) {
             }
         } else if(prev_active != active) {
             ESP_LOGI(TAG, "Disp loop pasv");
+            ssd1306_clear_screen(&dev, false);
             char *banner = "Haval Dargo    ";
             ssd1306_display_text(&dev, 1, banner, strlen(banner), false);
             char *msg = " No Signal ";
