@@ -23,9 +23,10 @@ Logic
 Tasks:
 
 1. Bus RX. Also responsible for bus reconnects?
-2. Button input. Also sends CAN msgs?
-3. LED output task.
-4. Control task - do we need it?
+2. Bus TX. Not sure if it is really required though.
+3. Router task. Gets events from rotary-encoder queue (the driver uses single queue for everything) and routes them to the respective tasks.
+4. Button and rotary encoders input. Also sends CAN msgs? One task per button and per encoder. Each task gets events from both input and can and is responsible for interpreting them and notifying the display.
+5. Display output task.
 
 Communication:
 RX -> Button (separate task per each)
@@ -35,7 +36,7 @@ RX -> Display (error state)
 
 Types:
 - ac_temp_t (LO, HI, unknown, half-degrees)
-- heater_temp_t (0, 1, 2, 3, unknown)
+- butt_temp_t (0, 1, 2, 3, unknown)
 
 States:
 1. Loading, or bus error. Spinner. Denoted by spinner_sem taken by non-LED task.
