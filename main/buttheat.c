@@ -27,6 +27,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "driver/twai.h"
+#include "hal/i2c_types.h"
 #include "portmacro.h"
 
 #include "sdkconfig.h"
@@ -41,8 +42,10 @@
 typedef int32_t rotary_value_t;
 
 typedef uint8_t ac_temp_t; // TODO
-#define AC_TEMP_MAX 0xff
-#define AC_TEMP_MIN 0
+#define AC_TEMP_HI 37
+#define AC_TEMP_MAX 36
+#define AC_TEMP_MIN 12
+#define AC_TEMP_LO 0
 
 typedef uint8_t butt_temp_t;
 
@@ -158,7 +161,7 @@ static void twai_receive_task(void *arg)
 
 static void twai_transmit_task(void *arg)
 {
-    ac_temp_t ac_temp_left, ac_temp_right;
+    ac_temp_t ac_temp_left = AC_TEMP_LO, ac_temp_right = AC_TEMP_LO;
     butt_temp_t butt_temp_left = 0, butt_temp_right = 0;
     data_update_t action;
     twai_message_t msg_buttheat_set = {
@@ -187,7 +190,7 @@ static void twai_transmit_task(void *arg)
                 } else {
                     ac_temp_right = action.ac_temp;
                 }
-                ESP_LOGW(TAG, "AC temp transmission not implemented yet");
+                ESP_LOGW(TAG, "AC temp transmission not implemented yet: %d %d", ac_temp_left, ac_temp_right);
                 // TODO!
                 //twai_transmit();
                 break;
@@ -366,7 +369,7 @@ static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right)
         // Draw wave segments going upward
         for(int seg = 0; seg < height; seg++) {
             // Oscillate left/right based on segment
-            int offset = ((seg / 2) % 2) ? 1 : -1;
+            int offset = ((seg / 2) % 2) ? 1 : 0;
             _ssd1306_pixel(dev, wx + offset, base_y - seg, false);
         }
     }
@@ -385,7 +388,13 @@ static void draw_active_display(SSD1306_t *dev,
 
     // Left side AC temperature (2 digits, 32px wide total)
     char temp_str[4];
-    snprintf(temp_str, sizeof(temp_str), "%2d", ac_left);
+    if(ac_left == AC_TEMP_LO) {
+        strncpy(temp_str, "LO", 3);
+    } else if(ac_left == AC_TEMP_HI) {
+        strncpy(temp_str, "HI", 3);
+    } else {
+        snprintf(temp_str, sizeof(temp_str), "%2d", ac_left);
+    }
     draw_digit_16x24(dev, 0, temp_str[0]);
     draw_digit_16x24(dev, 16, temp_str[1]);
 
@@ -404,7 +413,13 @@ static void draw_active_display(SSD1306_t *dev,
     draw_heat_dots(dev, 88, butt_right);
 
     // Right side AC temperature (x=96)
-    snprintf(temp_str, sizeof(temp_str), "%2d", ac_right);
+    if(ac_right == AC_TEMP_LO) {
+        strncpy(temp_str, "LO", 3);
+    } else if(ac_right == AC_TEMP_HI) {
+        strncpy(temp_str, "HI", 3);
+    } else {
+        snprintf(temp_str, sizeof(temp_str), "%2d", ac_right);
+    }
     draw_digit_16x24(dev, 96, temp_str[0]);
     draw_digit_16x24(dev, 112, temp_str[1]);
 
@@ -605,7 +620,15 @@ void generic_handler_task(void *ctx) {
             xQueueReceive(self->control_queue, &rotdiff, 0);
             ESP_LOGI(TAG, "%s task %d: got encoder event %d", kind, self->leftside, rotdiff);
             if(is_ac) {
-                value.ac = MAX(AC_TEMP_MIN, MIN(AC_TEMP_MAX, value.ac + rotdiff));
+                if(value.ac + rotdiff < AC_TEMP_MIN) {
+                    if(rotdiff > 0) {
+                        value.ac = AC_TEMP_MIN;
+                    } else {
+                        value.ac = AC_TEMP_LO;
+                    }
+                } else {
+                    value.ac = MAX(AC_TEMP_LO, MIN(AC_TEMP_HI, value.ac + rotdiff));
+                }
             } else {
                 if(value.butt == 0) {
                     value.butt = 3;
