@@ -45,11 +45,23 @@ typedef uint8_t ac_temp_t; // TODO
 
 typedef uint8_t butt_temp_t;
 
+typedef union {
+    ac_temp_t ac;
+    butt_temp_t butt;
+    uint8_t _max; // for simpler equality check
+} union_temp_t;
+
+typedef enum {
+    HANDLER_TYPE_AC,
+    HANDLER_TYPE_BUTTHEAT,
+} handler_type_t;
+
 typedef struct {
+    handler_type_t type;
     QueueHandle_t control_queue; // capacity: 8, since we don't want to lost those msgs!
     QueueHandle_t can_queue; // capacity: 1, and new message overwrites existing one.
     bool leftside;
-} handler_data_t;
+} handler_config_t;
 
 typedef enum {
     DU_BUTTHEAT,
@@ -78,16 +90,20 @@ static const twai_filter_config_t f_config = {
     .single_filter = true,
 };
 
-static handler_data_t left_ac_handler = {
+static handler_config_t left_ac_handler = {
+    .type = HANDLER_TYPE_AC,
     .leftside = true,
 };
-static handler_data_t right_ac_handler = {
+static handler_config_t right_ac_handler = {
+    .type = HANDLER_TYPE_AC,
     .leftside = false,
 };
-static handler_data_t left_butt_handler = {
+static handler_config_t left_butt_handler = {
+    .type = HANDLER_TYPE_BUTTHEAT,
     .leftside = true,
 };
-static handler_data_t right_butt_handler = {
+static handler_config_t right_butt_handler = {
+    .type = HANDLER_TYPE_BUTTHEAT,
     .leftside = false,
 };
 
@@ -341,15 +357,17 @@ static void encoder_router_task(void *arg) {
 }
 
 // Uniform handler
-void ac_temp_task(void *ctx) {
-    handler_data_t *self = (handler_data_t*)ctx;
+void generic_handler_task(void *ctx) {
+    handler_config_t *self = (handler_config_t*)ctx;
+    bool is_ac = self->type == HANDLER_TYPE_AC;
+    char *kind = is_ac ? "AC" : "BUTT";
 
-    ac_temp_t value = 0;  // TODO
+    union_temp_t value = {0};  // TODO
     rotary_value_t rotdiff;
-    ac_temp_t canval;
+    union_temp_t canval;
     data_update_t evt;
 
-    evt.kind = DU_AC;
+    evt.kind = is_ac ? DU_AC : DU_BUTTHEAT;
     evt.leftside = self->leftside;
 
     QueueSetHandle_t qset = xQueueCreateSet(2);
@@ -360,75 +378,32 @@ void ac_temp_task(void *ctx) {
         // wait for event on any of the queues
         xQueueSelectFromSet(qset, portMAX_DELAY);
         if(xQueueReceive(self->can_queue, &canval, 0)) {
-            ESP_LOGI(TAG, "AC task %d: got CAN event %d", self->leftside, canval);
-            if(value == canval) {
+            ESP_LOGI(TAG, "%s task %d: got CAN event %d", kind, self->leftside, canval);
+            if(value._max == canval._max) {
                 continue; // nothing changed, ignore this event
             }
-            value = canval;
+            value._max = canval._max;
             // emit to display
-            evt.ac_temp = value;
+            if(is_ac) evt.ac_temp = value.ac;
+            else      evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
         }
         int timeout = 0;
         while(xQueueReceive(self->control_queue, &rotdiff, timeout)) {
-            ESP_LOGI(TAG, "AC task %d: got encoder event %d", self->leftside, rotdiff);
-            value = MAX(AC_TEMP_MIN, MIN(AC_TEMP_MAX, value + rotdiff));
-
-            // emit to display
-            evt.ac_temp = value;
-            xQueueSend(display_queue, &evt, 0);
-            // and emit to CAN
-            xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
-
-            // Now listen only on control queue for TX_SETTLE
-            if(!timeout) {
-                timeout = pdMS_TO_TICKS(CONFIG_TX_SETTLE_TIMEOUT_MS);
-            }
-        }
-    }
-}
-
-// Uniform handler
-void buttheat_task(void *ctx) {
-    handler_data_t *self = (handler_data_t*)ctx;
-
-    butt_temp_t value = 0;
-    butt_temp_t canval;
-    data_update_t evt;
-
-    evt.kind = DU_BUTTHEAT;
-    evt.leftside = self->leftside;
-
-    QueueSetHandle_t qset = xQueueCreateSet(2);
-    xQueueAddToSet(self->control_queue, qset);
-    xQueueAddToSet(self->can_queue, qset);
-
-
-    while(1) {
-        // wait for event on any of the queues
-        uint8_t dummy;
-        xQueueSelectFromSet(qset, portMAX_DELAY);
-        if(xQueueReceive(self->can_queue, &canval, 0)) {
-            ESP_LOGI(TAG, "BUTT task %d: got CAN event %d", self->leftside, canval);
-            if(value == canval) {
-                continue; // nothing changed, ignore this event
-            }
-            value = canval;
-            // emit to display
-            evt.butt_temp = value;
-            xQueueSend(display_queue, &evt, 0);
-        }
-        int timeout = 0;
-        while(xQueueReceive(self->control_queue, &dummy, timeout)) {
-            ESP_LOGI(TAG, "BUTT task %d: got button event", self->leftside);
-            if(value == 0) {
-                value = 3;
+            ESP_LOGI(TAG, "%s task %d: got encoder event %d", kind, self->leftside, rotdiff);
+            if(is_ac) {
+                value.ac = MAX(AC_TEMP_MIN, MIN(AC_TEMP_MAX, value.ac + rotdiff));
             } else {
-                value--;
+                if(value.butt == 0) {
+                    value.butt = 3;
+                } else {
+                    value.butt--;
+                }
             }
 
             // emit to display
-            evt.butt_temp = value;
+            if(is_ac) evt.ac_temp = value.ac;
+            else      evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
             // and emit to CAN
             xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
@@ -464,10 +439,10 @@ void app_main(void)
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, 9, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(encoder_router_task, "ENC_router", 4096, NULL, 16, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(display_task, "DISP", 4096, NULL, 10, NULL, tskNO_AFFINITY);
-    xTaskCreatePinnedToCore(ac_temp_task, "AC_left", 4096, (void*)&left_ac_handler, 3, NULL, tskNO_AFFINITY);
-    xTaskCreatePinnedToCore(ac_temp_task, "AC_right", 4096, (void*)&right_ac_handler, 3, NULL, tskNO_AFFINITY);
-    xTaskCreatePinnedToCore(buttheat_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
-    xTaskCreatePinnedToCore(buttheat_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "AC_left", 4096, (void*)&left_ac_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "AC_right", 4096, (void*)&right_ac_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
 
     xSemaphoreGive(ctrl_task_sem);              //Start Control task
     xSemaphoreTake(done_sem, portMAX_DELAY);    //Wait for tasks to complete
