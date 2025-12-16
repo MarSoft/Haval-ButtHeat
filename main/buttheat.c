@@ -110,6 +110,9 @@ static handler_config_t right_butt_handler = {
 
 static QueueHandle_t tx_task_queue;
 static QueueHandle_t display_queue;
+static SemaphoreHandle_t ctrl_task_sem;
+static SemaphoreHandle_t spinner_sem;
+static SemaphoreHandle_t done_sem;
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
@@ -142,6 +145,8 @@ static void twai_receive_task(void *arg)
             ESP_LOGI(TAG, "TWAI recv unexpected len %d", rx_msg.data_length_code);
             continue;
         }
+
+        xSemaphoreGive(spinner_sem); // mark that we received valid data
 
         // parse message
         uint8_t b = rx_msg.data[1];  // the only meaningful byte
@@ -639,7 +644,11 @@ void app_main(void)
     left_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
     right_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
     right_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
+    ctrl_task_sem = xSemaphoreCreateBinary();
+    spinner_sem  = xSemaphoreCreateBinary();
+    done_sem  = xSemaphoreCreateBinary();
 
+    xSemaphoreTake(spinner_sem, 0);  // mark that we are loading
     xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, 8, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, 9, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(encoder_router_task, "ENC_router", 4096, NULL, 16, NULL, tskNO_AFFINITY);
@@ -649,11 +658,17 @@ void app_main(void)
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
 
+    xSemaphoreGive(ctrl_task_sem);              //Start Control task
+    xSemaphoreTake(done_sem, portMAX_DELAY);    //Wait for tasks to complete
+
     //Uninstall TWAI driver
     ESP_ERROR_CHECK(twai_driver_uninstall());
     ESP_LOGI(TAG, "Driver uninstalled");
 
     //Cleanup
+    vSemaphoreDelete(ctrl_task_sem);
+    vSemaphoreDelete(spinner_sem);
+    vSemaphoreDelete(done_sem);
     vQueueDelete(tx_task_queue);
     vQueueDelete(display_queue);
 }
