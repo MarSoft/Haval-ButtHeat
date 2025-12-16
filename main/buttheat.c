@@ -373,22 +373,45 @@ void generic_handler_task(void *ctx) {
     xQueueAddToSet(self->control_queue, qset);
     xQueueAddToSet(self->can_queue, qset);
 
+    TickType_t settle_until = 0;  // 0 means not settling
+
     while(1) {
-        // wait for event on any of the queues
-        xQueueSelectFromSet(qset, portMAX_DELAY);
-        if(xQueueReceive(self->can_queue, &canval, 0)) {
-            ESP_LOGI(TAG, "%s task %d: got CAN event %d", kind, self->leftside, canval);
-            if(value._max == canval._max) {
-                continue; // nothing changed, ignore this event
+        TickType_t timeout;
+        if(settle_until == 0) {
+            timeout = portMAX_DELAY;
+        } else {
+            TickType_t now = xTaskGetTickCount();
+            if(now >= settle_until) {
+                settle_until = 0;
+                timeout = portMAX_DELAY;
+            } else {
+                timeout = settle_until - now;
             }
+        }
+
+        QueueSetMemberHandle_t active_queue = xQueueSelectFromSet(qset, timeout);
+
+        if(active_queue == NULL) {
+            // Settle timeout expired
+            settle_until = 0;
+            continue;
+        }
+
+        // Always receive from whichever queue was signaled
+        if(active_queue == self->can_queue) {
+            xQueueReceive(self->can_queue, &canval, 0);
+            // Ignore CAN events during active input (settling)
+            if(settle_until != 0) continue;
+
+            ESP_LOGI(TAG, "%s task %d: got CAN event %d", kind, self->leftside, canval);
+            if(value._max == canval._max) continue; // nothing changed
             value._max = canval._max;
             // emit to display
             if(is_ac) evt.ac_temp = value.ac;
             else      evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
-        }
-        int timeout = 0;
-        while(xQueueReceive(self->control_queue, &rotdiff, timeout)) {
+        } else if(active_queue == self->control_queue) {
+            xQueueReceive(self->control_queue, &rotdiff, 0);
             ESP_LOGI(TAG, "%s task %d: got encoder event %d", kind, self->leftside, rotdiff);
             if(is_ac) {
                 value.ac = MAX(AC_TEMP_MIN, MIN(AC_TEMP_MAX, value.ac + rotdiff));
@@ -407,10 +430,8 @@ void generic_handler_task(void *ctx) {
             // and emit to CAN
             xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
 
-            // Now listen only on control queue for TX_SETTLE
-            if(!timeout) {
-                timeout = pdMS_TO_TICKS(CONFIG_TX_SETTLE_TIMEOUT_MS);
-            }
+            // Enter/extend settle mode
+            settle_until = xTaskGetTickCount() + pdMS_TO_TICKS(CONFIG_TX_SETTLE_TIMEOUT_MS);
         }
     }
 }
