@@ -369,7 +369,7 @@ void generic_handler_task(void *ctx) {
     evt.kind = is_ac ? DU_AC : DU_BUTTHEAT;
     evt.leftside = self->leftside;
 
-    QueueSetHandle_t qset = xQueueCreateSet(2);
+    QueueSetHandle_t qset = xQueueCreateSet(8 + 1);  // sum of control_queue (8) + can_queue (1)
     xQueueAddToSet(self->control_queue, qset);
     xQueueAddToSet(self->can_queue, qset);
 
