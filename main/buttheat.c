@@ -110,7 +110,6 @@ static handler_config_t right_butt_handler = {
 static QueueHandle_t tx_task_queue;
 static QueueHandle_t display_queue;
 static SemaphoreHandle_t ctrl_task_sem;
-static SemaphoreHandle_t stop_data_sem;
 static SemaphoreHandle_t spinner_sem;
 static SemaphoreHandle_t done_sem;
 
@@ -430,7 +429,6 @@ void app_main(void)
     right_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
     right_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
     ctrl_task_sem = xSemaphoreCreateBinary();
-    stop_data_sem  = xSemaphoreCreateBinary();
     spinner_sem  = xSemaphoreCreateBinary();
     done_sem  = xSemaphoreCreateBinary();
 
@@ -453,7 +451,6 @@ void app_main(void)
 
     //Cleanup
     vSemaphoreDelete(ctrl_task_sem);
-    vSemaphoreDelete(stop_data_sem);
     vSemaphoreDelete(spinner_sem);
     vSemaphoreDelete(done_sem);
     vQueueDelete(tx_task_queue);
