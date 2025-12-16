@@ -357,15 +357,18 @@ void ac_temp_task(void *ctx) {
                 continue; // nothing changed, ignore this event
             }
             value = canval;
-            // TODO emit to display
+            // emit to display
+            evt.ac_temp = value;
+            xQueueSend(display_queue, &evt, 0);
         }
         int timeout = 0;
         while(xQueueReceive(self->control_queue, &rotdiff, timeout)) {
             ESP_LOGI(TAG, "AC task %d: got encoder event %d", self->leftside, rotdiff);
             value = MAX(AC_TEMP_MIN, MIN(AC_TEMP_MAX, value + rotdiff));
 
+            // emit to display
             evt.ac_temp = value;
-            // TODO emit to display
+            xQueueSend(display_queue, &evt, 0);
             // and emit to CAN
             xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
 
