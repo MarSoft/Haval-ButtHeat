@@ -134,7 +134,7 @@ static void twai_receive_task(void *arg)
         esp_err_t err;
         if((err = twai_receive(&rx_msg, pdMS_TO_TICKS(500))) != ESP_OK) {
             ESP_LOGW(TAG, "TWAI recv error: %s", esp_err_to_name(err));
-            xQueueSend(display_queue, &noconn_msg, 0);
+            if(0)xQueueSend(display_queue, &noconn_msg, 0);
             continue;
         }
         if (rx_msg.identifier != CAN_ID_HEATER_STATUS) {  // safeguard
@@ -398,10 +398,15 @@ static void encoder_router_task(void *arg) {
         // got event, route it!
         switch(evt.type) {
             case RE_ET_CHANGED:
-                xQueueSend((leftside ? left_ac_handler : right_ac_handler).control_queue, &evt.diff, 0);
+                if(!xQueueSend((leftside ? left_ac_handler : right_ac_handler).control_queue, &evt.diff, 0)) {
+                    ESP_LOGE(TAG, "Rot: queue full!");
+                }
                 break;
             case RE_ET_BTN_CLICKED:
-                xQueueSend((leftside ? left_butt_handler : right_butt_handler).control_queue, &dummy, 0);
+                ESP_LOGI(TAG, "BTN send");
+                if(!xQueueSend((leftside ? left_butt_handler : right_butt_handler).control_queue, &dummy, 0)) {
+                    ESP_LOGE(TAG, "Btn: queue full!");
+                }
                 break;
             case RE_ET_BTN_LONG_PRESSED:
                 // seat memory
