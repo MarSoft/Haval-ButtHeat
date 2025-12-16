@@ -228,62 +228,153 @@ void seat_memory_apply(int slot) {
     xQueueSend(tx_task_queue, &msg, portMAX_DELAY);
 }
 
-// Seat icon facing right (for left side), 16x16 pixels, 2 pages
-// Simple side view: backrest + seat cushion
-static const uint8_t seat_icon_right[2][16] = {
-    // Page 0 (top 8 rows) - backrest
-    {0x00, 0xFE, 0xFF, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x06, 0x00, 0x00},
-    // Page 1 (bottom 8 rows) - seat
-    {0x00, 0xFF, 0xFF, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xC0, 0xE0, 0x7F, 0x3F, 0x00},
-};
+// Draw seat icon using lines and circles
+// facing_right: true = facing right (for left side), false = facing left (for right side)
+static void draw_seat(SSD1306_t *dev, int x, bool facing_right) {
+    // Seat is 24px wide, 32px tall
+    // Backrest: inclined line leaning back
+    // Seat cushion: horizontal with curved front
 
-// Seat icon facing left (for right side), 16x16 pixels, 2 pages (mirrored)
-static const uint8_t seat_icon_left[2][16] = {
-    // Page 0 (top 8 rows) - backrest
-    {0x00, 0x00, 0x06, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0xFF, 0xFE, 0x00},
-    // Page 1 (bottom 8 rows) - seat
-    {0x00, 0x3F, 0x7F, 0xE0, 0xC0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0x00},
-};
+    if(facing_right) {
+        // Backrest inclined: top-left to bottom-right
+        _ssd1306_line(dev, x+1, 2, x+7, 22, false);
+        _ssd1306_line(dev, x+2, 2, x+8, 22, false);
+        _ssd1306_line(dev, x+3, 2, x+9, 22, false);
+
+        // Seat cushion (y ~25-28)
+        _ssd1306_line(dev, x+7, 25, x+20, 25, false);
+        _ssd1306_line(dev, x+7, 26, x+21, 26, false);
+        _ssd1306_line(dev, x+8, 27, x+21, 27, false);
+        // Front curve
+        _ssd1306_circle(dev, x+18, 27, 3, OLED_DRAW_LOWER_RIGHT, false);
+    } else {
+        // Backrest inclined: top-right to bottom-left
+        _ssd1306_line(dev, x+22, 2, x+16, 22, false);
+        _ssd1306_line(dev, x+21, 2, x+15, 22, false);
+        _ssd1306_line(dev, x+20, 2, x+14, 22, false);
+
+        // Seat cushion
+        _ssd1306_line(dev, x+3, 25, x+16, 25, false);
+        _ssd1306_line(dev, x+2, 26, x+16, 26, false);
+        _ssd1306_line(dev, x+2, 27, x+15, 27, false);
+        // Front curve
+        _ssd1306_circle(dev, x+5, 27, 3, OLED_DRAW_LOWER_LEFT, false);
+    }
+}
+
+// Draw a single digit 16px wide x 24px tall (scaled 2x horizontally, 3x vertically from 8x8 font)
+// Vertically centered in 32px (4px padding top and bottom)
+static void draw_digit_16x24(SSD1306_t *dev, int x, char digit) {
+    const uint8_t *glyph = font8x8_basic_tr[(uint8_t)digit];
+
+    // Page 0: 4px padding (top)
+    uint8_t page0[16] = {0};
+    for(int col = 0; col < 8; col++) {
+        uint8_t src = glyph[col];
+        // Bottom 1-2 bits of glyph go to top 4 bits of page0 (after 4px padding)
+        uint8_t out = 0;
+        if(src & 0x01) out |= 0x70;  // bit 0 -> y4-6
+        if(src & 0x02) out |= 0x80;  // bit 1 -> y7 (partial)
+        page0[col * 2] = out;
+        page0[col * 2 + 1] = out;
+    }
+    ssd1306_display_image(dev, 0, x, page0, 16);
+
+    // Page 1: bits 1-4 of glyph (scaled 3x)
+    uint8_t page1[16] = {0};
+    for(int col = 0; col < 8; col++) {
+        uint8_t src = glyph[col];
+        uint8_t out = 0;
+        if(src & 0x02) out |= 0x07;  // bit 1 -> y0-2
+        if(src & 0x04) out |= 0x38;  // bit 2 -> y3-5
+        if(src & 0x08) out |= 0xC0;  // bit 3 -> y6-7 (partial)
+        page1[col * 2] = out;
+        page1[col * 2 + 1] = out;
+    }
+    ssd1306_display_image(dev, 1, x, page1, 16);
+
+    // Page 2: bits 3-6 of glyph (scaled 3x)
+    uint8_t page2[16] = {0};
+    for(int col = 0; col < 8; col++) {
+        uint8_t src = glyph[col];
+        uint8_t out = 0;
+        if(src & 0x08) out |= 0x01;  // bit 3 -> y0 (partial)
+        if(src & 0x10) out |= 0x0E;  // bit 4 -> y1-3
+        if(src & 0x20) out |= 0x70;  // bit 5 -> y4-6
+        if(src & 0x40) out |= 0x80;  // bit 6 -> y7 (partial)
+        page2[col * 2] = out;
+        page2[col * 2 + 1] = out;
+    }
+    ssd1306_display_image(dev, 2, x, page2, 16);
+
+    // Page 3: bits 6-7 of glyph + 4px padding (bottom)
+    uint8_t page3[16] = {0};
+    for(int col = 0; col < 8; col++) {
+        uint8_t src = glyph[col];
+        uint8_t out = 0;
+        if(src & 0x40) out |= 0x03;  // bit 6 -> y0-1
+        if(src & 0x80) out |= 0x0C;  // bit 7 -> y2-3
+        // y4-7 is padding (0)
+        page3[col * 2] = out;
+        page3[col * 2 + 1] = out;
+    }
+    ssd1306_display_image(dev, 3, x, page3, 16);
+}
+
+// Draw 3 vertical circular dots (traffic light style), 8px wide, at position x
+// level: 0=none, 1=bottom, 2=bottom+middle, 3=all three
+static void draw_heat_dots(SSD1306_t *dev, int x, int level) {
+    // 3 dots stacked vertically, each ~8px diameter
+    // Centers at y=5 (top), y=15 (middle), y=26 (bottom)
+    int cx = x + 4;  // center x (8px wide area)
+
+    if(level >= 3) {
+        _ssd1306_disc(dev, cx, 5, 3, OLED_DRAW_ALL, false);
+    }
+    if(level >= 2) {
+        _ssd1306_disc(dev, cx, 15, 3, OLED_DRAW_ALL, false);
+    }
+    if(level >= 1) {
+        _ssd1306_disc(dev, cx, 26, 3, OLED_DRAW_ALL, false);
+    }
+}
 
 static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
                                  butt_temp_t butt_left, butt_temp_t butt_right) {
-    ssd1306_clear_screen(dev, false);
+    // Clear buffer without sending to display
+    uint8_t zeros[128 * 4] = {0};
+    ssd1306_set_buffer(dev, zeros);
 
-    // Left side AC temperature (page 0, leftmost)
+    // Layout (128px wide):
+    // Left side:  [temp 32px][dots 8px][seat 24px] = 64px
+    // Right side: [seat 24px][dots 8px][temp 32px] = 64px
+
+    // Left side AC temperature (2 digits, 32px wide total)
     char temp_str[4];
     snprintf(temp_str, sizeof(temp_str), "%2d", ac_left);
-    ssd1306_display_image(dev, 0, 0, font8x8_basic_tr[(uint8_t)temp_str[0]], 8);
-    ssd1306_display_image(dev, 0, 8, font8x8_basic_tr[(uint8_t)temp_str[1]], 8);
+    draw_digit_16x24(dev, 0, temp_str[0]);
+    draw_digit_16x24(dev, 16, temp_str[1]);
 
-    // Right side AC temperature (page 0, rightmost)
+    // Left heat dots (x=32)
+    draw_heat_dots(dev, 32, butt_left);
+
+    // Left seat icon (x=40), facing right
+    draw_seat(dev, 40, true);
+
+    // Right seat icon (x=64), facing left
+    draw_seat(dev, 64, false);
+
+    // Right heat dots (x=88)
+    draw_heat_dots(dev, 88, butt_right);
+
+    // Right side AC temperature (x=96)
     snprintf(temp_str, sizeof(temp_str), "%2d", ac_right);
-    ssd1306_display_image(dev, 0, 112, font8x8_basic_tr[(uint8_t)temp_str[0]], 8);
-    ssd1306_display_image(dev, 0, 120, font8x8_basic_tr[(uint8_t)temp_str[1]], 8);
+    draw_digit_16x24(dev, 96, temp_str[0]);
+    draw_digit_16x24(dev, 112, temp_str[1]);
 
-    // Left seat icon (facing right) - pages 1-2, x=0
-    ssd1306_display_image(dev, 1, 0, seat_icon_right[0], 16);
-    ssd1306_display_image(dev, 2, 0, seat_icon_right[1], 16);
-
-    // Right seat icon (facing left) - pages 1-2, x=112
-    ssd1306_display_image(dev, 1, 112, seat_icon_left[0], 16);
-    ssd1306_display_image(dev, 2, 112, seat_icon_left[1], 16);
-
-    // Heat level bars - page 3
-    // Left side bars
-    for(int i = 0; i < 3; i++) {
-        bool on = (i < butt_left);
-        uint8_t bar[4];
-        bar[0] = bar[1] = bar[2] = bar[3] = on ? 0x7E : 0x00;
-        ssd1306_display_image(dev, 3, 1 + (i * 5), bar, 4);
-    }
-    // Right side bars
-    for(int i = 0; i < 3; i++) {
-        bool on = (i < butt_right);
-        uint8_t bar[4];
-        bar[0] = bar[1] = bar[2] = bar[3] = on ? 0x7E : 0x00;
-        ssd1306_display_image(dev, 3, 113 + (i * 5), bar, 4);
-    }
+    // Show the buffer (for _ssd1306_* drawing functions)
+    ssd1306_show_buffer(dev);
 }
 
 static void display_task(void *arg) {
