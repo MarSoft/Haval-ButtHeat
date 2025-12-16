@@ -339,6 +339,43 @@ static void draw_heat_dots(SSD1306_t *dev, int x, int level) {
     }
 }
 
+// Draw wavy heat lines above seat cushion
+// x: left edge of seat area (24px wide), level: 0-3 heat level
+// facing_right: true if seat faces right (affects wave positions to avoid backrest)
+static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right) {
+    if(level == 0) return;
+
+    // Height of waves depends on level (taller = more heat)
+    // level 1: short, level 2: medium, level 3: tall
+    int base_y = 22;  // just above seat cushion
+    int height = 4 + (level * 3);  // 7, 10, or 13 pixels tall
+
+    // Wave positions adjusted to avoid backrest
+    // Facing right: backrest on left, waves shifted right
+    // Facing left: backrest on right, waves shifted left
+    int wave_xs[3];
+    if(facing_right) {
+        wave_xs[0] = x + 10;
+        wave_xs[1] = x + 14;
+        wave_xs[2] = x + 18;
+    } else {
+        wave_xs[0] = x + 6;
+        wave_xs[1] = x + 10;
+        wave_xs[2] = x + 14;
+    }
+
+    for(int w = 0; w < 3; w++) {
+        int wx = wave_xs[w];
+
+        // Draw wave segments going upward
+        for(int seg = 0; seg < height; seg++) {
+            // Oscillate left/right based on segment
+            int offset = ((seg / 2) % 2) ? 1 : -1;
+            _ssd1306_pixel(dev, wx + offset, base_y - seg, false);
+        }
+    }
+}
+
 static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
                                  butt_temp_t butt_left, butt_temp_t butt_right) {
@@ -361,9 +398,11 @@ static void draw_active_display(SSD1306_t *dev,
 
     // Left seat icon (x=40), facing right
     draw_seat(dev, 40, true);
+    draw_heat_waves(dev, 40, butt_left, true);
 
     // Right seat icon (x=64), facing left
     draw_seat(dev, 64, false);
+    draw_heat_waves(dev, 64, butt_right, false);
 
     // Right heat dots (x=88)
     draw_heat_dots(dev, 88, butt_right);
