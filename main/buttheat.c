@@ -53,8 +53,8 @@ typedef uint8_t ac_temp_t; // TODO
 typedef uint8_t butt_temp_t;
 
 typedef struct {
-    QueueHandle_t control_queue;
-    QueueHandle_t can_queue;
+    QueueHandle_t control_queue; // capacity: 8, since we don't want to lost those msgs!
+    QueueHandle_t can_queue; // capacity: 1, and new message overwrites existing one.
     bool leftside;
 } handler_data_t;
 
@@ -62,6 +62,7 @@ typedef enum {
     DU_BUTTHEAT,
     DU_AC,
     DU_SEAT_MEMORY,
+    DU_CAN_ERROR, // put display to "can error" state
 } data_update_kind_t;
 typedef struct {
     data_update_kind_t kind;
@@ -115,12 +116,16 @@ static void twai_receive_task(void *arg)
     ESP_ERROR_CHECK(twai_start());
     ESP_LOGI(TAG, "Driver started");
 
+    data_update_t noconn_msg = {
+        .kind = DU_CAN_ERROR,
+    };
+
     while (1) {
         twai_message_t rx_msg;
         esp_err_t err;
         if((err = twai_receive(&rx_msg, pdMS_TO_TICKS(500))) != ESP_OK) {
             ESP_LOGW(TAG, "TWAI recv error: %s", esp_err_to_name(err));
-            taskYIELD();
+            xQueueSend(display_queue, &noconn_msg, 0);
             continue;
         }
         if (rx_msg.identifier != CAN_ID_HEATER_STATUS) {  // safeguard
@@ -196,6 +201,9 @@ static void twai_transmit_task(void *arg)
                 // use action.seat_memory_slot
                 ESP_LOGE(TAG, "Seat memory is not yet implemented");
                 break;
+            default:
+                ESP_LOGE(TAG, "Unexpected action in twai TX: %d", action.kind);
+                break;
         }
     }
     vTaskDelete(NULL);
@@ -256,6 +264,7 @@ static void display_task(void *arg) {
         if(xQueueReceive(display_queue, &msg, pdMS_TO_TICKS(500)) != errQUEUE_EMPTY) {
             switch(msg.kind) {
                 case DU_AC:
+                    active = true;
                     break; // TODO
                 case DU_BUTTHEAT:
                     active = true;
@@ -265,7 +274,10 @@ static void display_task(void *arg) {
                         butt_right_temp = msg.butt_temp;
                     }
                     break;
-                // TODO case for bus conn lost
+                case DU_CAN_ERROR:
+                    // bus connection lost
+                    active = false;
+                    break;
                 default:
                     ESP_LOGE(TAG, "Undef msg %d", msg.kind);
                     break;
