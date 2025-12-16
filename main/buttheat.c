@@ -31,6 +31,7 @@
 
 #include "sdkconfig.h"
 #include "ssd1306.h"
+#include "font8x8_basic.h"
 #include "encoder.h"
 
 /* --------------------- Definitions and static variables ------------------ */
@@ -227,6 +228,64 @@ void seat_memory_apply(int slot) {
     xQueueSend(tx_task_queue, &msg, portMAX_DELAY);
 }
 
+// Seat icon facing right (for left side), 16x16 pixels, 2 pages
+// Simple side view: backrest + seat cushion
+static const uint8_t seat_icon_right[2][16] = {
+    // Page 0 (top 8 rows) - backrest
+    {0x00, 0xFE, 0xFF, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x06, 0x00, 0x00},
+    // Page 1 (bottom 8 rows) - seat
+    {0x00, 0xFF, 0xFF, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xC0, 0xE0, 0x7F, 0x3F, 0x00},
+};
+
+// Seat icon facing left (for right side), 16x16 pixels, 2 pages (mirrored)
+static const uint8_t seat_icon_left[2][16] = {
+    // Page 0 (top 8 rows) - backrest
+    {0x00, 0x00, 0x06, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0xFF, 0xFE, 0x00},
+    // Page 1 (bottom 8 rows) - seat
+    {0x00, 0x3F, 0x7F, 0xE0, 0xC0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xFF, 0xFF, 0x00},
+};
+
+static void draw_active_display(SSD1306_t *dev,
+                                 ac_temp_t ac_left, ac_temp_t ac_right,
+                                 butt_temp_t butt_left, butt_temp_t butt_right) {
+    ssd1306_clear_screen(dev, false);
+
+    // Left side AC temperature (page 0, leftmost)
+    char temp_str[4];
+    snprintf(temp_str, sizeof(temp_str), "%2d", ac_left);
+    ssd1306_display_image(dev, 0, 0, font8x8_basic_tr[(uint8_t)temp_str[0]], 8);
+    ssd1306_display_image(dev, 0, 8, font8x8_basic_tr[(uint8_t)temp_str[1]], 8);
+
+    // Right side AC temperature (page 0, rightmost)
+    snprintf(temp_str, sizeof(temp_str), "%2d", ac_right);
+    ssd1306_display_image(dev, 0, 112, font8x8_basic_tr[(uint8_t)temp_str[0]], 8);
+    ssd1306_display_image(dev, 0, 120, font8x8_basic_tr[(uint8_t)temp_str[1]], 8);
+
+    // Left seat icon (facing right) - pages 1-2, x=0
+    ssd1306_display_image(dev, 1, 0, seat_icon_right[0], 16);
+    ssd1306_display_image(dev, 2, 0, seat_icon_right[1], 16);
+
+    // Right seat icon (facing left) - pages 1-2, x=112
+    ssd1306_display_image(dev, 1, 112, seat_icon_left[0], 16);
+    ssd1306_display_image(dev, 2, 112, seat_icon_left[1], 16);
+
+    // Heat level bars - page 3
+    // Left side bars
+    for(int i = 0; i < 3; i++) {
+        bool on = (i < butt_left);
+        uint8_t bar[4];
+        bar[0] = bar[1] = bar[2] = bar[3] = on ? 0x7E : 0x00;
+        ssd1306_display_image(dev, 3, 1 + (i * 5), bar, 4);
+    }
+    // Right side bars
+    for(int i = 0; i < 3; i++) {
+        bool on = (i < butt_right);
+        uint8_t bar[4];
+        bar[0] = bar[1] = bar[2] = bar[3] = on ? 0x7E : 0x00;
+        ssd1306_display_image(dev, 3, 113 + (i * 5), bar, 4);
+    }
+}
+
 static void display_task(void *arg) {
     SSD1306_t dev;
     ESP_LOGI(TAG, "Disp task start");
@@ -235,66 +294,67 @@ static void display_task(void *arg) {
     ssd1306_clear_screen(&dev, false);
     ssd1306_contrast(&dev, 0xff);
 
-    bool active = 0;
-    bool prev_active = 1;
-    bool scroll_left = 1;
-    ac_temp_t ac_left_temp, ac_right_temp;
-    butt_temp_t butt_left_temp, butt_right_temp;
+    bool active = false;
+    bool need_redraw = true;
+    bool scroll_left = true;
+    ac_temp_t ac_left_temp = 0, ac_right_temp = 0;
+    butt_temp_t butt_left_temp = 0, butt_right_temp = 0;
 
     while(1) {
-        if(active) {
-            ESP_LOGI(TAG, "Disp loop active");
+        if(active && need_redraw) {
+            ESP_LOGI(TAG, "Disp active redraw");
             ssd1306_hardware_scroll(&dev, SCROLL_STOP);
-            ssd1306_clear_screen(&dev, false);
-            // show status - for now only heaters
-            _ssd1306_circle(&dev, 16, 16, 16, OLED_DRAW_UPPER_LEFT, false);
-            for(int i=0; i<butt_left_temp; i++) {
-                _ssd1306_disc(&dev, 16, 26-(i*6), 4, OLED_DRAW_ALL, false);
-            }
-        } else if(prev_active != active) {
-            ESP_LOGI(TAG, "Disp loop pasv");
+            draw_active_display(&dev, ac_left_temp, ac_right_temp, butt_left_temp, butt_right_temp);
+            need_redraw = false;
+        } else if(!active && need_redraw) {
+            ESP_LOGI(TAG, "Disp passive");
             ssd1306_clear_screen(&dev, false);
             char *banner = "Haval Dargo    ";
             ssd1306_display_text(&dev, 1, banner, strlen(banner), false);
             char *msg = " No Signal ";
             ssd1306_display_text(&dev, 3, msg, strlen(msg), false);
             ssd1306_hardware_scroll(&dev, SCROLL_LEFT);
-        } else {
-            if(scroll_left) {
-                ssd1306_hardware_scroll(&dev, SCROLL_LEFT);
-            } else {
-                ssd1306_hardware_scroll(&dev, SCROLL_RIGHT);
-            }
+            scroll_left = true;
+            need_redraw = false;
+        } else if(!active) {
+            // Alternate scroll direction for idle animation
+            ssd1306_hardware_scroll(&dev, scroll_left ? SCROLL_LEFT : SCROLL_RIGHT);
             scroll_left = !scroll_left;
         }
 
-        prev_active = active;
-
-        ESP_LOGI(TAG, "Recving");
         data_update_t msg;
-        if(xQueueReceive(display_queue, &msg, pdMS_TO_TICKS(500)) != errQUEUE_EMPTY) {
+        if(xQueueReceive(display_queue, &msg, pdMS_TO_TICKS(500)) == pdTRUE) {
             switch(msg.kind) {
                 case DU_AC:
+                    ESP_LOGI(TAG, "Recvd AC %d = %d", msg.leftside, msg.ac_temp);
+                    if(msg.leftside) {
+                        ac_left_temp = msg.ac_temp;
+                    } else {
+                        ac_right_temp = msg.ac_temp;
+                    }
                     active = true;
-                    break; // TODO
+                    need_redraw = true;
+                    break;
                 case DU_BUTTHEAT:
-                    active = true;
+                    ESP_LOGI(TAG, "Recvd BUTT %d = %d", msg.leftside, msg.butt_temp);
                     if(msg.leftside) {
                         butt_left_temp = msg.butt_temp;
                     } else {
                         butt_right_temp = msg.butt_temp;
                     }
+                    active = true;
+                    need_redraw = true;
                     break;
                 case DU_CAN_ERROR:
-                    // bus connection lost
+                    ESP_LOGI(TAG, "Recvd ERR");
                     active = false;
+                    need_redraw = true;
                     break;
                 default:
                     ESP_LOGE(TAG, "Undef msg %d", msg.kind);
                     break;
             }
         }
-        ESP_LOGI(TAG, "Recv end");
     }
 }
 
