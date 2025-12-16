@@ -385,22 +385,51 @@ void buttheat_task(void *ctx) {
     handler_data_t *self = (handler_data_t*)ctx;
 
     butt_temp_t value = 0;
+    butt_temp_t canval;
+    data_update_t evt;
+
+    evt.kind = DU_BUTTHEAT;
+    evt.leftside = self->leftside;
+
+    QueueSetHandle_t qset = xQueueCreateSet(2);
+    xQueueAddToSet(self->control_queue, qset);
+    xQueueAddToSet(self->can_queue, qset);
+
 
     while(1) {
+        // wait for event on any of the queues
         uint8_t dummy;
-        if(!xQueueReceive(self->control_queue, &dummy, portMAX_DELAY)) {
-            continue;
+        xQueueSelectFromSet(qset, portMAX_DELAY);
+        if(xQueueReceive(self->can_queue, &canval, 0)) {
+            ESP_LOGI(TAG, "BUTT task %d: got CAN event %d", self->leftside, canval);
+            if(value == canval) {
+                continue; // nothing changed, ignore this event
+            }
+            value = canval;
+            // emit to display
+            evt.butt_temp = value;
+            xQueueSend(display_queue, &evt, 0);
         }
+        int timeout = 0;
+        while(xQueueReceive(self->control_queue, &dummy, timeout)) {
+            ESP_LOGI(TAG, "BUTT task %d: got button event", self->leftside);
+            if(value == 0) {
+                value = 3;
+            } else {
+                value--;
+            }
 
-        // got button press!
-        ESP_LOGI(TAG, "BUTT task %d: got click", self->leftside);
-        if(value == 0) {
-            value = 3;
-        } else {
-            value--;
+            // emit to display
+            evt.butt_temp = value;
+            xQueueSend(display_queue, &evt, 0);
+            // and emit to CAN
+            xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
+
+            // Now listen only on control queue for TX_SETTLE
+            if(!timeout) {
+                timeout = pdMS_TO_TICKS(CONFIG_TX_SETTLE_TIMEOUT_MS);
+            }
         }
-        // emit new value to CAN and to display...
-        // TODO
     }
 }
 
