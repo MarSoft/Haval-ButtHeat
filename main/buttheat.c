@@ -315,10 +315,10 @@ static void encoder_router_task(void *arg) {
         // got event, route it!
         switch(evt.type) {
             case RE_ET_CHANGED:
-                xQueueOverwrite((leftside ? left_ac_handler : right_ac_handler).control_queue, &evt.diff);
+                xQueueSend((leftside ? left_ac_handler : right_ac_handler).control_queue, &evt.diff, 0);
                 break;
             case RE_ET_BTN_CLICKED:
-                xQueueOverwrite((leftside ? left_butt_handler : right_butt_handler).control_queue, &dummy);
+                xQueueSend((leftside ? left_butt_handler : right_butt_handler).control_queue, &dummy, 0);
                 break;
             case RE_ET_BTN_LONG_PRESSED:
                 // seat memory
@@ -422,6 +422,7 @@ void app_main(void)
     xSemaphoreTake(spinner_sem, 0);  // mark that we are loading
     xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, RX_TASK_PRIO, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, TX_TASK_PRIO, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(encoder_router_task, "ENC_router", 4096, NULL, 16, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(display_task, "DISP", 4096, NULL, CTRL_TSK_PRIO, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(ac_temp_task, "AC_left", 4096, (void*)&left_ac_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(ac_temp_task, "AC_right", 4096, (void*)&right_ac_handler, 3, NULL, tskNO_AFFINITY);
