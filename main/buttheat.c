@@ -449,7 +449,7 @@ void app_main(void)
 {
     //Create semaphores and tasks
     tx_task_queue = xQueueCreate(8, sizeof(data_update_t));
-    display_queue = xQueueCreate(1, sizeof(data_update_t));
+    display_queue = xQueueCreate(8, sizeof(data_update_t));
     left_ac_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
     left_ac_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));
     right_ac_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
