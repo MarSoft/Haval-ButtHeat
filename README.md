@@ -28,9 +28,14 @@ Tasks:
 4. Control task - do we need it?
 
 Communication:
-Button -> LED
+RX -> Button (separate task per each)
 Button -> TX (or just send directly?)
-RX -> LED
+Button -> Display
+RX -> Display (error state)
+
+Types:
+- ac_temp_t (LO, HI, unknown, half-degrees)
+- heater_temp_t (0, 1, 2, 3, unknown)
 
 States:
 1. Loading, or bus error. Spinner. Denoted by spinner_sem taken by non-LED task.
