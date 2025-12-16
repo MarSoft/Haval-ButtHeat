@@ -35,14 +35,7 @@
 
 /* --------------------- Definitions and static variables ------------------ */
 //Example Configuration
-#define DATA_PERIOD_MS                  50
-#define ITER_DELAY_MS                   1000
-#define RX_TASK_PRIO                    8       //Receiving task priority
-#define TX_TASK_PRIO                    9       //Sending task priority
-#define CTRL_TSK_PRIO                   10      //Control task priority
-#define TX_GPIO_NUM                     CONFIG_TX_GPIO_NUM
-#define RX_GPIO_NUM                     CONFIG_RX_GPIO_NUM
-#define TAG                     "ButtHeat"
+#define TAG "ButtHeat"
 
 typedef int32_t rotary_value_t;
 
@@ -77,7 +70,7 @@ typedef struct {
 #define CAN_ID_HEATER_STATUS 0x2D1
 #define CAN_ID_HEATER_CONTROL 0x36D
 
-static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_GPIO_NUM, RX_GPIO_NUM, TWAI_MODE_NO_ACK);
+static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NO_ACK);
 static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
 static const twai_filter_config_t f_config = {
     .acceptance_code = CAN_ID_HEATER_STATUS,
@@ -464,10 +457,10 @@ void app_main(void)
     done_sem  = xSemaphoreCreateBinary();
 
     xSemaphoreTake(spinner_sem, 0);  // mark that we are loading
-    xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, RX_TASK_PRIO, NULL, tskNO_AFFINITY);
-    xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, TX_TASK_PRIO, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, 8, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, 9, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(encoder_router_task, "ENC_router", 4096, NULL, 16, NULL, tskNO_AFFINITY);
-    xTaskCreatePinnedToCore(display_task, "DISP", 4096, NULL, CTRL_TSK_PRIO, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(display_task, "DISP", 4096, NULL, 10, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(ac_temp_task, "AC_left", 4096, (void*)&left_ac_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(ac_temp_task, "AC_right", 4096, (void*)&right_ac_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(buttheat_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
