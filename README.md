@@ -6,7 +6,7 @@ Custom controller for Haval Dargo's seat heaters (and A/C in the future).
 Hardware and connections
 ------------------------
 
-This shall run on ESP32C3 board with TJA1050 or similar module
+This shall run on ESP32C3 board with TJA1050 (5V power supply) or similar module
 Connect to 5V supply and BD-CAN-1 (see the schematics).
 
 Controls: two tact buttons (left and right seat)
