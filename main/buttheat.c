@@ -135,7 +135,9 @@ static void twai_receive_task(void *arg)
         twai_message_t rx_msg;
         esp_err_t err;
         if((err = twai_receive(&rx_msg, pdMS_TO_TICKS(500))) != ESP_OK) {
-            ESP_LOGW(TAG, "TWAI recv error: %s", esp_err_to_name(err));
+            if(err != ESP_ERR_TIMEOUT) {
+                ESP_LOGW(TAG, "TWAI recv error: %s", esp_err_to_name(err));
+            }
             if(0)xQueueSend(display_queue, &noconn_msg, 0);
             continue;
         }
