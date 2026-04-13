@@ -41,11 +41,12 @@
 
 typedef int32_t rotary_value_t;
 
-typedef uint8_t ac_temp_t; // TODO
-#define AC_TEMP_HI 32*2
-#define AC_TEMP_MAX 32*2-1
-#define AC_TEMP_MIN 16*2+1
-#define AC_TEMP_LO 16*2
+typedef uint8_t ac_temp_t;  // 0 = LO; 1 = 16.5; 2 = 17; ...; 30=31; 31=31.5; 32=HI
+#define AC_TEMP_HI 32
+#define AC_TEMP_MAX 31
+#define AC_TEMP_MIN 1
+#define AC_TEMP_LO 0
+// ac to degrees: (val / 2) + 16
 
 typedef uint8_t butt_temp_t;
 
@@ -435,7 +436,7 @@ static void draw_active_display(SSD1306_t *dev,
     } else if(ac_left == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
     } else {
-        snprintf(temp_str, sizeof(temp_str), "%2d", ac_left/2);
+        snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_left/2); // TODO halves?
     }
     draw_digit_16x24(dev, 0, temp_str[0]);
     draw_digit_16x24(dev, 16, temp_str[1]);
@@ -460,7 +461,7 @@ static void draw_active_display(SSD1306_t *dev,
     } else if(ac_right == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
     } else {
-        snprintf(temp_str, sizeof(temp_str), "%2d", ac_right/2);
+        snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_right/2);  // TODO halves?
     }
     draw_digit_16x24(dev, 96, temp_str[0]);
     draw_digit_16x24(dev, 112, temp_str[1]);
