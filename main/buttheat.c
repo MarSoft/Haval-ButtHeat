@@ -42,10 +42,10 @@
 typedef int32_t rotary_value_t;
 
 typedef uint8_t ac_temp_t; // TODO
-#define AC_TEMP_HI 37
-#define AC_TEMP_MAX 36
-#define AC_TEMP_MIN 12
-#define AC_TEMP_LO 0
+#define AC_TEMP_HI 32*2
+#define AC_TEMP_MAX 32*2-1
+#define AC_TEMP_MIN 16*2+1
+#define AC_TEMP_LO 16*2
 
 typedef uint8_t butt_temp_t;
 
@@ -85,6 +85,8 @@ typedef struct {
 
 #define CAN_ID_HEATER_STATUS 0x2D1
 #define CAN_ID_HEATER_CONTROL 0x36D
+#define CAN_ID_AC_STATUS 0x385
+#define CAN_ID_AC_CONTROL 0x1EE
 #define CAN_ID_SEAT_MEMORY 0x1ED
 
 static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NO_ACK);
@@ -178,6 +180,13 @@ static void twai_transmit_task(void *arg)
         .data_length_code = 8,
         .data = {0, 0, 0x20, 0, 0, 0, 0, 0x40},
     };
+    twai_message_t msg_ac_set = {
+        // Message type and format settings - default...
+        // Message ID and payload
+        .identifier = CAN_ID_AC_CONTROL,
+        .data_length_code = 8,
+        .data = {0, 0x41, 0, 2, 0, 0, 0, 0},
+    };
     twai_message_t msg_seatmem_recall = {
         // Message type and format settings - default...
         // Message ID and payload
@@ -194,14 +203,16 @@ static void twai_transmit_task(void *arg)
 
         switch(action.kind) {
             case DU_AC:
+                msg_ac_set.data[2] = 0
+                msg_ac_set.data[3] = 2
                 if(action.leftside) {
                     ac_temp_left = action.ac_temp;
+                    msg_ac_set.data[2] = (1 + action.ac_temp) << 2;
                 } else {
                     ac_temp_right = action.ac_temp;
+                    msg_ac_set.data[3] = ((1 + action.ac_temp) << 2) | 2;  // XXX: is that |2 needed?
                 }
-                ESP_LOGW(TAG, "AC temp transmission not implemented yet: %d %d", ac_temp_left, ac_temp_right);
-                // TODO!
-                //twai_transmit();
+                twai_transmit(&msg_ac_set, portMAX_DELAY);
                 break;
             case DU_BUTTHEAT:
                 if(action.leftside) {
@@ -404,7 +415,7 @@ static void draw_active_display(SSD1306_t *dev,
     } else if(ac_left == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
     } else {
-        snprintf(temp_str, sizeof(temp_str), "%2d", ac_left);
+        snprintf(temp_str, sizeof(temp_str), "%2d", ac_left/2);
     }
     draw_digit_16x24(dev, 0, temp_str[0]);
     draw_digit_16x24(dev, 16, temp_str[1]);
@@ -429,7 +440,7 @@ static void draw_active_display(SSD1306_t *dev,
     } else if(ac_right == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
     } else {
-        snprintf(temp_str, sizeof(temp_str), "%2d", ac_right);
+        snprintf(temp_str, sizeof(temp_str), "%2d", ac_right/2);
     }
     draw_digit_16x24(dev, 96, temp_str[0]);
     draw_digit_16x24(dev, 112, temp_str[1]);
