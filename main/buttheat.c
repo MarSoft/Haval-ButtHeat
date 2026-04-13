@@ -224,8 +224,8 @@ static void twai_transmit_task(void *arg)
 
         switch(action.kind) {
             case DU_AC:
-                msg_ac_set.data[2] = 0
-                msg_ac_set.data[3] = 2
+                msg_ac_set.data[2] = 0;
+                msg_ac_set.data[3] = 2;
                 if(action.leftside) {
                     ac_temp_left = action.ac_temp;
                     msg_ac_set.data[2] = (1 + action.ac_temp) << 2;
