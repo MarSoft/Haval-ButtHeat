@@ -430,15 +430,20 @@ static void draw_active_display(SSD1306_t *dev,
 
     // Left side AC temperature (2 digits, 32px wide total)
     char temp_str[4];
+    bool temp_halves = false;
     if(ac_left == AC_TEMP_LO) {
         strncpy(temp_str, "LO", 3);
     } else if(ac_left == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
     } else {
-        snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_left/2); // TODO halves?
+        snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_left/2);
+        temp_halves = ac_left % 2;
     }
     draw_digit_16x24(dev, 0, temp_str[0]);
     draw_digit_16x24(dev, 16, temp_str[1]);
+    if(temp_halves) {
+        _ssd1306_disc(dev, 31, 5, 2, OLED_DRAW_ALL, false);
+    }
 
     // Left heat dots (x=32)
     draw_heat_dots(dev, 32, butt_left);
@@ -461,9 +466,13 @@ static void draw_active_display(SSD1306_t *dev,
         strncpy(temp_str, "HI", 3);
     } else {
         snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_right/2);  // TODO halves?
+        temp_halves = ac_left % 2;
     }
     draw_digit_16x24(dev, 96, temp_str[0]);
     draw_digit_16x24(dev, 112, temp_str[1]);
+    if(temp_halves) {
+        _ssd1306_disc(dev, 127, 5, 2, OLED_DRAW_ALL, false);
+    }
 
     // Show the buffer (for _ssd1306_* drawing functions)
     ssd1306_show_buffer(dev);
