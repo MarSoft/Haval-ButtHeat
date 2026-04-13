@@ -151,12 +151,12 @@ static void twai_receive_task(void *arg)
             case CAN_ID_HEATER_STATUS:
                 // parse message
                 uint8_t b = rx_msg.data[1];  // the only meaningful byte
-                butt_temp_t left = b >> 6;
-                butt_temp_t right = (b >> 4) & 0b11;
+                butt_temp_t butt_left = b >> 6;
+                butt_temp_t butt_right = (b >> 4) & 0b11;
 
                 // send to the queue, overwrite any stale value
-                xQueueOverwrite(left_butt_handler.can_queue, &left);
-                xQueueOverwrite(right_butt_handler.can_queue, &right);
+                xQueueOverwrite(left_butt_handler.can_queue, &butt_left);
+                xQueueOverwrite(right_butt_handler.can_queue, &butt_right);
                 break;
             case CAN_ID_AC_STATUS:
                 // parse message
