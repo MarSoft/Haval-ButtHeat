@@ -188,7 +188,6 @@ static void twai_receive_task(void *arg)
 
 static void twai_transmit_task(void *arg)
 {
-    ac_temp_t ac_temp_left = AC_TEMP_LO, ac_temp_right = AC_TEMP_LO;
     butt_temp_t butt_temp_left = 0, butt_temp_right = 0;
     data_update_t action;
     twai_message_t msg_buttheat_set = {
@@ -229,10 +228,8 @@ static void twai_transmit_task(void *arg)
                 msg_ac_set.data[2] = 0;
                 msg_ac_set.data[3] = 2;
                 if(action.leftside) {
-                    ac_temp_left = action.ac_temp;
                     msg_ac_set.data[2] = (1 + action.ac_temp) << 2;
                 } else {
-                    ac_temp_right = action.ac_temp;
                     msg_ac_set.data[3] = ((1 + action.ac_temp) << 2) | 2;  // XXX: is that |2 needed?
                 }
                 twai_transmit(&msg_ac_set, portMAX_DELAY);
