@@ -85,6 +85,7 @@ typedef struct {
 
 #define CAN_ID_HEATER_STATUS 0x2D1
 #define CAN_ID_HEATER_CONTROL 0x36D
+#define CAN_ID_SEAT_MEMORY 0x1ED
 
 static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NO_ACK);
 static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
@@ -177,6 +178,13 @@ static void twai_transmit_task(void *arg)
         .data_length_code = 8,
         .data = {0, 0, 0x20, 0, 0, 0, 0, 0x40},
     };
+    twai_message_t msg_seatmem_recall = {
+        // Message type and format settings - default...
+        // Message ID and payload
+        .identifier = CAN_ID_SEAT_MEMORY,
+        .data_length_code = 8,
+        .data = {0, 0, 0, 0, 0, 0, 0, 0},
+    };
 
     
     while (1) {
@@ -207,8 +215,10 @@ static void twai_transmit_task(void *arg)
                 twai_transmit(&msg_buttheat_set, portMAX_DELAY);
                 break;
             case DU_SEAT_MEMORY:
-                // use action.seat_memory_slot
-                ESP_LOGE(TAG, "Seat memory is not yet implemented");
+                // use action.seat_mem_slot
+                // 0x04 = first slot, 0x05 = second slot
+                msg_seatmem_recall.data[1] = 3 + action.seat_mem_slot;
+                twai_transmit(&msg_seatmem_recall, portMAX_DELAY);
                 break;
             default:
                 ESP_LOGE(TAG, "Unexpected action in twai TX: %d", action.kind);
