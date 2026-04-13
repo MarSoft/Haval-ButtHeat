@@ -92,7 +92,7 @@ typedef struct {
 static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NO_ACK);
 static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
 static const twai_filter_config_t f_config = {
-    .acceptance_code = CAN_ID_HEATER_STATUS << 21, // <<21 is for 11-bit identifiers
+    .acceptance_code = (CAN_ID_HEATER_STATUS | CAN_ID_AC_STATUS) << 21, // <<21 is for 11-bit identifiers
     .acceptance_mask = ~(0x7ff << 21),  // only standard 11-bit ID matters
     //.acceptance_mask = 0xffffffff,  // accept anything
     .single_filter = true,
@@ -142,23 +142,43 @@ static void twai_receive_task(void *arg)
             if(0)xQueueSend(display_queue, &noconn_msg, 0);
             continue;
         }
-        if (rx_msg.identifier != CAN_ID_HEATER_STATUS) {  // safeguard
-            ESP_LOGI(TAG, "TWAI recv unexpected ID %x", rx_msg.identifier);
-            continue;
-        }
         if (rx_msg.data_length_code != 8) {
             ESP_LOGI(TAG, "TWAI recv unexpected len %d", rx_msg.data_length_code);
             continue;
         }
+        switch(rx_msg.identifier) {
+            case CAN_ID_HEATER_STATUS:
+                // parse message
+                uint8_t b = rx_msg.data[1];  // the only meaningful byte
+                butt_temp_t left = b >> 6;
+                butt_temp_t right = (b >> 4) & 0b11;
 
-        // parse message
-        uint8_t b = rx_msg.data[1];  // the only meaningful byte
-        butt_temp_t left = b >> 6;
-        butt_temp_t right = (b >> 4) & 0b11;
-
-        // send to the queue, overwrite any stale value
-        xQueueOverwrite(left_butt_handler.can_queue, &left);
-        xQueueOverwrite(right_butt_handler.can_queue, &right);
+                // send to the queue, overwrite any stale value
+                xQueueOverwrite(left_butt_handler.can_queue, &left);
+                xQueueOverwrite(right_butt_handler.can_queue, &right);
+                break;
+            case CAN_ID_AC_STATUS:
+                // parse message
+                // example:
+                //        __ changes from 41 to 61 for 1sec when the value is changed?
+                //      /          __ left
+                //     |         /     __ right
+                //     v        v     v
+                // F6 41 6C C8 C0 02 C0 36
+                uint8_t left = 0, right = 0;
+                uint8_t left_raw = rx_msg.data[4];
+                uint8_t right_raw = rx_msg.data[6];
+                if(left_raw >= 0x80 && left_raw <= 0xc0) {
+                    left = left_raw - 0x80;
+                }
+                if(right_raw >= 0xc0 && right_raw <= 0xe0) {
+                    right = right_raw - 0xc0;
+                }
+                break;
+            default:
+                // unsupported message, ignore
+                break;
+        }
     }
     vTaskDelete(NULL);
 }
