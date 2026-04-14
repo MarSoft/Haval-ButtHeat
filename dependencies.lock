@@ -1,0 +1,29 @@
+dependencies:
+  esp-idf-lib/encoder:
+    component_hash: 40eaa0893a37f7c615dbe0992e4417e4b8f3117d1701281df5b13b02a58949e1
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    targets:
+    - esp32
+    - esp32c2
+    - esp32c3
+    - esp32c5
+    - esp32c6
+    - esp32c61
+    - esp32h2
+    - esp32p4
+    - esp32s2
+    - esp32s3
+    version: 1.0.7
+  idf:
+    source:
+      type: idf
+    version: 5.5.2
+direct_dependencies:
+- esp-idf-lib/encoder
+- idf
+manifest_hash: 118871783f548bcaca10e8689038c72271b7174c99215dab9ae40b848b5fc052
+target: esp32c3
+version: 2.0.0
