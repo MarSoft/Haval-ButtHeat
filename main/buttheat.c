@@ -442,7 +442,7 @@ static void draw_active_display(SSD1306_t *dev,
     draw_digit_16x24(dev, 0, temp_str[0]);
     draw_digit_16x24(dev, 16, temp_str[1]);
     if(temp_halves) {
-        _ssd1306_disc(dev, 31, 5, 2, OLED_DRAW_ALL, false);
+        _ssd1306_disc(dev, 31, 8, 2, OLED_DRAW_ALL, false);
     }
 
     // Left heat dots (x=32)
@@ -472,7 +472,7 @@ static void draw_active_display(SSD1306_t *dev,
     draw_digit_16x24(dev, 96, temp_str[0]);
     draw_digit_16x24(dev, 112, temp_str[1]);
     if(temp_halves) {
-        _ssd1306_disc(dev, 127, 5, 2, OLED_DRAW_ALL, false);
+        _ssd1306_disc(dev, 127, 8, 2, OLED_DRAW_ALL, false);
     }
 
     // Show the buffer (for _ssd1306_* drawing functions)
