@@ -632,26 +632,40 @@ void generic_handler_task(void *ctx) {
     xQueueAddToSet(self->can_queue, qset);
 
     TickType_t settle_until = 0;  // 0 means not settling
+    TickType_t can_tx_earliest = 0;  // earliest tick we may send next CAN tx
+    bool can_tx_pending = false;  // true if we have a value waiting to be sent
+
+    #define CAN_TX_INTERVAL pdMS_TO_TICKS(500)
 
     while(1) {
-        TickType_t timeout;
-        if(settle_until == 0) {
-            timeout = portMAX_DELAY;
-        } else {
-            TickType_t now = xTaskGetTickCount();
+        TickType_t now = xTaskGetTickCount();
+        TickType_t timeout = portMAX_DELAY;
+
+        // Determine nearest deadline from settle and pending CAN tx
+        if(settle_until != 0) {
             if(now >= settle_until) {
                 settle_until = 0;
-                timeout = portMAX_DELAY;
             } else {
                 timeout = settle_until - now;
+            }
+        }
+        if(can_tx_pending) {
+            if(now >= can_tx_earliest) {
+                // Time to send the pending CAN message now
+                xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
+                can_tx_earliest = now + CAN_TX_INTERVAL;
+                can_tx_pending = false;
+                ESP_LOGI(TAG, "%s task %d: throttled CAN tx sent", kind, self->leftside);
+            } else {
+                TickType_t tx_wait = can_tx_earliest - now;
+                if(tx_wait < timeout) timeout = tx_wait;
             }
         }
 
         QueueSetMemberHandle_t active_queue = xQueueSelectFromSet(qset, timeout);
 
         if(active_queue == NULL) {
-            // Settle timeout expired
-            settle_until = 0;
+            // A timeout expired — loop back to check settle/pending tx
             continue;
         }
 
@@ -689,12 +703,21 @@ void generic_handler_task(void *ctx) {
                 }
             }
 
-            // emit to display
+            // emit to display immediately
             if(is_ac) evt.ac_temp = value.ac;
             else      evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
-            // and emit to CAN
-            xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
+
+            now = xTaskGetTickCount();
+            if(now >= can_tx_earliest) {
+                // Enough time has passed — send immediately
+                xQueueSend(tx_task_queue, &evt, portMAX_DELAY);
+                can_tx_earliest = now + CAN_TX_INTERVAL;
+                can_tx_pending = false;
+            } else {
+                // Too soon — mark pending, will be sent when can_tx_earliest arrives
+                can_tx_pending = true;
+            }
 
             // Enter/extend settle mode
             settle_until = xTaskGetTickCount() + pdMS_TO_TICKS(CONFIG_TX_SETTLE_TIMEOUT_MS);
