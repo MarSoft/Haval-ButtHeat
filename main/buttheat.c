@@ -460,6 +460,7 @@ static void draw_active_display(SSD1306_t *dev,
     draw_heat_dots(dev, 88, butt_right);
 
     // Right side AC temperature (x=96)
+    temp_halves = false;
     if(ac_right == AC_TEMP_LO) {
         strncpy(temp_str, "LO", 3);
     } else if(ac_right == AC_TEMP_HI) {
