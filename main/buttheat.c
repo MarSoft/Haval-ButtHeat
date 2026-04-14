@@ -430,7 +430,7 @@ static void draw_active_display(SSD1306_t *dev,
     } else if(ac_left == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
     } else if(ac_left > AC_TEMP_HI) {
-        // means a/c is unpowered
+        // value of 33 means a/c is unpowered
         strncpy(temp_str, "--", 3);
     } else {
         snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_left/2);
