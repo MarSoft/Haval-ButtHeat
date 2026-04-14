@@ -629,7 +629,7 @@ void generic_handler_task(void *ctx) {
     TickType_t can_tx_earliest = 0;  // earliest tick we may send next CAN tx
     bool can_tx_pending = false;  // true if we have a value waiting to be sent
 
-    #define CAN_TX_INTERVAL pdMS_TO_TICKS(500)
+    #define CAN_TX_INTERVAL pdMS_TO_TICKS(100)
 
     while(1) {
         TickType_t now = xTaskGetTickCount();
