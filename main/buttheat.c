@@ -170,7 +170,7 @@ static void twai_receive_task(void *arg)
                 uint8_t ac_left_raw = rx_msg.data[4];
                 uint8_t ac_right_raw = rx_msg.data[6];
                 if(ac_left_raw >= 0x80 && ac_left_raw <= 0xc0) {
-                    ac_left = ac_left_raw - 0x80;
+                    ac_left = (ac_left_raw - 0x80) >> 1;
                 }
                 if(ac_right_raw >= 0xc0 && ac_right_raw <= 0xe0) {
                     ac_right = ac_right_raw - 0xc0;
