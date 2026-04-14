@@ -166,15 +166,9 @@ static void twai_receive_task(void *arg)
                 //     |         /     __ right
                 //     v        v     v
                 // F6 41 6C C8 C0 02 C0 36
-                ac_temp_t ac_left = AC_TEMP_LO, ac_right = AC_TEMP_LO;
-                uint8_t ac_left_raw = rx_msg.data[4];
-                uint8_t ac_right_raw = rx_msg.data[6];
-                if(ac_left_raw >= 0x80 && ac_left_raw <= 0xc0) {
-                    ac_left = (ac_left_raw - 0x80) >> 1;
-                }
-                if(ac_right_raw >= 0xc0 && ac_right_raw <= 0xe0) {
-                    ac_right = ac_right_raw - 0xc0;
-                }
+                ac_temp_t ac_left = (rx_msg.data[4] >> 1) & 0x3f;
+                ac_temp_t ac_right = (rx_msg.data[6]) & 0x3f;
+                // bool just_changed = rx_msg.data[1] & 0x20
                 xQueueOverwrite(left_ac_handler.can_queue, &ac_left);
                 xQueueOverwrite(right_ac_handler.can_queue, &ac_right);
                 break;
