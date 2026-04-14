@@ -429,6 +429,9 @@ static void draw_active_display(SSD1306_t *dev,
         strncpy(temp_str, "LO", 3);
     } else if(ac_left == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
+    } else if(ac_left > AC_TEMP_HI) {
+        // means a/c is unpowered
+        strncpy(temp_str, "--", 3);
     } else {
         snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_left/2);
         temp_halves = ac_left % 2;
@@ -459,6 +462,8 @@ static void draw_active_display(SSD1306_t *dev,
         strncpy(temp_str, "LO", 3);
     } else if(ac_right == AC_TEMP_HI) {
         strncpy(temp_str, "HI", 3);
+    } else if(ac_right > AC_TEMP_HI) {
+        strncpy(temp_str, "--", 3);
     } else {
         snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_right/2);  // TODO halves?
         temp_halves = ac_right % 2;
@@ -545,23 +550,36 @@ static void display_task(void *arg) {
     }
 }
 
+static void encoder_cb(const rotary_encoder_event_t *evt, void *ctx) {
+    QueueHandle_t queue = (QueueHandle_t)ctx;
+    xQueueSendToBack(queue, evt, 0);
+}
+
+// 3 seconds for long press (FIXME should be in menuconfig but isn't?..)
+#define CONFIG_RE_BTN_LONG_PRESS_TIME_US 1000*1000*3
 static void encoder_router_task(void *arg) {
     QueueHandle_t encoder_queue = xQueueCreate(16, sizeof(rotary_encoder_event_t));
-    rotary_encoder_init(encoder_queue);
 
-    rotary_encoder_t re_left = {
-        .pin_a = CONFIG_ENCODER_LEFT_A,
-        .pin_b = CONFIG_ENCODER_LEFT_B,
-        .pin_btn = CONFIG_BTN_LEFT,
-    };
-    rotary_encoder_add(&re_left);
-    rotary_encoder_enable_acceleration(&re_left, 100);  // TODO
-    rotary_encoder_t re_right = {
-        .pin_a = CONFIG_ENCODER_RIGHT_A,
-        .pin_b = CONFIG_ENCODER_RIGHT_B,
-        .pin_btn = CONFIG_BTN_RIGHT,
-    };
-    rotary_encoder_add(&re_right);
+    rotary_encoder_config_t cfg_left = ROTARY_ENCODER_DEFAULT_CONFIG();
+    cfg_left.pin_a = CONFIG_ENCODER_LEFT_A;
+    cfg_left.pin_b = CONFIG_ENCODER_LEFT_B;
+    cfg_left.pin_btn = CONFIG_BTN_LEFT;
+    cfg_left.callback = encoder_cb;
+    cfg_left.callback_ctx = encoder_queue;
+    rotary_encoder_config_t cfg_right = ROTARY_ENCODER_DEFAULT_CONFIG();
+    cfg_right.pin_a = CONFIG_ENCODER_RIGHT_A;
+    cfg_right.pin_b = CONFIG_ENCODER_RIGHT_B;
+    cfg_right.pin_btn = CONFIG_BTN_RIGHT;
+    cfg_right.callback = encoder_cb;
+    cfg_right.callback_ctx = encoder_queue;
+
+    rotary_encoder_handle_t re_left = NULL, re_right = NULL;
+    ESP_ERROR_CHECK(rotary_encoder_create(&cfg_left, &re_left));
+    
+    //rotary_encoder_add(&re_left);
+    rotary_encoder_enable_acceleration(re_left, 10);
+    ESP_ERROR_CHECK(rotary_encoder_create(&cfg_right, &re_right));
+    rotary_encoder_enable_acceleration(re_right, 10);
 
     // now that init is done, listen on queue and route
     while(1) {
@@ -571,9 +589,9 @@ static void encoder_router_task(void *arg) {
         }
 
         bool leftside;
-        if(evt.sender == &re_left) {
+        if(evt.sender == re_left) {
             leftside = true;
-        } else if(evt.sender == &re_right) {
+        } else if(evt.sender == re_right) {
             leftside = false;
         } else {
             ESP_LOGE(TAG, "Unknown sender %p", evt.sender);
@@ -597,7 +615,7 @@ static void encoder_router_task(void *arg) {
                 break;
             case RE_ET_BTN_LONG_PRESSED:
                 // seat memory
-                ESP_LOGI(TAG, "Got long press");
+                ESP_LOGI(TAG, "Got long press %d", leftside);
                 seat_memory_apply(leftside ? 1 : 2);
                 break;
             default:
@@ -669,7 +687,7 @@ void generic_handler_task(void *ctx) {
             // Ignore CAN events during active input (settling)
             if(settle_until != 0) continue;
 
-            ESP_LOGI(TAG, "%s task %d: got CAN event %d", kind, self->leftside, canval);
+            //ESP_LOGI(TAG, "%s task %d: got CAN event %d", kind, self->leftside, canval);
             if(value._max == canval._max) continue; // nothing changed
             value._max = canval._max;
             // emit to display
