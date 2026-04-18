@@ -33,7 +33,7 @@
 #include "esp_timer.h"
 #include "sdkconfig.h"
 #include "ssd1306.h"
-#include "font8x8_basic.h"
+#include "font16x28.h"  // generated with tools/gen_font16x28.py
 #include "encoder.h"
 
 /* --------------------- Definitions and static variables ------------------ */
@@ -305,63 +305,13 @@ static void draw_seat(SSD1306_t *dev, int x, bool facing_right) {
     }
 }
 
-// Draw a single digit 16px wide x 24px tall (scaled 2x horizontally, 3x vertically from 8x8 font)
-// Vertically centered in 32px (4px padding top and bottom)
-static void draw_digit_16x24(SSD1306_t *dev, int x, char digit) {
-    const uint8_t *glyph = font8x8_basic_tr[(uint8_t)digit];
-
-    // Page 0: 4px padding (top)
-    uint8_t page0[16] = {0};
-    for(int col = 0; col < 8; col++) {
-        uint8_t src = glyph[col];
-        // Bottom 1-2 bits of glyph go to top 4 bits of page0 (after 4px padding)
-        uint8_t out = 0;
-        if(src & 0x01) out |= 0x70;  // bit 0 -> y4-6
-        if(src & 0x02) out |= 0x80;  // bit 1 -> y7 (partial)
-        page0[col * 2] = out;
-        page0[col * 2 + 1] = out;
+// Draw a single character 16px wide x 28px tall using the custom font
+// (stored as 16x32 with 2px top/bottom padding for page alignment)
+static void draw_char_16x28(SSD1306_t *dev, int x, char ch) {
+    int idx = font16x28_index(ch);
+    for(int page = 0; page < 4; page++) {
+        ssd1306_display_image(dev, page, x, font16x28[idx][page], 16);
     }
-    ssd1306_display_image(dev, 0, x, page0, 16);
-
-    // Page 1: bits 1-4 of glyph (scaled 3x)
-    uint8_t page1[16] = {0};
-    for(int col = 0; col < 8; col++) {
-        uint8_t src = glyph[col];
-        uint8_t out = 0;
-        if(src & 0x02) out |= 0x07;  // bit 1 -> y0-2
-        if(src & 0x04) out |= 0x38;  // bit 2 -> y3-5
-        if(src & 0x08) out |= 0xC0;  // bit 3 -> y6-7 (partial)
-        page1[col * 2] = out;
-        page1[col * 2 + 1] = out;
-    }
-    ssd1306_display_image(dev, 1, x, page1, 16);
-
-    // Page 2: bits 3-6 of glyph (scaled 3x)
-    uint8_t page2[16] = {0};
-    for(int col = 0; col < 8; col++) {
-        uint8_t src = glyph[col];
-        uint8_t out = 0;
-        if(src & 0x08) out |= 0x01;  // bit 3 -> y0 (partial)
-        if(src & 0x10) out |= 0x0E;  // bit 4 -> y1-3
-        if(src & 0x20) out |= 0x70;  // bit 5 -> y4-6
-        if(src & 0x40) out |= 0x80;  // bit 6 -> y7 (partial)
-        page2[col * 2] = out;
-        page2[col * 2 + 1] = out;
-    }
-    ssd1306_display_image(dev, 2, x, page2, 16);
-
-    // Page 3: bits 6-7 of glyph + 4px padding (bottom)
-    uint8_t page3[16] = {0};
-    for(int col = 0; col < 8; col++) {
-        uint8_t src = glyph[col];
-        uint8_t out = 0;
-        if(src & 0x40) out |= 0x03;  // bit 6 -> y0-1
-        if(src & 0x80) out |= 0x0C;  // bit 7 -> y2-3
-        // y4-7 is padding (0)
-        page3[col * 2] = out;
-        page3[col * 2 + 1] = out;
-    }
-    ssd1306_display_image(dev, 3, x, page3, 16);
 }
 
 // Draw 3 vertical circular dots (traffic light style), 8px wide, at position x
@@ -427,7 +377,7 @@ static void draw_boxed_digit(SSD1306_t *dev, int x, uint8_t digit) {
     _ssd1306_line(dev, x, 0, x, 31, false);           // left
     _ssd1306_line(dev, x+23, 0, x+23, 31, false);    // right
     // Digit centered inside (16px wide, 4px padding each side)
-    draw_digit_16x24(dev, x + 4, '0' + digit);
+    draw_char_16x28(dev, x + 4, '0' + digit);
 }
 
 static void draw_active_display(SSD1306_t *dev,
@@ -456,8 +406,8 @@ static void draw_active_display(SSD1306_t *dev,
         snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_left/2);
         temp_halves = ac_left % 2;
     }
-    draw_digit_16x24(dev, 0, temp_str[0]);
-    draw_digit_16x24(dev, 16, temp_str[1]);
+    draw_char_16x28(dev, 0, temp_str[0]);
+    draw_char_16x28(dev, 16, temp_str[1]);
     if(temp_halves) {
         _ssd1306_disc(dev, 31, 8, 2, OLED_DRAW_ALL, false);
     }
@@ -496,8 +446,8 @@ static void draw_active_display(SSD1306_t *dev,
         snprintf(temp_str, sizeof(temp_str), "%2d", 16+ac_right/2);  // TODO halves?
         temp_halves = ac_right % 2;
     }
-    draw_digit_16x24(dev, 96, temp_str[0]);
-    draw_digit_16x24(dev, 112, temp_str[1]);
+    draw_char_16x28(dev, 96, temp_str[0]);
+    draw_char_16x28(dev, 112, temp_str[1]);
     if(temp_halves) {
         _ssd1306_disc(dev, 127, 8, 2, OLED_DRAW_ALL, false);
     }
