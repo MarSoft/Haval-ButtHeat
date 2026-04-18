@@ -30,6 +30,7 @@
 #include "hal/i2c_types.h"
 #include "portmacro.h"
 
+#include "esp_timer.h"
 #include "sdkconfig.h"
 #include "ssd1306.h"
 #include "font8x8_basic.h"
@@ -73,6 +74,8 @@ typedef enum {
     DU_AC,
     DU_SEAT_MEMORY,
     DU_CAN_ERROR, // put display to "can error" state
+    DU_LONGPRESS_STAGE,    // overlay while holding: seat_mem_slot 0=clear, 1-3=slot
+    DU_LONGPRESS_CONFIRM,  // confirmed on release: seat_mem_slot 1-3, triggers blink
 } data_update_kind_t;
 typedef struct {
     data_update_kind_t kind;
@@ -263,6 +266,11 @@ void seat_memory_apply(int slot) {
     xQueueSend(tx_task_queue, &msg, portMAX_DELAY);
 }
 
+void disable_twozone_ac(void) {
+    // TODO: send CAN command to disable two-zone AC (command TBD)
+    ESP_LOGI(TAG, "disable_twozone_ac: stub called");
+}
+
 // Draw seat icon using lines and circles
 // facing_right: true = facing right (for left side), false = facing left (for right side)
 static void draw_seat(SSD1306_t *dev, int x, bool facing_right) {
@@ -411,9 +419,21 @@ static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right)
     }
 }
 
+// Draw a digit inside a square outline, in a 24x32 area starting at x
+static void draw_boxed_digit(SSD1306_t *dev, int x, uint8_t digit) {
+    // Square outline
+    _ssd1306_line(dev, x, 0, x+23, 0, false);       // top
+    _ssd1306_line(dev, x, 31, x+23, 31, false);      // bottom
+    _ssd1306_line(dev, x, 0, x, 31, false);           // left
+    _ssd1306_line(dev, x+23, 0, x+23, 31, false);    // right
+    // Digit centered inside (16px wide, 4px padding each side)
+    draw_digit_16x24(dev, x + 4, '0' + digit);
+}
+
 static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
-                                 butt_temp_t butt_left, butt_temp_t butt_right) {
+                                 butt_temp_t butt_left, butt_temp_t butt_right,
+                                 uint8_t left_overlay, uint8_t right_overlay) {
     // Clear buffer without sending to display
     uint8_t zeros[128 * 4] = {0};
     ssd1306_set_buffer(dev, zeros);
@@ -445,13 +465,21 @@ static void draw_active_display(SSD1306_t *dev,
     // Left heat dots (x=32)
     draw_heat_dots(dev, 32, butt_left);
 
-    // Left seat icon (x=40), facing right
-    draw_seat(dev, 40, true);
-    draw_heat_waves(dev, 40, butt_left, true);
+    // Left seat icon (x=40), facing right — or overlay
+    if(left_overlay > 0) {
+        draw_boxed_digit(dev, 40, left_overlay);
+    } else {
+        draw_seat(dev, 40, true);
+        draw_heat_waves(dev, 40, butt_left, true);
+    }
 
-    // Right seat icon (x=64), facing left
-    draw_seat(dev, 64, false);
-    draw_heat_waves(dev, 64, butt_right, false);
+    // Right seat icon (x=64), facing left — or overlay
+    if(right_overlay > 0) {
+        draw_boxed_digit(dev, 64, right_overlay);
+    } else {
+        draw_seat(dev, 64, false);
+        draw_heat_waves(dev, 64, butt_right, false);
+    }
 
     // Right heat dots (x=88)
     draw_heat_dots(dev, 88, butt_right);
@@ -492,11 +520,28 @@ static void display_task(void *arg) {
     ac_temp_t ac_left_temp = 0, ac_right_temp = 0;
     butt_temp_t butt_left_temp = 0, butt_right_temp = 0;
 
+    // Long press overlay state
+    uint8_t lp_left_stage = 0;        // 0=none, 1-3=showing slot number
+    uint8_t lp_right_stage = 0;
+    uint8_t confirm_left_slot = 0;    // 0=none, 1-3=blinking this slot
+    uint8_t confirm_left_blinks = 0;  // countdown: odd=visible, even=hidden, 0=done
+    uint8_t confirm_right_slot = 0;
+    uint8_t confirm_right_blinks = 0;
+
     while(1) {
+        // Compute overlay: stage preview takes priority, then blink
+        uint8_t left_overlay = 0, right_overlay = 0;
+        if(lp_left_stage > 0) left_overlay = lp_left_stage;
+        else if(confirm_left_slot > 0 && confirm_left_blinks % 2 == 1) left_overlay = confirm_left_slot;
+        if(lp_right_stage > 0) right_overlay = lp_right_stage;
+        else if(confirm_right_slot > 0 && confirm_right_blinks % 2 == 1) right_overlay = confirm_right_slot;
+
         if(active && need_redraw) {
             ESP_LOGI(TAG, "Disp active redraw");
             ssd1306_hardware_scroll(&dev, SCROLL_STOP);
-            draw_active_display(&dev, ac_left_temp, ac_right_temp, butt_left_temp, butt_right_temp);
+            draw_active_display(&dev, ac_left_temp, ac_right_temp,
+                                butt_left_temp, butt_right_temp,
+                                left_overlay, right_overlay);
             need_redraw = false;
         } else if(!active && need_redraw) {
             ESP_LOGI(TAG, "Disp passive");
@@ -514,8 +559,14 @@ static void display_task(void *arg) {
             scroll_left = !scroll_left;
         }
 
+        // Shorter timeout during blink animation
+        TickType_t timeout = pdMS_TO_TICKS(500);
+        if(confirm_left_blinks > 0 || confirm_right_blinks > 0) {
+            timeout = pdMS_TO_TICKS(150);
+        }
+
         data_update_t msg;
-        if(xQueueReceive(display_queue, &msg, pdMS_TO_TICKS(500)) == pdTRUE) {
+        if(xQueueReceive(display_queue, &msg, timeout) == pdTRUE) {
             switch(msg.kind) {
                 case DU_AC:
                     ESP_LOGI(TAG, "Recvd AC %d = %d", msg.leftside, msg.ac_temp);
@@ -542,9 +593,45 @@ static void display_task(void *arg) {
                     active = false;
                     need_redraw = true;
                     break;
+                case DU_LONGPRESS_STAGE:
+                    if(msg.leftside) {
+                        lp_left_stage = msg.seat_mem_slot;
+                        confirm_left_slot = 0;
+                        confirm_left_blinks = 0;
+                    } else {
+                        lp_right_stage = msg.seat_mem_slot;
+                        confirm_right_slot = 0;
+                        confirm_right_blinks = 0;
+                    }
+                    need_redraw = true;
+                    break;
+                case DU_LONGPRESS_CONFIRM:
+                    if(msg.leftside) {
+                        lp_left_stage = 0;
+                        confirm_left_slot = msg.seat_mem_slot;
+                        confirm_left_blinks = 5; // on-off-on-off-on then clear
+                    } else {
+                        lp_right_stage = 0;
+                        confirm_right_slot = msg.seat_mem_slot;
+                        confirm_right_blinks = 5;
+                    }
+                    need_redraw = true;
+                    break;
                 default:
                     ESP_LOGE(TAG, "Undef msg %d", msg.kind);
                     break;
+            }
+        } else {
+            // Timeout — advance blink countdown
+            if(confirm_left_blinks > 0) {
+                confirm_left_blinks--;
+                if(confirm_left_blinks == 0) confirm_left_slot = 0;
+                need_redraw = true;
+            }
+            if(confirm_right_blinks > 0) {
+                confirm_right_blinks--;
+                if(confirm_right_blinks == 0) confirm_right_slot = 0;
+                need_redraw = true;
             }
         }
     }
@@ -555,8 +642,34 @@ static void encoder_cb(const rotary_encoder_event_t *evt, void *ctx) {
     xQueueSendToBack(queue, evt, 0);
 }
 
-// 3 seconds for long press (FIXME should be in menuconfig but isn't?..)
-#define CONFIG_RE_BTN_LONG_PRESS_TIME_US 1000*1000*3
+// Long press custom handling
+#define RE_ET_LONGPRESS_TICK 99  // synthetic event type for timer ticks
+#define LONGPRESS_INTERVAL_US (1000 * 1000)  // 1 second between stages
+#define LONGPRESS_MAX_STAGE_LEFT 3   // left knob: stages 1-3, cancel at 4
+#define LONGPRESS_MAX_STAGE_RIGHT 1  // right knob: stage 1 only, cancel at 2
+
+typedef struct {
+    bool active;
+    uint8_t current_stage; // 0=none, 1-N=slot
+    bool secondary_rotation; // rotation occurred during long press
+    bool click_suppressed;   // suppress next BTN_CLICKED event
+    esp_timer_handle_t timer;
+} longpress_state_t;
+
+typedef struct {
+    QueueHandle_t queue;
+    rotary_encoder_handle_t sender;
+} longpress_timer_ctx_t;
+
+static void longpress_timer_cb(void *arg) {
+    longpress_timer_ctx_t *ctx = (longpress_timer_ctx_t *)arg;
+    rotary_encoder_event_t evt = {
+        .type = RE_ET_LONGPRESS_TICK,
+        .sender = ctx->sender,
+    };
+    xQueueSendToBack(ctx->queue, &evt, 0);
+}
+
 static void encoder_router_task(void *arg) {
     QueueHandle_t encoder_queue = xQueueCreate(16, sizeof(rotary_encoder_event_t));
 
@@ -564,22 +677,42 @@ static void encoder_router_task(void *arg) {
     cfg_left.pin_a = CONFIG_ENCODER_LEFT_A;
     cfg_left.pin_b = CONFIG_ENCODER_LEFT_B;
     cfg_left.pin_btn = CONFIG_BTN_LEFT;
+    cfg_left.btn_long_press_time_us = UINT32_MAX; // disable library long press
     cfg_left.callback = encoder_cb;
     cfg_left.callback_ctx = encoder_queue;
     rotary_encoder_config_t cfg_right = ROTARY_ENCODER_DEFAULT_CONFIG();
     cfg_right.pin_a = CONFIG_ENCODER_RIGHT_A;
     cfg_right.pin_b = CONFIG_ENCODER_RIGHT_B;
     cfg_right.pin_btn = CONFIG_BTN_RIGHT;
+    cfg_right.btn_long_press_time_us = UINT32_MAX; // disable library long press
     cfg_right.callback = encoder_cb;
     cfg_right.callback_ctx = encoder_queue;
 
     rotary_encoder_handle_t re_left = NULL, re_right = NULL;
     ESP_ERROR_CHECK(rotary_encoder_create(&cfg_left, &re_left));
-    
-    //rotary_encoder_add(&re_left);
     rotary_encoder_enable_acceleration(re_left, 10);
     ESP_ERROR_CHECK(rotary_encoder_create(&cfg_right, &re_right));
     rotary_encoder_enable_acceleration(re_right, 10);
+
+    // Long press state (task never returns, so local vars stay valid for timer callbacks)
+    longpress_timer_ctx_t lp_ctx_left, lp_ctx_right;
+    longpress_state_t lp_left = {0}, lp_right = {0};
+
+    lp_ctx_left = (longpress_timer_ctx_t){ .queue = encoder_queue, .sender = re_left };
+    lp_ctx_right = (longpress_timer_ctx_t){ .queue = encoder_queue, .sender = re_right };
+
+    esp_timer_create_args_t timer_args_left = {
+        .callback = longpress_timer_cb,
+        .arg = &lp_ctx_left,
+        .name = "lp_left",
+    };
+    esp_timer_create_args_t timer_args_right = {
+        .callback = longpress_timer_cb,
+        .arg = &lp_ctx_right,
+        .name = "lp_right",
+    };
+    ESP_ERROR_CHECK(esp_timer_create(&timer_args_left, &lp_left.timer));
+    ESP_ERROR_CHECK(esp_timer_create(&timer_args_right, &lp_right.timer));
 
     // now that init is done, listen on queue and route
     while(1) {
@@ -598,28 +731,122 @@ static void encoder_router_task(void *arg) {
             continue;
         }
 
+        longpress_state_t *lp = leftside ? &lp_left : &lp_right;
+        int max_stage = leftside ? LONGPRESS_MAX_STAGE_LEFT : LONGPRESS_MAX_STAGE_RIGHT;
         uint8_t dummy = 0;
 
-        // got event, route it!
-        switch(evt.type) {
+        // Cast to int: evt.type is rotary_encoder_event_type_t but we also handle
+        // our synthetic RE_ET_LONGPRESS_TICK which is outside the enum.
+        switch((int)evt.type) {
             case RE_ET_CHANGED:
-                if(!xQueueSend((leftside ? left_ac_handler : right_ac_handler).control_queue, &evt.diff, 0)) {
-                    ESP_LOGE(TAG, "Rot: queue full!");
+                if(lp->active) {
+                    // Cancel long press, enter secondary rotation mode
+                    esp_timer_stop(lp->timer);
+                    lp->active = false;
+                    lp->current_stage = 0;
+                    lp->secondary_rotation = true;
+                    lp->click_suppressed = true;
+                    data_update_t du_cancel = {
+                        .kind = DU_LONGPRESS_STAGE,
+                        .leftside = leftside,
+                        .seat_mem_slot = 0,
+                    };
+                    xQueueSend(display_queue, &du_cancel, 0);
+                }
+                if(lp->secondary_rotation) {
+                    // TODO: handle secondary rotation (button held + rotate)
+                    ESP_LOGD(TAG, "Secondary rotation %d (%s)", evt.diff, leftside ? "left" : "right");
+                } else {
+                    // Normal rotation → AC control
+                    if(!xQueueSend((leftside ? left_ac_handler : right_ac_handler).control_queue, &evt.diff, 0)) {
+                        ESP_LOGE(TAG, "Rot: queue full!");
+                    }
                 }
                 break;
+
+            case RE_ET_BTN_PRESSED:
+                lp->active = true;
+                lp->current_stage = 0;
+                lp->secondary_rotation = false;
+                lp->click_suppressed = false;
+                esp_timer_start_once(lp->timer, LONGPRESS_INTERVAL_US);
+                ESP_LOGI(TAG, "Button pressed (%s), tracking long press", leftside ? "left" : "right");
+                break;
+
+            case RE_ET_LONGPRESS_TICK:
+                if(!lp->active) break; // race with release, ignore
+                lp->current_stage++;
+                if(lp->current_stage <= max_stage) {
+                    // Show stage on display
+                    data_update_t du_stage = {
+                        .kind = DU_LONGPRESS_STAGE,
+                        .leftside = leftside,
+                        .seat_mem_slot = lp->current_stage,
+                    };
+                    xQueueSend(display_queue, &du_stage, 0);
+                    // Schedule next tick
+                    esp_timer_start_once(lp->timer, LONGPRESS_INTERVAL_US);
+                    ESP_LOGI(TAG, "Long press stage %d (%s)", lp->current_stage, leftside ? "left" : "right");
+                } else {
+                    // Cancel — held too long
+                    lp->active = false;
+                    lp->current_stage = 0;
+                    lp->click_suppressed = true;
+                    data_update_t du_cancel = {
+                        .kind = DU_LONGPRESS_STAGE,
+                        .leftside = leftside,
+                        .seat_mem_slot = 0,
+                    };
+                    xQueueSend(display_queue, &du_cancel, 0);
+                    ESP_LOGI(TAG, "Long press cancelled (held too long, %s)", leftside ? "left" : "right");
+                }
+                break;
+
+            case RE_ET_BTN_RELEASED: {
+                esp_timer_stop(lp->timer);
+                uint8_t stage = lp->current_stage;
+                bool was_secondary = lp->secondary_rotation;
+                lp->active = false;
+                lp->current_stage = 0;
+                lp->secondary_rotation = false;
+
+                if(was_secondary) {
+                    // Rotation cancelled the long press — suppress click, no action
+                    lp->click_suppressed = true;
+                } else if(stage >= 1 && stage <= max_stage) {
+                    // Apply the action
+                    if(leftside) {
+                        seat_memory_apply(stage);
+                    } else {
+                        disable_twozone_ac();
+                    }
+                    // Show confirmation blink
+                    data_update_t du_confirm = {
+                        .kind = DU_LONGPRESS_CONFIRM,
+                        .leftside = leftside,
+                        .seat_mem_slot = stage,
+                    };
+                    xQueueSend(display_queue, &du_confirm, 0);
+                    lp->click_suppressed = true;
+                    ESP_LOGI(TAG, "Long press applied stage %d (%s)", stage, leftside ? "left" : "right");
+                }
+                // If stage == 0 and !was_secondary: short press, let BTN_CLICKED through
+                break;
+            }
+
             case RE_ET_BTN_CLICKED:
-                ESP_LOGI(TAG, "BTN send");
+                if(lp->click_suppressed) {
+                    lp->click_suppressed = false;
+                    break;
+                }
+                // Normal click → butt heat toggle
+                ESP_LOGI(TAG, "BTN click (%s)", leftside ? "left" : "right");
                 if(!xQueueSend((leftside ? left_butt_handler : right_butt_handler).control_queue, &dummy, 0)) {
                     ESP_LOGE(TAG, "Btn: queue full!");
                 }
                 break;
-            case RE_ET_BTN_LONG_PRESSED:
-                // seat memory
-                ESP_LOGI(TAG, "Got long press %d", leftside);
-                seat_memory_apply(leftside ? 1 : 2);
-                break;
+
             default:
-                // ignore press & release events for now
                 break;
         }
     }
