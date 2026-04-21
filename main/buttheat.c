@@ -232,14 +232,14 @@ static void twai_transmit_task(void *arg)
         .data = {
             0, // 8 = steering heat on, 4 = steering heat off?
             0x10,  // ?
-            ac_two_zone << 4, // 0x10 = twozone, 0x00 = onezone
+            0, // ac_two_zone << 4, // 0x10 = twozone, 0x00 = onezone
             0, // 0x40 = (A) btn in a/c control panel
             0x10,
             1, // 0x9 = head, 0x11 = foot+head, 0x19=foot, 0x21 = foot+glass, 
             0, // 1 = ion toggle?..
             0, // fan_strength: 1..7 (fan-off - some other command), 0 means no change
         },
-    }
+    };
     twai_message_t msg_seatmem_recall = {
         // Message type and format settings - default...
         // Message ID and payload
