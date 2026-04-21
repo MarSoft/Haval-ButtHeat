@@ -403,6 +403,19 @@ static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right)
     }
 }
 
+// Draw fan speed as horizontal dashes at the very bottom of the display (y=30-31)
+// speed: 0=off (nothing drawn), 1-7 = that many dashes spread across 128px
+static void draw_fan_speed(SSD1306_t *dev, fan_speed_t speed) {
+    if(speed == 0) return;
+    // 7 possible dashes across 128px: each 16px wide, 2px gap
+    // Total: 7*16 + 6*2 = 124px, centered with 2px margin each side
+    for(int i = 0; i < speed && i < 7; i++) {
+        int x = 2 + i * 18;  // 16px dash + 2px gap
+        _ssd1306_line(dev, x, 30, x + 15, 30, false);
+        _ssd1306_line(dev, x, 31, x + 15, 31, false);
+    }
+}
+
 // Draw a digit inside a square outline, in a 24x32 area starting at x
 static void draw_boxed_digit(SSD1306_t *dev, int x, uint8_t digit) {
     // Square outline
@@ -417,6 +430,7 @@ static void draw_boxed_digit(SSD1306_t *dev, int x, uint8_t digit) {
 static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
                                  butt_temp_t butt_left, butt_temp_t butt_right,
+                                 fan_speed_t fan_speed,
                                  uint8_t left_overlay, uint8_t right_overlay) {
     // Clear buffer without sending to display
     uint8_t zeros[128 * 4] = {0};
@@ -486,6 +500,9 @@ static void draw_active_display(SSD1306_t *dev,
         _ssd1306_disc(dev, 127, 8, 2, OLED_DRAW_ALL, false);
     }
 
+    // Fan speed indicator at the very bottom
+    draw_fan_speed(dev, fan_speed);
+
     // Show the buffer (for _ssd1306_* drawing functions)
     ssd1306_show_buffer(dev);
 }
@@ -503,6 +520,7 @@ static void display_task(void *arg) {
     bool scroll_left = true;
     ac_temp_t ac_left_temp = 0, ac_right_temp = 0;
     butt_temp_t butt_left_temp = 0, butt_right_temp = 0;
+    fan_speed_t fan_speed = 0;
 
     // Long press overlay state
     uint8_t lp_left_stage = 0;        // 0=none, 1-3=showing slot number
@@ -525,6 +543,7 @@ static void display_task(void *arg) {
             ssd1306_hardware_scroll(&dev, SCROLL_STOP);
             draw_active_display(&dev, ac_left_temp, ac_right_temp,
                                 butt_left_temp, butt_right_temp,
+                                fan_speed,
                                 left_overlay, right_overlay);
             need_redraw = false;
         } else if(!active && need_redraw) {
@@ -569,6 +588,12 @@ static void display_task(void *arg) {
                     } else {
                         butt_right_temp = msg.butt_temp;
                     }
+                    active = true;
+                    need_redraw = true;
+                    break;
+                case DU_FANSPEED:
+                    ESP_LOGI(TAG, "Recvd FAN = %d", msg.fan_speed);
+                    fan_speed = msg.fan_speed;
                     active = true;
                     need_redraw = true;
                     break;
