@@ -79,6 +79,7 @@ typedef struct {
 typedef enum {
     DU_BUTTHEAT,
     DU_AC,
+    DU_DISABLE_TWOZONE, // toggle two-zone AC off (only if currently on)
     DU_FANSPEED,
     DU_SEAT_MEMORY,
     DU_CAN_ERROR, // put display to "can error" state
@@ -135,6 +136,7 @@ static handler_config_t right_butt_handler = {
 static QueueHandle_t tx_task_queue;
 static QueueHandle_t display_queue;
 static SemaphoreHandle_t done_sem;
+static bool twozone_active = false; // updated by twai_receive_task, read by twai_transmit_task
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
@@ -184,7 +186,7 @@ static void twai_receive_task(void *arg)
                 // F6 41 6C C8 C0 02 C0 36
                 ac_temp_t ac_left = (rx_msg.data[4] >> 1) & 0x3f;
                 ac_temp_t ac_right = (rx_msg.data[6]) & 0x3f;
-                // bool two_zones_active = rx_msg.data[4] & 0x80 != 0
+                twozone_active = (rx_msg.data[4] & 0x80) != 0;
                 // bool just_changed = rx_msg.data[1] & 0x20
                 fan_speed_t fan_speed = rx_msg.data[1] & 7;
                 // if(rx_msg.data[1] == 0) then fan is off
@@ -282,6 +284,16 @@ static void twai_transmit_task(void *arg)
                 msg_seatmem_recall.data[1] = 3 + action.seat_mem_slot;
                 twai_transmit(&msg_seatmem_recall, portMAX_DELAY);
                 break;
+            case DU_DISABLE_TWOZONE:
+                if(twozone_active) {
+                    msg_fan_set.data[2] = 0x10; // toggle two-zone
+                    twai_transmit(&msg_fan_set, portMAX_DELAY);
+                    msg_fan_set.data[2] = 0;    // reset for future use
+                    ESP_LOGI(TAG, "Sent two-zone toggle (was active)");
+                } else {
+                    ESP_LOGI(TAG, "Two-zone already disabled, skipping toggle");
+                }
+                break;
             default:
                 ESP_LOGE(TAG, "Unexpected action in twai TX: %d", action.kind);
                 break;
@@ -301,8 +313,10 @@ void seat_memory_apply(int slot) {
 }
 
 void disable_twozone_ac(void) {
-    // TODO: send CAN command to disable two-zone AC (command TBD)
-    ESP_LOGI(TAG, "disable_twozone_ac: stub called");
+    data_update_t msg = {
+        .kind = DU_DISABLE_TWOZONE,
+    };
+    xQueueSend(tx_task_queue, &msg, portMAX_DELAY);
 }
 
 // Draw seat icon using lines and circles
