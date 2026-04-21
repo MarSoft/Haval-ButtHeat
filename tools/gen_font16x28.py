@@ -12,11 +12,19 @@ above the digits and for the square frame of the long-press overlay.
 
 Glyphs covered: 0-9, space, dash, H, I, L, O
 
+Glyph sources:
+  - Built-in ASCII art definitions (default)
+  - BDF font files (--bdf <file.bdf>): extracts needed glyphs, centers/crops
+    to 16x28. Use --preview to see the result before generating.
+
 Usage:
     python3 gen_font16x28.py > ../main/font16x28.h
+    python3 gen_font16x28.py --bdf somefont.bdf > ../main/font16x28.h
+    python3 gen_font16x28.py --bdf somefont.bdf --preview
 """
 
 import sys
+import argparse
 
 W = 16
 H_VISIBLE = 28  # visible glyph height
@@ -544,11 +552,147 @@ GLYPHS['O'] = GLYPHS['0']  # identical
 # ── Character ordering ──
 CHARS = "0123456789 -HILO"
 
+
+# ── BDF font import ──
+
+def parse_bdf(filename):
+    """Parse a BDF font file, return dict of {encoding_int: (bbw, bbh, bbx, bby, [hex_rows])}."""
+    glyphs = {}
+    with open(filename) as f:
+        lines = f.readlines()
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        if line.startswith('STARTCHAR'):
+            encoding = None
+            bbw = bbh = bbx = bby = 0
+            bitmap_rows = []
+            i += 1
+            while i < len(lines) and not lines[i].strip().startswith('ENDCHAR'):
+                l = lines[i].strip()
+                if l.startswith('ENCODING'):
+                    encoding = int(l.split()[1])
+                elif l.startswith('BBX'):
+                    parts = l.split()
+                    bbw, bbh, bbx, bby = int(parts[1]), int(parts[2]), int(parts[3]), int(parts[4])
+                elif l == 'BITMAP':
+                    i += 1
+                    while i < len(lines) and not lines[i].strip().startswith('ENDCHAR'):
+                        bitmap_rows.append(lines[i].strip())
+                        i += 1
+                    continue  # don't increment i again, ENDCHAR check will handle it
+                i += 1
+            if encoding is not None:
+                glyphs[encoding] = (bbw, bbh, bbx, bby, bitmap_rows)
+        i += 1
+    return glyphs
+
+
+def bdf_glyph_to_grid(bdf_glyph):
+    """Convert a BDF glyph to a 16x28 grid, centered horizontally, aligned to baseline.
+
+    BDF glyphs have a bounding box (bbw x bbh) at offset (bbx, bby) relative
+    to the origin. bby is typically negative for descenders.
+
+    We place the glyph centered in 16 columns and vertically positioned so that
+    the baseline sits near row 24 (leaving ~4 rows for descenders in the 28-row
+    visible area).
+    """
+    bbw, bbh, bbx, bby, hex_rows = bdf_glyph
+
+    # Decode hex rows into a bbw x bbh pixel grid
+    raw = []
+    for hexrow in hex_rows:
+        val = int(hexrow, 16)
+        # BDF hex is MSB-first, padded to byte boundary
+        n_bits = len(hexrow) * 4
+        row = []
+        for bit in range(n_bits):
+            row.append(1 if (val >> (n_bits - 1 - bit)) & 1 else 0)
+        # Trim or pad to bbw
+        row = row[:bbw] + [0] * max(0, bbw - len(row))
+        raw.append(row)
+
+    # Position in 16x28 grid
+    # Baseline at row 22 (0-indexed within the 28-row visible area)
+    # This leaves rows 23-27 for descenders and bottom padding
+    BASELINE = 22
+
+    # The glyph's bottom-left is at (bbx, bby) relative to origin.
+    # bby > 0 means the glyph bottom is above the baseline.
+    # bby < 0 means the glyph extends below the baseline (descender).
+    # The glyph top is at bby + bbh - 1 above baseline origin.
+    glyph_top_y = BASELINE - (bby + bbh - 1)  # row in our grid where glyph starts
+
+    # Center horizontally
+    glyph_left_x = (W - bbw) // 2 + bbx
+
+    grid = [[0] * W for _ in range(H_VISIBLE)]
+    for row_idx, row_data in enumerate(raw):
+        y = glyph_top_y + row_idx
+        if y < 0 or y >= H_VISIBLE:
+            continue
+        for col_idx, pixel in enumerate(row_data):
+            x = glyph_left_x + col_idx
+            if 0 <= x < W and pixel:
+                grid[y][x] = 1
+
+    return grid
+
+
+def load_bdf_glyphs(bdf_file, chars):
+    """Load specific characters from a BDF file, return dict of {char: 28-line art string}."""
+    bdf_glyphs = parse_bdf(bdf_file)
+    result = {}
+
+    for ch in chars:
+        enc = ord(ch)
+        if enc not in bdf_glyphs:
+            print(f"Warning: character '{ch}' (U+{enc:04X}) not found in BDF file, using blank",
+                  file=sys.stderr)
+            result[ch] = '\n'.join(['.' * W] * H_VISIBLE)
+            continue
+
+        grid = bdf_glyph_to_grid(bdf_glyphs[enc])
+        # Convert grid to art string
+        art_lines = []
+        for row in grid:
+            art_lines.append(''.join('#' if p else '.' for p in row))
+        result[ch] = '\n'.join(art_lines)
+
+    return result
+
+
 # ── Generate C header ──
 def main():
+    parser = argparse.ArgumentParser(description='Generate font16x28.h for SSD1306')
+    parser.add_argument('--bdf', help='Import glyphs from a BDF font file instead of built-in art')
+    parser.add_argument('--preview', action='store_true',
+                        help='Print ASCII art preview to stderr and exit (no C output)')
+    args = parser.parse_args()
+
     grids = {}
+
+    if args.bdf:
+        # Load from BDF file
+        bdf_arts = load_bdf_glyphs(args.bdf, CHARS)
+        for ch in CHARS:
+            # Override built-in glyphs with BDF versions
+            GLYPHS[ch] = bdf_arts[ch]
+
     for ch in CHARS:
         grids[ch] = parse_grid(GLYPHS[ch])
+
+    if args.preview:
+        for ch in CHARS:
+            label = ch if ch != ' ' else 'SPACE'
+            print(f"── '{label}' ──", file=sys.stderr)
+            art = grid_to_art(grids[ch])
+            for line in art:
+                print(f"  {line}", file=sys.stderr)
+            print(file=sys.stderr)
+        return
 
     print("// Auto-generated by tools/gen_font16x28.py — do not edit by hand")
     print("// Custom 16x28 font for SSD1306 (page-oriented, stored as 16x32 with 2px padding)")
