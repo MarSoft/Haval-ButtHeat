@@ -777,7 +777,9 @@ static void encoder_router_task(void *arg) {
                     xQueueSend(display_queue, &du_cancel, 0);
                 }
                 if(lp->secondary_rotation) {
-                    // TODO: handle secondary rotation (button held + rotate)
+                    // handle secondary rotation (button held + rotate):
+                    // for now it controls fan
+                    xQueueSend(fan_speed_handler.control_queue, &evt.diff, 0);
                     ESP_LOGD(TAG, "Secondary rotation %d (%s)", evt.diff, leftside ? "left" : "right");
                 } else {
                     // Normal rotation → AC control
