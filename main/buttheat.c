@@ -49,16 +49,23 @@ typedef uint8_t ac_temp_t;  // 0 = LO; 1 = 16.5; 2 = 17; ...; 30=31; 31=31.5; 32
 #define AC_TEMP_LO 0
 // ac to degrees: (val / 2) + 16
 
+typedef uint8_t fan_speed_t;
+#define FAN_SPEED_UNKNOWN 0
+#define FAN_SPEED_MIN 1
+#define FAN_SPEED_MAX 7
+
 typedef uint8_t butt_temp_t;
 
 typedef union {
     ac_temp_t ac;
+    fan_speed_t fan;
     butt_temp_t butt;
     uint8_t _max; // for simpler equality check
 } union_temp_t;
 
 typedef enum {
     HANDLER_TYPE_AC,
+    HANDLER_TYPE_FAN,
     HANDLER_TYPE_BUTTHEAT,
 } handler_type_t;
 
@@ -72,6 +79,7 @@ typedef struct {
 typedef enum {
     DU_BUTTHEAT,
     DU_AC,
+    DU_FANSPEED,
     DU_SEAT_MEMORY,
     DU_CAN_ERROR, // put display to "can error" state
     DU_LONGPRESS_STAGE,    // overlay while holding: seat_mem_slot 0=clear, 1-3=slot
@@ -82,6 +90,7 @@ typedef struct {
     bool leftside;
     union {
         ac_temp_t ac_temp;
+        fan_speed_t fan_speed;
         butt_temp_t butt_temp;
         uint8_t seat_mem_slot;
     };
@@ -89,6 +98,7 @@ typedef struct {
 
 #define CAN_ID_HEATER_STATUS 0x2D1
 #define CAN_ID_HEATER_CONTROL 0x36D
+#define CAN_ID_FAN_CONTROL 0x367
 #define CAN_ID_AC_STATUS 0x385
 #define CAN_ID_AC_CONTROL 0x1EE
 #define CAN_ID_SEAT_MEMORY 0x1ED
@@ -109,6 +119,9 @@ static handler_config_t left_ac_handler = {
 static handler_config_t right_ac_handler = {
     .type = HANDLER_TYPE_AC,
     .leftside = false,
+};
+static handler_config_t fan_speed_handler = {
+    .type = HANDLER_TYPE_FAN,
 };
 static handler_config_t left_butt_handler = {
     .type = HANDLER_TYPE_BUTTHEAT,
@@ -171,9 +184,16 @@ static void twai_receive_task(void *arg)
                 // F6 41 6C C8 C0 02 C0 36
                 ac_temp_t ac_left = (rx_msg.data[4] >> 1) & 0x3f;
                 ac_temp_t ac_right = (rx_msg.data[6]) & 0x3f;
+                // bool two_zones_active = rx_msg.data[4] & 0x80 != 0
                 // bool just_changed = rx_msg.data[1] & 0x20
+                fan_speed_t fan_speed = rx_msg.data[1] & 7;
+                // if(rx_msg.data[1] == 0) then fan is off
+                // int cur_temp_in_cabin_info = rx_msg.data[3]? variants: 
+                // bool ac_on = rx_msg.data[5] & 0x8 != 0
+                // bool air_from_outside_taken = rx_msg.data[5] & 0x2 != 0
                 xQueueOverwrite(left_ac_handler.can_queue, &ac_left);
                 xQueueOverwrite(right_ac_handler.can_queue, &ac_right);
+                xQueueOverwrite(fan_speed_handler.can_queue, &fan_speed);
                 break;
             default:
                 // unsupported message, ignore
@@ -206,6 +226,20 @@ static void twai_transmit_task(void *arg)
         .data_length_code = 8,
         .data = {0, 0x41, 0, 2, 0, 0, 0, 0},
     };
+    twai_message_t msg_fan_set = {
+        .identifier = CAN_ID_FAN_CONTROL,
+        .data_length_code = 8,
+        .data = {
+            0, // 8 = steering heat on, 4 = steering heat off?
+            0x10,  // ?
+            ac_two_zone << 4, // 0x10 = twozone, 0x00 = onezone
+            0, // 0x40 = (A) btn in a/c control panel
+            0x10,
+            1, // 0x9 = head, 0x11 = foot+head, 0x19=foot, 0x21 = foot+glass, 
+            0, // 1 = ion toggle?..
+            0, // fan_strength: 1..7 (fan-off - some other command), 0 means no change
+        },
+    }
     twai_message_t msg_seatmem_recall = {
         // Message type and format settings - default...
         // Message ID and payload
@@ -806,14 +840,15 @@ static void encoder_router_task(void *arg) {
 void generic_handler_task(void *ctx) {
     handler_config_t *self = (handler_config_t*)ctx;
     bool is_ac = self->type == HANDLER_TYPE_AC;
-    char *kind = is_ac ? "AC" : "BUTT";
+    bool is_fan = self->type == HANDLER_TYPE_FAN;
+    char *kind = is_ac ? "AC" : is_fan ? "FAN" : "BUTT";
 
-    union_temp_t value = {0};  // TODO
+    union_temp_t value = {0};
     rotary_value_t rotdiff;
     union_temp_t canval;
     data_update_t evt;
 
-    evt.kind = is_ac ? DU_AC : DU_BUTTHEAT;
+    evt.kind = is_ac ? DU_AC : is_fan ? DU_FANSPEED : DU_BUTTHEAT;
     evt.leftside = self->leftside;
 
     QueueSetHandle_t qset = xQueueCreateSet(8 + 1);  // sum of control_queue (8) + can_queue (1)
@@ -868,8 +903,9 @@ void generic_handler_task(void *ctx) {
             if(value._max == canval._max) continue; // nothing changed
             value._max = canval._max;
             // emit to display
-            if(is_ac) evt.ac_temp = value.ac;
-            else      evt.butt_temp = value.butt;
+            if(is_ac)       evt.ac_temp = value.ac;
+            else if(is_fan) evt.fan_speed = value.fan;
+            else            evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
         } else if(active_queue == self->control_queue) {
             xQueueReceive(self->control_queue, &rotdiff, 0);
@@ -884,6 +920,9 @@ void generic_handler_task(void *ctx) {
                 } else {
                     value.ac = MAX(AC_TEMP_LO, MIN(AC_TEMP_HI, value.ac + rotdiff));
                 }
+            } else if(is_fan) {
+                // FIXME what about int overflow when going down?
+                value.fan = MAX(FAN_SPEED_MIN, MIN(FAN_SPEED_MAX, value.fan + rotdiff));
             } else {
                 if(value.butt == 0) {
                     value.butt = 3;
@@ -893,8 +932,9 @@ void generic_handler_task(void *ctx) {
             }
 
             // emit to display immediately
-            if(is_ac) evt.ac_temp = value.ac;
-            else      evt.butt_temp = value.butt;
+            if(is_ac)       evt.ac_temp = value.ac;
+            else if(is_fan) evt.fan_speed = value.fan;
+            else            evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
 
             now = xTaskGetTickCount();
@@ -923,6 +963,8 @@ void app_main(void)
     left_ac_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));
     right_ac_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
     right_ac_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));
+    fan_speed_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
+    fan_speed_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));
     left_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
     left_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
     right_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
@@ -935,6 +977,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(display_task, "DISP", 4096, NULL, 10, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "AC_left", 4096, (void*)&left_ac_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "AC_right", 4096, (void*)&right_ac_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "FAN", 4096, (void*)&fan_speed_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
 
