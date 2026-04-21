@@ -278,6 +278,11 @@ static void twai_transmit_task(void *arg)
                 // ... and send it!
                 twai_transmit(&msg_buttheat_set, portMAX_DELAY);
                 break;
+            case DU_FANSPEED:
+                msg_fan_set.data[7] = action.fan_speed;
+                twai_transmit(&msg_fan_set, portMAX_DELAY);
+                msg_fan_set.data[7] = 0; // reset for future use
+                break;
             case DU_SEAT_MEMORY:
                 // use action.seat_mem_slot
                 // 0x04 = first slot, 0x05 = second slot
@@ -289,6 +294,7 @@ static void twai_transmit_task(void *arg)
                     msg_fan_set.data[2] = 0x10; // toggle two-zone
                     twai_transmit(&msg_fan_set, portMAX_DELAY);
                     msg_fan_set.data[2] = 0;    // reset for future use
+                    twai_transmit(&msg_fan_set, portMAX_DELAY); // and send a "neutral" msg to confirm
                     ESP_LOGI(TAG, "Sent two-zone toggle (was active)");
                 } else {
                     ESP_LOGI(TAG, "Two-zone already disabled, skipping toggle");
