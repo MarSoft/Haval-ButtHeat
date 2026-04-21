@@ -230,9 +230,9 @@ static void twai_transmit_task(void *arg)
         .identifier = CAN_ID_FAN_CONTROL,
         .data_length_code = 8,
         .data = {
-            0, // 8 = steering heat on, 4 = steering heat off?
+            0, // 8 = steering heat on, 4 = steering wheel heat off?
             0x10,  // ?
-            0, // ac_two_zone << 4, // 0x10 = twozone, 0x00 = onezone
+            0, // ac_two_zone << 4, // 0x10 = toggle_twozone, 0x00 = no_change
             0, // 0x40 = (A) btn in a/c control panel
             0x10,
             1, // 0x9 = head, 0x11 = foot+head, 0x19=foot, 0x21 = foot+glass, 
