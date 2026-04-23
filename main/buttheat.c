@@ -193,6 +193,7 @@ static void twai_receive_task(void *arg)
                 // int cur_temp_in_cabin_info = rx_msg.data[3]? variants: 
                 // bool ac_on = rx_msg.data[5] & 0x8 != 0
                 // bool air_from_outside_taken = rx_msg.data[5] & 0x2 != 0
+                // bool windshield_heat = rx_msg.data[5] & 0x10 != 0
                 xQueueOverwrite(left_ac_handler.can_queue, &ac_left);
                 xQueueOverwrite(right_ac_handler.can_queue, &ac_right);
                 xQueueOverwrite(fan_speed_handler.can_queue, &fan_speed);
@@ -226,7 +227,7 @@ static void twai_transmit_task(void *arg)
         // Message ID and payload
         .identifier = CAN_ID_AC_CONTROL,
         .data_length_code = 8,
-        .data = {0, 0x41, 0, 2, 0, 0, 0, 0},
+        .data = {0, 0x41, 0, 2, 0, 0, 0, 0}, // data[0]: 8 = enable heat steering, 4 = disable heat steering
     };
     twai_message_t msg_fan_set = {
         .identifier = CAN_ID_FAN_CONTROL,
@@ -234,12 +235,12 @@ static void twai_transmit_task(void *arg)
         .data = {
             0, // 8 = steering heat on, 4 = steering wheel heat off?
             0x10,  // ?
-            0, // ac_two_zone << 4, // 0x10 = toggle_twozone, 0x00 = no_change
+            0, // ac_two_zone << 4, // 0x10 = toggle_twozone, 0x00 = no_change; 0x01 = toggle_recirculation?..
             0, // 0x40 = (A) btn in a/c control panel
             0x10,
             1, // 0x9 = head, 0x11 = foot+head, 0x19=foot, 0x21 = foot+glass, 
-            0, // 1 = ion toggle?..
-            0, // fan_strength: 1..7 (fan-off - some other command), 0 means no change
+            0, // 1 = ion toggle?.. 0x40 = ?
+            0, // fan_strength: 1..7 (fan-off - some other command), 0 means no change; 0x40: fan off
         },
     };
     twai_message_t msg_seatmem_recall = {
