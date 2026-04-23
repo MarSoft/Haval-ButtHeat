@@ -87,6 +87,7 @@ typedef enum {
     DU_CAN_ERROR, // put display to "can error" state
     DU_LONGPRESS_STAGE,    // overlay while holding: seat_mem_slot 0=clear, 1-3=slot
     DU_LONGPRESS_CONFIRM,  // confirmed on release: seat_mem_slot 1-3, triggers blink
+    DU_AC_ACK,             // AC controller ack bit changed (leftside = new value)
 } data_update_kind_t;
 typedef struct {
     data_update_kind_t kind;
@@ -96,6 +97,7 @@ typedef struct {
         fan_speed_t fan_speed;
         butt_temp_t butt_temp;
         uint8_t seat_mem_slot;
+        bool ac_ack;
     };
 } data_update_t;
 
@@ -139,6 +141,7 @@ static QueueHandle_t tx_task_queue;
 static QueueHandle_t display_queue;
 static SemaphoreHandle_t done_sem;
 static bool twozone_active = false; // updated by twai_receive_task, read by twai_transmit_task
+static bool ac_just_updated = false; // set by twai_receive_task when AC controller acks a change
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
@@ -154,7 +157,7 @@ static void twai_receive_task(void *arg)
     data_update_t noconn_msg = {
         .kind = DU_CAN_ERROR,
     };
-
+    bool prev_ac_ack = false;
     while (1) {
         twai_message_t rx_msg;
         esp_err_t err;
@@ -189,10 +192,18 @@ static void twai_receive_task(void *arg)
                 ac_temp_t ac_left = (rx_msg.data[4] >> 1) & 0x3f;
                 ac_temp_t ac_right = (rx_msg.data[6]) & 0x3f;
                 twozone_active = (rx_msg.data[4] & 0x80) != 0;
-                // bool just_changed = rx_msg.data[1] & 0x20
+                ac_just_updated = (rx_msg.data[1] & 0x20) != 0;
+                if(ac_just_updated != prev_ac_ack) {
+                    prev_ac_ack = ac_just_updated;
+                    data_update_t ack_msg = {
+                        .kind = DU_AC_ACK,
+                        .ac_ack = ac_just_updated,
+                    };
+                    xQueueSend(display_queue, &ack_msg, 0);
+                }
                 fan_speed_t fan_speed = rx_msg.data[1] & 7;
                 // if(rx_msg.data[1] == 0) then fan is off
-                // int cur_temp_in_cabin_info = rx_msg.data[3]? variants: 
+                // int cur_temp_in_cabin_info = rx_msg.data[3]? variants:
                 // bool ac_on = rx_msg.data[5] & 0x8 != 0
                 // bool air_from_outside_taken = rx_msg.data[5] & 0x2 != 0
                 // bool windshield_heat = rx_msg.data[5] & 0x10 != 0
@@ -454,7 +465,7 @@ static void draw_boxed_digit(SSD1306_t *dev, int x, uint8_t digit) {
 static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
                                  butt_temp_t butt_left, butt_temp_t butt_right,
-                                 fan_speed_t fan_speed,
+                                 fan_speed_t fan_speed, bool show_just_updated,
                                  uint8_t left_overlay, uint8_t right_overlay) {
     // Clear buffer without sending to display
     uint8_t zeros[128 * 4] = {0};
@@ -527,6 +538,11 @@ static void draw_active_display(SSD1306_t *dev,
     // Fan speed indicator at the very bottom
     draw_fan_speed(dev, fan_speed);
 
+    if(show_just_updated) {
+        _ssd1306_line(dev, 0, 0, 0, 30, false);
+        _ssd1306_line(dev, 127, 0, 127, 30, false);
+    }
+
     // Show the buffer (for _ssd1306_* drawing functions)
     ssd1306_show_buffer(dev);
 }
@@ -545,6 +561,7 @@ static void display_task(void *arg) {
     ac_temp_t ac_left_temp = 0, ac_right_temp = 0;
     butt_temp_t butt_left_temp = 0, butt_right_temp = 0;
     fan_speed_t fan_speed = 0;
+    bool show_ac_ack = false;
 
     // Long press overlay state
     uint8_t lp_left_stage = 0;        // 0=none, 1-3=showing slot number
@@ -567,7 +584,7 @@ static void display_task(void *arg) {
             ssd1306_hardware_scroll(&dev, SCROLL_STOP);
             draw_active_display(&dev, ac_left_temp, ac_right_temp,
                                 butt_left_temp, butt_right_temp,
-                                fan_speed,
+                                fan_speed, show_ac_ack,
                                 left_overlay, right_overlay);
             need_redraw = false;
         } else if(!active && need_redraw) {
@@ -648,6 +665,10 @@ static void display_task(void *arg) {
                         confirm_right_slot = msg.seat_mem_slot;
                         confirm_right_blinks = 5;
                     }
+                    need_redraw = true;
+                    break;
+                case DU_AC_ACK:
+                    show_ac_ack = msg.ac_ack;
                     need_redraw = true;
                     break;
                 default:
