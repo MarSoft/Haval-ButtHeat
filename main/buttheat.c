@@ -364,10 +364,11 @@ static void draw_seat(SSD1306_t *dev, int x, bool facing_right) {
 
 // Draw a single character 16px wide x 28px tall using the custom font
 // (stored as 16x32 with 2px top/bottom padding for page alignment)
+// Writes to internal buffer only — call ssd1306_show_buffer() to flush.
 static void draw_char_16x28(SSD1306_t *dev, int x, char ch) {
     int idx = font16x28_index(ch);
     for(int page = 0; page < 4; page++) {
-        ssd1306_display_image(dev, page, x, font16x28[idx][page], 16);
+        memcpy(&dev->_page[page]._segs[x], font16x28[idx][page], 16);
     }
 }
 
