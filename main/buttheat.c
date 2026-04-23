@@ -51,6 +51,8 @@ typedef uint8_t ac_temp_t;  // 0 = LO; 1 = 16.5; 2 = 17; ...; 30=31; 31=31.5; 32
 
 typedef uint8_t fan_speed_t;
 #define FAN_SPEED_UNKNOWN 0
+// fan-off requires special handling
+#define FAN_SPEED_OFF 0
 #define FAN_SPEED_MIN 1
 #define FAN_SPEED_MAX 7
 
@@ -280,7 +282,7 @@ static void twai_transmit_task(void *arg)
                 twai_transmit(&msg_buttheat_set, portMAX_DELAY);
                 break;
             case DU_FANSPEED:
-                msg_fan_set.data[7] = action.fan_speed;
+                msg_fan_set.data[7] = action.fan_speed == FAN_SPEED_OFF ? 0x40 : action.fan_speed; // 0x40 is the command to turn fan off
                 twai_transmit(&msg_fan_set, portMAX_DELAY);
                 msg_fan_set.data[7] = 0; // reset for future use
                 break;
@@ -970,7 +972,7 @@ void generic_handler_task(void *ctx) {
                 }
             } else if(is_fan) {
                 // FIXME what about int overflow when going down?
-                value.fan = MAX(FAN_SPEED_MIN, MIN(FAN_SPEED_MAX, value.fan + rotdiff));
+                value.fan = MAX(FAN_SPEED_OFF, MIN(FAN_SPEED_MAX, value.fan + rotdiff));
             } else {
                 if(value.butt == 0) {
                     value.butt = 3;
