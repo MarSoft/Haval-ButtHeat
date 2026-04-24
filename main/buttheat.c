@@ -108,7 +108,7 @@ typedef struct {
 #define CAN_ID_AC_CONTROL 0x1EE
 #define CAN_ID_SEAT_MEMORY 0x1ED
 
-static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NO_ACK);
+static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NORMAL);
 static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
 static const twai_filter_config_t f_config = {
     .acceptance_code = (CAN_ID_HEATER_STATUS << 21) | (CAN_ID_AC_STATUS << 5), // <<21 is for 11-bit identifiers
