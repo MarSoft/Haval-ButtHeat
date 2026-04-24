@@ -110,11 +110,19 @@ typedef struct {
 
 static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NORMAL);
 static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
+// Single filter accepting both 0x2D1 and 0x385 (and 14 other IDs, of which
+// only 0x295 and 0x2C1 exist on the bus — harmlessly ignored in the switch).
+// Dual filter mode is avoided due to intermittent failures on ESP32-C3
+// (espressif/esp-idf#17504).
+//
+// Bitwise breakdown (11-bit standard IDs):
+//   0x2D1 = 010 1101 0001
+//   0x385 = 011 1000 0101
+//   XOR   = 001 0101 0100  (= 0x154, bits that differ → must be don't-care in mask)
 static const twai_filter_config_t f_config = {
-    .acceptance_code = (CAN_ID_HEATER_STATUS << 21) | (CAN_ID_AC_STATUS << 5), // <<21 is for 11-bit identifiers
-    .acceptance_mask = ~((0x7ff << 21) | (0x7ff << 5)),  // only standard 11-bit ID matters
-    //.acceptance_mask = 0xffffffff,  // accept anything
-    .single_filter = false,
+    .acceptance_code = (CAN_ID_HEATER_STATUS << 21),  // 0x2D1 as base
+    .acceptance_mask = ((CAN_ID_HEATER_STATUS ^ CAN_ID_AC_STATUS) << 21) | 0x1FFFFF,  // don't-care for differing bits + all non-ID bits
+    .single_filter = true,
 };
 
 static handler_config_t left_ac_handler = {
