@@ -304,15 +304,24 @@ static void twai_transmit_task(void *arg)
                 twai_transmit(&msg_seatmem_recall, portMAX_DELAY);
                 break;
             case DU_DISABLE_TWOZONE:
-                if(twozone_active) {
-                    msg_fan_set.data[2] = 0x10; // toggle two-zone
-                    twai_transmit(&msg_fan_set, portMAX_DELAY);
-                    msg_fan_set.data[2] = 0;    // reset for future use
-                    twai_transmit(&msg_fan_set, portMAX_DELAY); // and send a "neutral" msg to confirm
-                    ESP_LOGI(TAG, "Sent two-zone toggle (was active)");
-                } else {
-                    ESP_LOGI(TAG, "Two-zone already disabled, skipping toggle");
+                if(!twozone_active) {
+                    ESP_LOGI(TAG, "Two-zone already disabled");
+                    break;
                 }
+                // Stock head unit protocol: 5x toggle + 5x neutral at ~60ms intervals
+                // This will freeze can-send task for 600ms, but we control two-zone with longpress and we properly queue other reqs
+                // so this should not be too harmful.
+                msg_fan_set.data[2] = 0x10;
+                for(int i = 0; i < 5; i++) {
+                    twai_transmit(&msg_fan_set, portMAX_DELAY);
+                    vTaskDelay(pdMS_TO_TICKS(60));
+                }
+                msg_fan_set.data[2] = 0;
+                for(int i = 0; i < 5; i++) {
+                    twai_transmit(&msg_fan_set, portMAX_DELAY);
+                    vTaskDelay(pdMS_TO_TICKS(60));
+                }
+                ESP_LOGI(TAG, "Two-zone toggle: sent 5+5 burst");
                 break;
             default:
                 ESP_LOGE(TAG, "Unexpected action in twai TX: %d", action.kind);
