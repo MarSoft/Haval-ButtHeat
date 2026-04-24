@@ -142,6 +142,7 @@ static QueueHandle_t display_queue;
 static SemaphoreHandle_t done_sem;
 static bool twozone_active = false; // updated by twai_receive_task, read by twai_transmit_task
 static bool ac_just_updated = false; // set by twai_receive_task when AC controller acks a change
+static fan_speed_t current_fan_speed = 0; // updated by twai_receive_task
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
@@ -202,6 +203,7 @@ static void twai_receive_task(void *arg)
                     xQueueSend(display_queue, &ack_msg, 0);
                 }
                 fan_speed_t fan_speed = rx_msg.data[1] & 7;
+                current_fan_speed = fan_speed;
                 // if(rx_msg.data[1] == 0) then fan is off
                 // int cur_temp_in_cabin_info = rx_msg.data[3]? variants:
                 // bool ac_on = rx_msg.data[5] & 0x8 != 0
@@ -217,6 +219,23 @@ static void twai_receive_task(void *arg)
         }
     }
     vTaskDelete(NULL);
+}
+
+// Ensure fan is running before sending AC commands.
+// Sends fan speed 1 and waits for confirmation (~60ms retry, up to 10 attempts).
+static void ensure_fan_on(twai_message_t *msg_fan_set) {
+    if(current_fan_speed != FAN_SPEED_OFF) return;
+
+    ESP_LOGI(TAG, "Fan is off, turning on (speed 1) before AC command");
+    for(int i = 0; i < 10 && current_fan_speed == FAN_SPEED_OFF; i++) {
+        msg_fan_set->data[7] = FAN_SPEED_MIN;
+        twai_transmit(msg_fan_set, portMAX_DELAY);
+        msg_fan_set->data[7] = 0;
+        vTaskDelay(pdMS_TO_TICKS(60));
+    }
+    if(current_fan_speed == FAN_SPEED_OFF) {
+        ESP_LOGW(TAG, "Fan did not turn on after retries, proceeding anyway");
+    }
 }
 
 static void twai_transmit_task(void *arg)
@@ -272,6 +291,7 @@ static void twai_transmit_task(void *arg)
 
         switch(action.kind) {
             case DU_AC:
+                ensure_fan_on(&msg_fan_set);
                 msg_ac_set.data[2] = 0;
                 msg_ac_set.data[3] = 2;
                 if(action.leftside) {
@@ -308,6 +328,7 @@ static void twai_transmit_task(void *arg)
                     ESP_LOGI(TAG, "Two-zone already disabled");
                     break;
                 }
+                ensure_fan_on(&msg_fan_set);
                 // Stock head unit protocol: 5x toggle + 5x neutral at ~60ms intervals
                 // This will freeze can-send task for 600ms, but we control two-zone with longpress and we properly queue other reqs
                 // so this should not be too harmful.
