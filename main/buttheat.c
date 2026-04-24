@@ -173,6 +173,8 @@ static void twai_receive_task(void *arg)
         rx_can_msg_t rx_msg;
         if(xQueueReceive(twai_rx_queue, &rx_msg, pdMS_TO_TICKS(500)) != pdTRUE) {
             ESP_LOGW(TAG, "TWAI recv timeout");
+            data_update_t err_msg = { .kind = DU_CAN_ERROR };
+            xQueueSend(display_queue, &err_msg, 0);
             continue;
         }
         if (rx_msg.dlc != 8) {
