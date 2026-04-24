@@ -149,6 +149,16 @@ static fan_speed_t current_fan_speed = 0; // updated by twai_receive_task
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
+static IRAM_ATTR bool twai_state_change_isr_cb(twai_node_handle_t handle,
+                                                const twai_state_change_event_data_t *edata,
+                                                void *user_ctx)
+{
+    if(edata->new_sta == TWAI_ERROR_BUS_OFF) {
+        twai_node_recover(handle);
+    }
+    return false;
+}
+
 static IRAM_ATTR bool twai_rx_isr_cb(twai_node_handle_t handle,
                                        const twai_rx_done_event_data_t *edata,
                                        void *user_ctx)
@@ -1082,8 +1092,10 @@ void app_main(void)
         .fail_retry_cnt = -1,  // retry forever
     };
     ESP_ERROR_CHECK(twai_new_node_onchip(&node_config, &twai_node));
-    twai_event_callbacks_t cbs = { .on_rx_done = twai_rx_isr_cb };
-    ESP_ERROR_CHECK(twai_node_register_event_callbacks(twai_node, &cbs, twai_rx_queue));
+    ESP_ERROR_CHECK(twai_node_register_event_callbacks(twai_node, &(twai_event_callbacks_t){
+        .on_rx_done = twai_rx_isr_cb,
+        .on_state_change = twai_state_change_isr_cb,
+    }, twai_rx_queue));
     // Dual filter: exact match for 0x2D1 (heater status) and 0x385 (AC status)
     twai_mask_filter_config_t filter = twai_make_dual_filter(
         CAN_ID_HEATER_STATUS, 0x7FF,
