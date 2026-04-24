@@ -58,11 +58,24 @@ typedef uint8_t fan_speed_t;
 #define FAN_SPEED_MIN 1
 #define FAN_SPEED_MAX 7
 
+// Airflow direction from 0x29D byte[2]: (upper_nibble >> 1)
+// Raw upper nibble: 0=face, 2=face+feet, 4=feet, 6=feet+windshield, 8=windshield, E=off
+typedef enum {
+    AIRFLOW_FACE = 0,            // head/face vents
+    AIRFLOW_FACE_FEET = 1,      // face + feet
+    AIRFLOW_FEET = 2,            // feet only
+    AIRFLOW_FEET_WINDSHIELD = 3, // feet + windshield defrost
+    AIRFLOW_WINDSHIELD = 4,      // windshield only (defrost)
+    AIRFLOW_OFF = 7,             // AC off (raw 0xE >> 1)
+} airflow_dir_t;
+#define AIRFLOW_FROM_CAN(b)  ((airflow_dir_t)((b) >> 5))  // extract from 0x29D byte[2]
+
 typedef uint8_t butt_temp_t;
 
 typedef union {
     ac_temp_t ac;
     fan_speed_t fan;
+    airflow_dir_t airflow;
     butt_temp_t butt;
     uint8_t _max; // for simpler equality check
 } union_temp_t;
@@ -70,6 +83,7 @@ typedef union {
 typedef enum {
     HANDLER_TYPE_AC,
     HANDLER_TYPE_FAN,
+    HANDLER_TYPE_AIRFLOW,
     HANDLER_TYPE_BUTTHEAT,
 } handler_type_t;
 
@@ -85,6 +99,7 @@ typedef enum {
     DU_AC,
     DU_DISABLE_TWOZONE, // toggle two-zone AC off (only if currently on)
     DU_FANSPEED,
+    DU_AIRFLOW,
     DU_SEAT_MEMORY,
     DU_CAN_ERROR, // put display to "can error" state
     DU_LONGPRESS_STAGE,    // overlay while holding: seat_mem_slot 0=clear, 1-3=slot
@@ -97,6 +112,7 @@ typedef struct {
     union {
         ac_temp_t ac_temp;
         fan_speed_t fan_speed;
+        airflow_dir_t airflow_dir;
         butt_temp_t butt_temp;
         uint8_t seat_mem_slot;
         bool ac_ack;
@@ -106,6 +122,7 @@ typedef struct {
 #define CAN_ID_HEATER_STATUS 0x2D1
 #define CAN_ID_HEATER_CONTROL 0x36D
 #define CAN_ID_FAN_CONTROL 0x367
+#define CAN_ID_AIRFLOW_STATUS 0x29D
 #define CAN_ID_AC_STATUS 0x385
 #define CAN_ID_AC_CONTROL 0x1EE
 #define CAN_ID_SEAT_MEMORY 0x1ED
@@ -130,6 +147,9 @@ static handler_config_t right_ac_handler = {
 };
 static handler_config_t fan_speed_handler = {
     .type = HANDLER_TYPE_FAN,
+};
+static handler_config_t airflow_handler = {
+    .type = HANDLER_TYPE_AIRFLOW,
 };
 static handler_config_t left_butt_handler = {
     .type = HANDLER_TYPE_BUTTHEAT,
@@ -232,6 +252,10 @@ static void twai_receive_task(void *arg)
                 xQueueOverwrite(left_ac_handler.can_queue, &ac_left);
                 xQueueOverwrite(right_ac_handler.can_queue, &ac_right);
                 xQueueOverwrite(fan_speed_handler.can_queue, &fan_speed);
+                break;
+            case CAN_ID_AIRFLOW_STATUS:
+                airflow_dir_t airflow = AIRFLOW_FROM_CAN(rx_msg.data[2]);
+                xQueueOverwrite(airflow_handler.can_queue, &airflow);
                 break;
             default:
                 // unsupported message, ignore
@@ -473,6 +497,38 @@ static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right)
     }
 }
 
+// Draw airflow direction icon in the upper center of the display (x=58-69, y=0-15)
+// Drawn on top of the seat icons where they meet in the middle.
+static void draw_airflow_icon(SSD1306_t *dev, airflow_dir_t dir) {
+    int cx = 64; // center x of the display
+    if(dir == AIRFLOW_OFF) return;
+
+    // Upward arrow (face vents): drawn in top area
+    if(dir == AIRFLOW_FACE || dir == AIRFLOW_FACE_FEET) {
+        _ssd1306_line(dev, cx, 1, cx, 8, false);      // shaft
+        _ssd1306_line(dev, cx-3, 4, cx, 1, false);    // left barb
+        _ssd1306_line(dev, cx+3, 4, cx, 1, false);    // right barb
+    }
+
+    // Downward arrow (feet): drawn in lower-middle area
+    if(dir == AIRFLOW_FEET || dir == AIRFLOW_FACE_FEET || dir == AIRFLOW_FEET_WINDSHIELD) {
+        int y_top = (dir == AIRFLOW_FACE_FEET) ? 9 : 3; // shift down if sharing with up arrow
+        int y_bot = y_top + 7;
+        _ssd1306_line(dev, cx, y_top, cx, y_bot, false);       // shaft
+        _ssd1306_line(dev, cx-3, y_bot-3, cx, y_bot, false);   // left barb
+        _ssd1306_line(dev, cx+3, y_bot-3, cx, y_bot, false);   // right barb
+    }
+
+    // Windshield (trapezoid shape)
+    if(dir == AIRFLOW_WINDSHIELD || dir == AIRFLOW_FEET_WINDSHIELD) {
+        int y_off = (dir == AIRFLOW_FEET_WINDSHIELD) ? 0 : 3;
+        _ssd1306_line(dev, cx-5, y_off+8, cx-2, y_off+1, false);  // left slope
+        _ssd1306_line(dev, cx+5, y_off+8, cx+2, y_off+1, false);  // right slope
+        _ssd1306_line(dev, cx-2, y_off+1, cx+2, y_off+1, false);  // top edge
+        _ssd1306_line(dev, cx-5, y_off+8, cx+5, y_off+8, false);  // bottom edge
+    }
+}
+
 // Draw fan speed as horizontal dashes at the very bottom of the display (y=30-31)
 // speed: 0=off (nothing drawn), 1-7 = that many dashes spread across 128px
 static void draw_fan_speed(SSD1306_t *dev, fan_speed_t speed) {
@@ -500,7 +556,8 @@ static void draw_boxed_digit(SSD1306_t *dev, int x, uint8_t digit) {
 static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
                                  butt_temp_t butt_left, butt_temp_t butt_right,
-                                 fan_speed_t fan_speed, bool show_just_updated,
+                                 fan_speed_t fan_speed, airflow_dir_t airflow_dir,
+                                 bool show_just_updated,
                                  uint8_t left_overlay, uint8_t right_overlay) {
     // Clear buffer without sending to display
     uint8_t zeros[128 * 4] = {0};
@@ -570,6 +627,9 @@ static void draw_active_display(SSD1306_t *dev,
         _ssd1306_disc(dev, 127, 8, 2, OLED_DRAW_ALL, false);
     }
 
+    // Airflow direction icon in upper center
+    draw_airflow_icon(dev, airflow_dir);
+
     // Fan speed indicator at the very bottom
     draw_fan_speed(dev, fan_speed);
 
@@ -596,6 +656,7 @@ static void display_task(void *arg) {
     ac_temp_t ac_left_temp = 0, ac_right_temp = 0;
     butt_temp_t butt_left_temp = 0, butt_right_temp = 0;
     fan_speed_t fan_speed = 0;
+    airflow_dir_t airflow_dir = AIRFLOW_OFF;
     bool show_ac_ack = false;
 
     // Long press overlay state
@@ -619,7 +680,7 @@ static void display_task(void *arg) {
             ssd1306_hardware_scroll(&dev, SCROLL_STOP);
             draw_active_display(&dev, ac_left_temp, ac_right_temp,
                                 butt_left_temp, butt_right_temp,
-                                fan_speed, show_ac_ack,
+                                fan_speed, airflow_dir, show_ac_ack,
                                 left_overlay, right_overlay);
             need_redraw = false;
         } else if(!active && need_redraw) {
@@ -670,6 +731,12 @@ static void display_task(void *arg) {
                 case DU_FANSPEED:
                     ESP_LOGI(TAG, "Recvd FAN = %d", msg.fan_speed);
                     fan_speed = msg.fan_speed;
+                    active = true;
+                    need_redraw = true;
+                    break;
+                case DU_AIRFLOW:
+                    ESP_LOGI(TAG, "Recvd AIRFLOW = %d", msg.airflow_dir);
+                    airflow_dir = msg.airflow_dir;
                     active = true;
                     need_redraw = true;
                     break;
@@ -948,14 +1015,15 @@ void generic_handler_task(void *ctx) {
     handler_config_t *self = (handler_config_t*)ctx;
     bool is_ac = self->type == HANDLER_TYPE_AC;
     bool is_fan = self->type == HANDLER_TYPE_FAN;
-    char *kind = is_ac ? "AC" : is_fan ? "FAN" : "BUTT";
+    bool is_airflow = self->type == HANDLER_TYPE_AIRFLOW;
+    char *kind = is_ac ? "AC" : is_fan ? "FAN" : is_airflow ? "AIRFLOW" : "BUTT";
 
     union_temp_t value = {0};
     rotary_value_t rotdiff;
     union_temp_t canval;
     data_update_t evt;
 
-    evt.kind = is_ac ? DU_AC : is_fan ? DU_FANSPEED : DU_BUTTHEAT;
+    evt.kind = is_ac ? DU_AC : is_fan ? DU_FANSPEED : is_airflow ? DU_AIRFLOW : DU_BUTTHEAT;
     evt.leftside = self->leftside;
 
     QueueSetHandle_t qset = xQueueCreateSet(8 + 1);  // sum of control_queue (8) + can_queue (1)
@@ -1010,9 +1078,10 @@ void generic_handler_task(void *ctx) {
             if(value._max == canval._max) continue; // nothing changed
             value._max = canval._max;
             // emit to display
-            if(is_ac)       evt.ac_temp = value.ac;
-            else if(is_fan) evt.fan_speed = value.fan;
-            else            evt.butt_temp = value.butt;
+            if(is_ac)            evt.ac_temp = value.ac;
+            else if(is_fan)      evt.fan_speed = value.fan;
+            else if(is_airflow)  evt.airflow_dir = value.airflow;
+            else                 evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
         } else if(active_queue == self->control_queue) {
             xQueueReceive(self->control_queue, &rotdiff, 0);
@@ -1030,6 +1099,9 @@ void generic_handler_task(void *ctx) {
             } else if(is_fan) {
                 // FIXME what about int overflow when going down?
                 value.fan = MAX(FAN_SPEED_OFF, MIN(FAN_SPEED_MAX, value.fan + rotdiff));
+            } else if(is_airflow) {
+                // TODO: airflow control via encoder (not yet wired)
+                value.airflow = MAX(AIRFLOW_FACE, MIN(AIRFLOW_WINDSHIELD, value.airflow + rotdiff));
             } else {
                 if(value.butt == 0) {
                     value.butt = 3;
@@ -1039,9 +1111,10 @@ void generic_handler_task(void *ctx) {
             }
 
             // emit to display immediately
-            if(is_ac)       evt.ac_temp = value.ac;
-            else if(is_fan) evt.fan_speed = value.fan;
-            else            evt.butt_temp = value.butt;
+            if(is_ac)            evt.ac_temp = value.ac;
+            else if(is_fan)      evt.fan_speed = value.fan;
+            else if(is_airflow)  evt.airflow_dir = value.airflow;
+            else                 evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
 
             now = xTaskGetTickCount();
@@ -1071,7 +1144,9 @@ void app_main(void)
     right_ac_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
     right_ac_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));
     fan_speed_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
-    fan_speed_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));
+    fan_speed_handler.can_queue = xQueueCreate(1, sizeof(fan_speed_t));
+    airflow_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
+    airflow_handler.can_queue = xQueueCreate(1, sizeof(airflow_dir_t));
     left_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
     left_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
     right_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
@@ -1096,10 +1171,11 @@ void app_main(void)
         .on_rx_done = twai_rx_isr_cb,
         .on_state_change = twai_state_change_isr_cb,
     }, twai_rx_queue));
-    // Dual filter: exact match for 0x2D1 (heater status) and 0x385 (AC status)
+    // Dual filter: exact 0x385 (AC), combined 0x2D1+0x29D (heater+airflow)
+    // 0x2D1 ^ 0x29D = 0x04C (3 bits differ); accepts 8 IDs, only 0x295 extra on bus
     twai_mask_filter_config_t filter = twai_make_dual_filter(
-        CAN_ID_HEATER_STATUS, 0x7FF,
-        CAN_ID_AC_STATUS, 0x7FF,
+        CAN_ID_AC_STATUS, 0x7FF,                                              // exact 0x385
+        CAN_ID_HEATER_STATUS, ~(CAN_ID_HEATER_STATUS ^ CAN_ID_AIRFLOW_STATUS) & 0x7FF, // 0x2D1+0x29D
         false  // standard 11-bit IDs
     );
     ESP_ERROR_CHECK(twai_node_config_mask_filter(twai_node, 0, &filter));
@@ -1111,6 +1187,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(generic_handler_task, "AC_left", 4096, (void*)&left_ac_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "AC_right", 4096, (void*)&right_ac_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "FAN", 4096, (void*)&fan_speed_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "AIRFLOW", 4096, (void*)&airflow_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
 
