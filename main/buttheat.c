@@ -662,7 +662,7 @@ static void display_task(void *arg) {
                     need_redraw = true;
                     break;
                 case DU_CAN_ERROR:
-                    ESP_LOGI(TAG, "Recvd ERR");
+                    ESP_LOGE(TAG, "Recvd CAN_ERROR! leftside=%d val=%d", msg.leftside, msg.butt_temp);
                     active = false;
                     need_redraw = true;
                     break;
