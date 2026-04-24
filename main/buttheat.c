@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
@@ -26,7 +27,8 @@
 #include "freertos/semphr.h"
 #include "esp_err.h"
 #include "esp_log.h"
-#include "driver/twai.h"
+#include "esp_twai.h"
+#include "esp_twai_onchip.h"
 #include "hal/i2c_types.h"
 #include "portmacro.h"
 
@@ -108,22 +110,15 @@ typedef struct {
 #define CAN_ID_AC_CONTROL 0x1EE
 #define CAN_ID_SEAT_MEMORY 0x1ED
 
-static const twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CONFIG_TX_GPIO_NUM, CONFIG_RX_GPIO_NUM, TWAI_MODE_NORMAL);
-static const twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
-// Single filter accepting both 0x2D1 and 0x385 (and 14 other IDs, of which
-// only 0x295 and 0x2C1 exist on the bus — harmlessly ignored in the switch).
-// Dual filter mode is avoided due to intermittent failures on ESP32-C3
-// (espressif/esp-idf#17504).
-//
-// Bitwise breakdown (11-bit standard IDs):
-//   0x2D1 = 010 1101 0001
-//   0x385 = 011 1000 0101
-//   XOR   = 001 0101 0100  (= 0x154, bits that differ → must be don't-care in mask)
-static const twai_filter_config_t f_config = {
-    .acceptance_code = (CAN_ID_HEATER_STATUS << 21),  // 0x2D1 as base
-    .acceptance_mask = ((CAN_ID_HEATER_STATUS ^ CAN_ID_AC_STATUS) << 21) | 0x1FFFFF,  // don't-care for differing bits + all non-ID bits
-    .single_filter = true,
-};
+// RX message struct for ISR → task queue transfer
+typedef struct {
+    uint32_t id;
+    uint8_t data[8];
+    uint8_t dlc;
+} rx_can_msg_t;
+
+static twai_node_handle_t twai_node;
+static QueueHandle_t twai_rx_queue;
 
 static handler_config_t left_ac_handler = {
     .type = HANDLER_TYPE_AC,
@@ -154,32 +149,37 @@ static fan_speed_t current_fan_speed = 0; // updated by twai_receive_task
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
+static IRAM_ATTR bool twai_rx_isr_cb(twai_node_handle_t handle,
+                                       const twai_rx_done_event_data_t *edata,
+                                       void *user_ctx)
+{
+    QueueHandle_t rx_queue = (QueueHandle_t)user_ctx;
+    uint8_t buf[8];
+    twai_frame_t frame = { .buffer = buf, .buffer_len = sizeof(buf) };
+    if(twai_node_receive_from_isr(handle, &frame) == ESP_OK) {
+        rx_can_msg_t msg = { .id = frame.header.id, .dlc = frame.header.dlc };
+        memcpy(msg.data, buf, sizeof(buf));
+        BaseType_t woken = pdFALSE;
+        xQueueSendFromISR(rx_queue, &msg, &woken);
+        return woken == pdTRUE;
+    }
+    return false;
+}
+
 static void twai_receive_task(void *arg)
 {
-    //Install TWAI driver
-    ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
-    ESP_LOGI(TAG, "Driver installed");
-
-    ESP_ERROR_CHECK(twai_start());
-    ESP_LOGI(TAG, "Driver started");
-
-    data_update_t noconn_msg = {
-        .kind = DU_CAN_ERROR,
-    };
     bool prev_ac_ack = false;
     while (1) {
-        twai_message_t rx_msg;
-        esp_err_t err;
-        if((err = twai_receive(&rx_msg, pdMS_TO_TICKS(500))) != ESP_OK) {
-            ESP_LOGW(TAG, "TWAI recv error: %s", esp_err_to_name(err));
-            if(0)xQueueSend(display_queue, &noconn_msg, 0);
+        rx_can_msg_t rx_msg;
+        if(xQueueReceive(twai_rx_queue, &rx_msg, pdMS_TO_TICKS(500)) != pdTRUE) {
+            ESP_LOGW(TAG, "TWAI recv timeout");
             continue;
         }
-        if (rx_msg.data_length_code != 8) {
-            ESP_LOGI(TAG, "TWAI recv unexpected len %d", rx_msg.data_length_code);
+        if (rx_msg.dlc != 8) {
+            ESP_LOGI(TAG, "TWAI recv unexpected len %d", rx_msg.dlc);
             continue;
         }
-        switch(rx_msg.identifier) {
+        switch(rx_msg.id) {
             case CAN_ID_HEATER_STATUS:
                 // parse message
                 uint8_t b = rx_msg.data[1];  // the only meaningful byte
@@ -231,14 +231,14 @@ static void twai_receive_task(void *arg)
 
 // Ensure fan is running before sending AC commands.
 // Sends fan speed 1 and waits for confirmation (~60ms retry, up to 10 attempts).
-static void ensure_fan_on(twai_message_t *msg_fan_set) {
+static void ensure_fan_on(uint8_t *fan_data, twai_frame_t *msg_fan_set) {
     if(current_fan_speed != FAN_SPEED_OFF) return;
 
     ESP_LOGI(TAG, "Fan is off, turning on (speed 1) before AC command");
     for(int i = 0; i < 10 && current_fan_speed == FAN_SPEED_OFF; i++) {
-        msg_fan_set->data[7] = FAN_SPEED_MIN;
-        twai_transmit(msg_fan_set, portMAX_DELAY);
-        msg_fan_set->data[7] = 0;
+        fan_data[7] = FAN_SPEED_MIN;
+        twai_node_transmit(twai_node, msg_fan_set, -1);
+        fan_data[7] = 0;
         vTaskDelay(pdMS_TO_TICKS(60));
     }
     if(current_fan_speed == FAN_SPEED_OFF) {
@@ -250,48 +250,39 @@ static void twai_transmit_task(void *arg)
 {
     butt_temp_t butt_temp_left = 0, butt_temp_right = 0;
     data_update_t action;
-    twai_message_t msg_buttheat_set = {
-        // Message type and format settings
-        .extd = 0,              // Standard Format message (11-bit ID)
-        .rtr = 0,               // Send a data frame
-        .ss = 0,                // Not single shot
-        .self = 0,              // Not a self reception request
-        .dlc_non_comp = 0,      // DLC is less than 8
-        // Message ID and payload
-        .identifier = CAN_ID_HEATER_CONTROL,
-        .data_length_code = 8,
-        .data = {0, 0, 0x20, 0, 0, 0, 0, 0x40},
+
+    // TX data buffers (backing storage for twai_frame_t.buffer pointers)
+    uint8_t data_buttheat[8] = {0, 0, 0x20, 0, 0, 0, 0, 0x40};
+    uint8_t data_ac[8] = {0, 0x41, 0, 2, 0, 0, 0, 0}; // data[0]: 8 = enable heat steering, 4 = disable heat steering
+    uint8_t data_fan[8] = {
+        0,     // 8 = steering heat on, 4 = steering wheel heat off?
+        0x10,  // ?
+        0,     // ac_two_zone << 4, // 0x10 = toggle_twozone, 0x00 = no_change; 0x01 = toggle_recirculation?..
+        0,     // 0x40 = (A) btn in a/c control panel
+        0x10,
+        1,     // 0x9 = head, 0x11 = foot+head, 0x19=foot, 0x21 = foot+glass,
+        0,     // 1 = ion toggle?.. 0x40 = ?
+        0,     // fan_strength: 1..7 (fan-off - some other command), 0 means no change; 0x40: fan off
     };
-    twai_message_t msg_ac_set = {
-        // Message type and format settings - default...
-        // Message ID and payload
-        .identifier = CAN_ID_AC_CONTROL,
-        .data_length_code = 8,
-        .data = {0, 0x41, 0, 2, 0, 0, 0, 0}, // data[0]: 8 = enable heat steering, 4 = disable heat steering
+    uint8_t data_seatmem[8] = {0};
+
+    twai_frame_t msg_buttheat_set = {
+        .header = { .id = CAN_ID_HEATER_CONTROL, .dlc = 8 },
+        .buffer = data_buttheat, .buffer_len = 8,
     };
-    twai_message_t msg_fan_set = {
-        .identifier = CAN_ID_FAN_CONTROL,
-        .data_length_code = 8,
-        .data = {
-            0, // 8 = steering heat on, 4 = steering wheel heat off?
-            0x10,  // ?
-            0, // ac_two_zone << 4, // 0x10 = toggle_twozone, 0x00 = no_change; 0x01 = toggle_recirculation?..
-            0, // 0x40 = (A) btn in a/c control panel
-            0x10,
-            1, // 0x9 = head, 0x11 = foot+head, 0x19=foot, 0x21 = foot+glass, 
-            0, // 1 = ion toggle?.. 0x40 = ?
-            0, // fan_strength: 1..7 (fan-off - some other command), 0 means no change; 0x40: fan off
-        },
+    twai_frame_t msg_ac_set = {
+        .header = { .id = CAN_ID_AC_CONTROL, .dlc = 8 },
+        .buffer = data_ac, .buffer_len = 8,
     };
-    twai_message_t msg_seatmem_recall = {
-        // Message type and format settings - default...
-        // Message ID and payload
-        .identifier = CAN_ID_SEAT_MEMORY,
-        .data_length_code = 8,
-        .data = {0, 0, 0, 0, 0, 0, 0, 0},
+    twai_frame_t msg_fan_set = {
+        .header = { .id = CAN_ID_FAN_CONTROL, .dlc = 8 },
+        .buffer = data_fan, .buffer_len = 8,
+    };
+    twai_frame_t msg_seatmem_recall = {
+        .header = { .id = CAN_ID_SEAT_MEMORY, .dlc = 8 },
+        .buffer = data_seatmem, .buffer_len = 8,
     };
 
-    
     while (1) {
         if(!xQueueReceive(tx_task_queue, &action, portMAX_DELAY)) {
             continue;
@@ -299,15 +290,15 @@ static void twai_transmit_task(void *arg)
 
         switch(action.kind) {
             case DU_AC:
-                ensure_fan_on(&msg_fan_set);
-                msg_ac_set.data[2] = 0;
-                msg_ac_set.data[3] = 2;
+                ensure_fan_on(data_fan, &msg_fan_set);
+                data_ac[2] = 0;
+                data_ac[3] = 2;
                 if(action.leftside) {
-                    msg_ac_set.data[2] = (1 + action.ac_temp) << 2;
+                    data_ac[2] = (1 + action.ac_temp) << 2;
                 } else {
-                    msg_ac_set.data[3] = ((1 + action.ac_temp) << 2) | 2;  // XXX: is that |2 needed?
+                    data_ac[3] = ((1 + action.ac_temp) << 2) | 2;  // XXX: is that |2 needed?
                 }
-                twai_transmit(&msg_ac_set, portMAX_DELAY);
+                twai_node_transmit(twai_node, &msg_ac_set, -1);
                 break;
             case DU_BUTTHEAT:
                 if(action.leftside) {
@@ -315,39 +306,33 @@ static void twai_transmit_task(void *arg)
                 } else {
                     butt_temp_right = action.butt_temp;
                 }
-                // update msg...
-                msg_buttheat_set.data[1] = (butt_temp_left << 6) | (butt_temp_right << 3);
-                // ... and send it!
-                twai_transmit(&msg_buttheat_set, portMAX_DELAY);
+                data_buttheat[1] = (butt_temp_left << 6) | (butt_temp_right << 3);
+                twai_node_transmit(twai_node, &msg_buttheat_set, -1);
                 break;
             case DU_FANSPEED:
-                msg_fan_set.data[7] = action.fan_speed == FAN_SPEED_OFF ? 0x40 : action.fan_speed; // 0x40 is the command to turn fan off
-                twai_transmit(&msg_fan_set, portMAX_DELAY);
-                msg_fan_set.data[7] = 0; // reset for future use
+                data_fan[7] = action.fan_speed == FAN_SPEED_OFF ? 0x40 : action.fan_speed;
+                twai_node_transmit(twai_node, &msg_fan_set, -1);
+                data_fan[7] = 0;
                 break;
             case DU_SEAT_MEMORY:
-                // use action.seat_mem_slot
-                // 0x04 = first slot, 0x05 = second slot
-                msg_seatmem_recall.data[1] = 3 + action.seat_mem_slot;
-                twai_transmit(&msg_seatmem_recall, portMAX_DELAY);
+                data_seatmem[1] = 3 + action.seat_mem_slot;
+                twai_node_transmit(twai_node, &msg_seatmem_recall, -1);
                 break;
             case DU_DISABLE_TWOZONE:
                 if(!twozone_active) {
                     ESP_LOGI(TAG, "Two-zone already disabled");
                     break;
                 }
-                ensure_fan_on(&msg_fan_set);
+                ensure_fan_on(data_fan, &msg_fan_set);
                 // Stock head unit protocol: 5x toggle + 5x neutral at ~60ms intervals
-                // This will freeze can-send task for 600ms, but we control two-zone with longpress and we properly queue other reqs
-                // so this should not be too harmful.
-                msg_fan_set.data[2] = 0x10;
+                data_fan[2] = 0x10;
                 for(int i = 0; i < 5; i++) {
-                    twai_transmit(&msg_fan_set, portMAX_DELAY);
+                    twai_node_transmit(twai_node, &msg_fan_set, -1);
                     vTaskDelay(pdMS_TO_TICKS(60));
                 }
-                msg_fan_set.data[2] = 0;
+                data_fan[2] = 0;
                 for(int i = 0; i < 5; i++) {
-                    twai_transmit(&msg_fan_set, portMAX_DELAY);
+                    twai_node_transmit(twai_node, &msg_fan_set, -1);
                     vTaskDelay(pdMS_TO_TICKS(60));
                 }
                 ESP_LOGI(TAG, "Two-zone toggle: sent 5+5 burst");
@@ -1081,6 +1066,32 @@ void app_main(void)
     right_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
     done_sem  = xSemaphoreCreateBinary();
 
+    // TWAI node init (new driver API)
+    twai_rx_queue = xQueueCreate(8, sizeof(rx_can_msg_t));
+    twai_onchip_node_config_t node_config = {
+        .io_cfg = {
+            .tx = CONFIG_TX_GPIO_NUM,
+            .rx = CONFIG_RX_GPIO_NUM,
+            .quanta_clk_out = GPIO_NUM_NC,
+            .bus_off_indicator = GPIO_NUM_NC,
+        },
+        .bit_timing = { .bitrate = 500000 },
+        .tx_queue_depth = 5,
+        .fail_retry_cnt = -1,  // retry forever
+    };
+    ESP_ERROR_CHECK(twai_new_node_onchip(&node_config, &twai_node));
+    twai_event_callbacks_t cbs = { .on_rx_done = twai_rx_isr_cb };
+    ESP_ERROR_CHECK(twai_node_register_event_callbacks(twai_node, &cbs, twai_rx_queue));
+    // Dual filter: exact match for 0x2D1 (heater status) and 0x385 (AC status)
+    twai_mask_filter_config_t filter = twai_make_dual_filter(
+        CAN_ID_HEATER_STATUS, 0x7FF,
+        CAN_ID_AC_STATUS, 0x7FF,
+        false  // standard 11-bit IDs
+    );
+    ESP_ERROR_CHECK(twai_node_config_mask_filter(twai_node, 0, &filter));
+    ESP_ERROR_CHECK(twai_node_enable(twai_node));
+    ESP_LOGI(TAG, "TWAI node enabled");
+
     xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, 8, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, 9, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(encoder_router_task, "ENC_router", 4096, NULL, 16, NULL, tskNO_AFFINITY);
@@ -1094,8 +1105,9 @@ void app_main(void)
     while(!xSemaphoreTake(done_sem, portMAX_DELAY));    //Wait for tasks to complete
 
     //Uninstall TWAI driver
-    ESP_ERROR_CHECK(twai_driver_uninstall());
-    ESP_LOGI(TAG, "Driver uninstalled");
+    ESP_ERROR_CHECK(twai_node_disable(twai_node));
+    ESP_ERROR_CHECK(twai_node_delete(twai_node));
+    ESP_LOGI(TAG, "TWAI node deleted");
 
     //Cleanup
     vSemaphoreDelete(done_sem);
