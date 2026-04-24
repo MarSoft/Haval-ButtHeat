@@ -1089,8 +1089,6 @@ void app_main(void)
         false  // standard 11-bit IDs
     );
     ESP_ERROR_CHECK(twai_node_config_mask_filter(twai_node, 0, &filter));
-    ESP_ERROR_CHECK(twai_node_enable(twai_node));
-    ESP_LOGI(TAG, "TWAI node enabled");
 
     xTaskCreatePinnedToCore(twai_receive_task, "TWAI_rx", 4096, NULL, 8, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(twai_transmit_task, "TWAI_tx", 4096, NULL, 9, NULL, tskNO_AFFINITY);
@@ -1101,6 +1099,16 @@ void app_main(void)
     xTaskCreatePinnedToCore(generic_handler_task, "FAN", 4096, (void*)&fan_speed_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
+
+    // Enable TWAI after all tasks are created and have set up their queue sets.
+    // On single-core ESP32-C3, higher-priority tasks (handler tasks at prio 3)
+    // preempt app_main (prio 1) during xTaskCreate, run until they block on
+    // xQueueSelectFromSet, then return here. So by this point all queue sets
+    // are ready. Enabling earlier would race: ISR→receive_task→xQueueOverwrite
+    // could fill a can_queue before its handler adds it to a queue set, making
+    // the item invisible to xQueueSelectFromSet forever.
+    ESP_ERROR_CHECK(twai_node_enable(twai_node));
+    ESP_LOGI(TAG, "TWAI node enabled");
 
     while(!xSemaphoreTake(done_sem, portMAX_DELAY));    //Wait for tasks to complete
 
