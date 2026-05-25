@@ -485,72 +485,55 @@ static void draw_heat_dots(SSD1306_t *dev, int x, int level) {
     }
 }
 
-// Draw wavy heat lines above seat cushion
-// x: left edge of seat area (24px wide), level: 0-3 heat level
-// facing_right: true if seat faces right (affects wave positions to avoid backrest)
-static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right) {
-    if(level <= 0) return;
-
-    // Height of waves depends on level (taller = more heat)
-    // level 1: short, level 2: medium, level 3: tall
-    int base_y = 22;  // just above seat cushion
-    int height = 4 + (level * 3);  // 7, 10, or 13 pixels tall
-
-    // Wave positions adjusted to avoid backrest
-    // Facing right: backrest on left, waves shifted right
-    // Facing left: backrest on right, waves shifted left
-    int wave_xs[3];
-    if(facing_right) {
-        wave_xs[0] = x + 10;
-        wave_xs[1] = x + 14;
-        wave_xs[2] = x + 18;
-    } else {
-        wave_xs[0] = x + 6;
-        wave_xs[1] = x + 10;
-        wave_xs[2] = x + 14;
-    }
-
-    for(int w = 0; w < 3; w++) {
-        int wx = wave_xs[w];
-
-        // Draw wave segments going upward
-        for(int seg = 0; seg < height; seg++) {
-            // Oscillate left/right based on segment
-            int offset = ((seg / 2) % 2) ? 1 : 0;
-            _ssd1306_pixel(dev, wx + offset, base_y - seg, false);
-        }
-    }
-}
-
-// Draw airflow direction icon in the upper center of the display (x=58-69, y=0-15)
-// Drawn on top of the seat icons where they meet in the middle.
-static void draw_airflow_icon(SSD1306_t *dev, airflow_dir_t dir) {
-    int cx = 64; // center x of the display
+// Draw airflow direction icon between the two seats.
+// cx: horizontal center. 64 centers it; pass ~70 when massage indicator
+// occupies the left strip (~x=50..58) so airflow shifts right to make room.
+// Footprint: 14px wide, y=0..22 (full inter-seat vertical space). 2px strokes.
+static void draw_airflow_icon(SSD1306_t *dev, int cx, airflow_dir_t dir) {
     if(dir == AIRFLOW_OFF) return;
 
-    // Upward arrow (face vents): drawn in top area
-    if(dir == AIRFLOW_FACE || dir == AIRFLOW_FACE_FEET) {
-        _ssd1306_line(dev, cx, 1, cx, 8, false);      // shaft
-        _ssd1306_line(dev, cx-3, 4, cx, 1, false);    // left barb
-        _ssd1306_line(dev, cx+3, 4, cx, 1, false);    // right barb
+    bool has_face = (dir == AIRFLOW_FACE || dir == AIRFLOW_FACE_FEET);
+    bool has_feet = (dir == AIRFLOW_FEET || dir == AIRFLOW_FACE_FEET || dir == AIRFLOW_FEET_WINDSHIELD);
+    bool has_wind = (dir == AIRFLOW_WINDSHIELD || dir == AIRFLOW_FEET_WINDSHIELD);
+
+    // Upward arrow (face vents): tip at y=0
+    if(has_face) {
+        int y_top = 0;
+        int y_bot = has_feet ? 9 : 11;
+        // doubled shaft
+        _ssd1306_line(dev, cx,   y_top,   cx,   y_bot, false);
+        _ssd1306_line(dev, cx-1, y_top,   cx-1, y_bot, false);
+        // doubled barbs from tip outward-down
+        _ssd1306_line(dev, cx-1, y_top,   cx-6, y_top+5, false);
+        _ssd1306_line(dev, cx-1, y_top+1, cx-5, y_top+5, false);
+        _ssd1306_line(dev, cx,   y_top,   cx+5, y_top+5, false);
+        _ssd1306_line(dev, cx,   y_top+1, cx+4, y_top+5, false);
     }
 
-    // Downward arrow (feet): drawn in lower-middle area
-    if(dir == AIRFLOW_FEET || dir == AIRFLOW_FACE_FEET || dir == AIRFLOW_FEET_WINDSHIELD) {
-        int y_top = (dir == AIRFLOW_FACE_FEET) ? 9 : 3; // shift down if sharing with up arrow
-        int y_bot = y_top + 7;
-        _ssd1306_line(dev, cx, y_top, cx, y_bot, false);       // shaft
-        _ssd1306_line(dev, cx-3, y_bot-3, cx, y_bot, false);   // left barb
-        _ssd1306_line(dev, cx+3, y_bot-3, cx, y_bot, false);   // right barb
+    // Downward arrow (feet)
+    if(has_feet) {
+        int y_top = has_face ? 12 : 0;
+        int y_bot = has_face ? 22 : 11;
+        _ssd1306_line(dev, cx,   y_top, cx,   y_bot,   false);
+        _ssd1306_line(dev, cx-1, y_top, cx-1, y_bot,   false);
+        _ssd1306_line(dev, cx-1, y_bot,   cx-6, y_bot-5, false);
+        _ssd1306_line(dev, cx-1, y_bot-1, cx-5, y_bot-5, false);
+        _ssd1306_line(dev, cx,   y_bot,   cx+5, y_bot-5, false);
+        _ssd1306_line(dev, cx,   y_bot-1, cx+4, y_bot-5, false);
     }
 
-    // Windshield (trapezoid shape)
-    if(dir == AIRFLOW_WINDSHIELD || dir == AIRFLOW_FEET_WINDSHIELD) {
-        int y_off = (dir == AIRFLOW_FEET_WINDSHIELD) ? 0 : 3;
-        _ssd1306_line(dev, cx-5, y_off+8, cx-2, y_off+1, false);  // left slope
-        _ssd1306_line(dev, cx+5, y_off+8, cx+2, y_off+1, false);  // right slope
-        _ssd1306_line(dev, cx-2, y_off+1, cx+2, y_off+1, false);  // top edge
-        _ssd1306_line(dev, cx-5, y_off+8, cx+5, y_off+8, false);  // bottom edge
+    // Windshield (trapezoid)
+    if(has_wind) {
+        int top_y = has_feet ? 0 : 4;
+        int bot_y = top_y + 11;
+        _ssd1306_line(dev, cx-7, bot_y,   cx-3, top_y,   false);  // left slope
+        _ssd1306_line(dev, cx-6, bot_y,   cx-2, top_y,   false);
+        _ssd1306_line(dev, cx+7, bot_y,   cx+3, top_y,   false);  // right slope
+        _ssd1306_line(dev, cx+6, bot_y,   cx+2, top_y,   false);
+        _ssd1306_line(dev, cx-3, top_y,   cx+3, top_y,   false);  // top edge
+        _ssd1306_line(dev, cx-3, top_y+1, cx+3, top_y+1, false);
+        _ssd1306_line(dev, cx-7, bot_y,   cx+7, bot_y,   false);  // bottom edge
+        _ssd1306_line(dev, cx-7, bot_y-1, cx+7, bot_y-1, false);
     }
 }
 
@@ -620,7 +603,6 @@ static void draw_active_display(SSD1306_t *dev,
         draw_boxed_digit(dev, 40, left_overlay);
     } else {
         draw_seat(dev, 40, true);
-        draw_heat_waves(dev, 40, butt_left, true);
     }
 
     // Right seat icon (x=64), facing left — or overlay
@@ -628,7 +610,6 @@ static void draw_active_display(SSD1306_t *dev,
         draw_boxed_digit(dev, 64, right_overlay);
     } else {
         draw_seat(dev, 64, false);
-        draw_heat_waves(dev, 64, butt_right, false);
     }
 
     // Right heat dots (x=88)
@@ -652,8 +633,9 @@ static void draw_active_display(SSD1306_t *dev,
         _ssd1306_disc(dev, 127, 8, 2, OLED_DRAW_ALL, false);
     }
 
-    // Airflow direction icon in upper center
-    draw_airflow_icon(dev, airflow_dir);
+    // Airflow direction icon between the seats.
+    // cx=64 centers it; will shift right when a massage indicator is drawn on the left.
+    draw_airflow_icon(dev, 64, airflow_dir);
 
     // Fan speed indicator at the very bottom
     draw_fan_speed(dev, fan_speed);
