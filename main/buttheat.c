@@ -70,7 +70,8 @@ typedef enum {
 } airflow_dir_t;
 #define AIRFLOW_FROM_CAN(b)  ((airflow_dir_t)((b) >> 5))  // extract from 0x29D byte[2]
 
-typedef uint8_t butt_temp_t;
+// positive 1..3: heater, negative -1..-3: fan
+typedef int8_t butt_temp_t;
 
 typedef union {
     ac_temp_t ac;
@@ -215,8 +216,20 @@ static void twai_receive_task(void *arg)
             case CAN_ID_HEATER_STATUS:
                 // parse message
                 uint8_t b = rx_msg.data[1];  // the only meaningful byte
+                // data structure of this byte:
+                // LLRRllrr, where L/R is heater and l/r is fan
                 butt_temp_t butt_left = b >> 6;
                 butt_temp_t butt_right = (b >> 4) & 0b11;
+
+                uint8_t butt_fan_left = (b >> 2) & 0b11;
+                uint8_t butt_fan_right = b & 0b11;
+
+                if(butt_fan_left > 0) {
+                    butt_left = -butt_fan_left;
+                }
+                if(butt_fan_right > 0) {
+                    butt_right = -butt_fan_right;
+                }
 
                 // send to the queue, overwrite any stale value
                 xQueueOverwrite(left_butt_handler.can_queue, &butt_left);
@@ -442,21 +455,33 @@ static void draw_char_16x28(SSD1306_t *dev, int x, char ch) {
     }
 }
 
-// Draw 3 vertical circular dots (traffic light style), 8px wide, at position x
-// level: 0=none, 1=bottom, 2=bottom+middle, 3=all three
+// Draw an "x" mark centered at (cx, cy), ~7px wide (fan blade-like shape)
+static void draw_x_mark(SSD1306_t *dev, int cx, int cy) {
+    _ssd1306_line(dev, cx-3, cy-3, cx+3, cy+3, false);
+    _ssd1306_line(dev, cx-3, cy+3, cx+3, cy-3, false);
+    // thicken slightly for visibility
+    _ssd1306_line(dev, cx-2, cy-3, cx+3, cy+2, false);
+    _ssd1306_line(dev, cx-3, cy+2, cx+2, cy-3, false);
+}
+
+// Draw 3 vertical level indicators, 8px wide, at position x
+// level > 0: filled circular dots for heater (1..3)
+// level < 0: "x" marks for fan (-1..-3)
+// In both cases the count cumulates from the bottom.
 static void draw_heat_dots(SSD1306_t *dev, int x, int level) {
-    // 3 dots stacked vertically, each ~8px diameter
+    // 3 markers stacked vertically, each ~8px tall
     // Centers at y=5 (top), y=15 (middle), y=26 (bottom)
     int cx = x + 4;  // center x (8px wide area)
+    int n = level < 0 ? -level : level;
+    bool is_fan = level < 0;
 
-    if(level >= 3) {
-        _ssd1306_disc(dev, cx, 5, 3, OLED_DRAW_ALL, false);
-    }
-    if(level >= 2) {
-        _ssd1306_disc(dev, cx, 15, 3, OLED_DRAW_ALL, false);
-    }
-    if(level >= 1) {
-        _ssd1306_disc(dev, cx, 26, 3, OLED_DRAW_ALL, false);
+    int ys[3] = {26, 15, 5};
+    for(int i = 0; i < n && i < 3; i++) {
+        if(is_fan) {
+            draw_x_mark(dev, cx, ys[i]);
+        } else {
+            _ssd1306_disc(dev, cx, ys[i], 3, OLED_DRAW_ALL, false);
+        }
     }
 }
 
@@ -464,7 +489,7 @@ static void draw_heat_dots(SSD1306_t *dev, int x, int level) {
 // x: left edge of seat area (24px wide), level: 0-3 heat level
 // facing_right: true if seat faces right (affects wave positions to avoid backrest)
 static void draw_heat_waves(SSD1306_t *dev, int x, int level, bool facing_right) {
-    if(level == 0) return;
+    if(level <= 0) return;
 
     // Height of waves depends on level (taller = more heat)
     // level 1: short, level 2: medium, level 3: tall
@@ -1103,7 +1128,8 @@ void generic_handler_task(void *ctx) {
                 // TODO: airflow control via encoder (not yet wired)
                 value.airflow = MAX(AIRFLOW_FACE, MIN(AIRFLOW_WINDSHIELD, value.airflow + rotdiff));
             } else {
-                if(value.butt == 0) {
+                // Cycle heat: 3 → 2 → 1 → 0 → 3. If fan is on (negative), reset to 3.
+                if(value.butt <= 0) {
                     value.butt = 3;
                 } else {
                     value.butt--;
