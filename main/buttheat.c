@@ -237,10 +237,16 @@ typedef struct {
 static bool can_data_changed(uint32_t id, const uint8_t *data) {
     static can_cache_entry_t cache[8] = {0};
     static int n_entries = 0;
+    uint8_t size = 8, offset = 0;
+    if(id == CAN_ID_AC_STATUS || id == 0x295) {
+        // ignore first and last bytes when they are some counters/checksums
+        offset = 1;
+        size = 6;
+    }
     for(int i = 0; i < n_entries; i++) {
         if(cache[i].id == id) {
-            if(memcmp(cache[i].data, data, 8) == 0) return false;
-            memcpy(cache[i].data, data, 8);
+            if(memcmp(cache[i].data+offset, data+offset, size) == 0) return false;
+            memcpy(cache[i].data+offset, data+offset, size);
             return true;
         }
     }
