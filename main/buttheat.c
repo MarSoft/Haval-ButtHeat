@@ -73,11 +73,29 @@ typedef enum {
 // positive 1..3: heater, negative -1..-3: fan
 typedef int8_t butt_temp_t;
 
+typedef enum {
+    MASSAGE_MODE_WAVES = 0,
+    MASSAGE_MODE_DOTS = 1,
+    MASSAGE_MODE_GENERAL = 2,
+    MASSAGE_MODE_SHOULDER = 3,
+    MASSAGE_MODE_WAIST = 4,
+} massage_mode_t;
+
+// Massage state. Layout is provisional and will change once the real CAN
+// payload is decoded; do not rely on bit positions for wire serialization.
+typedef struct {
+    uint8_t intensity : 2;  // 0=off, 1..3
+    uint8_t mode      : 3;  // massage_mode_t
+    uint8_t _pad      : 3;
+} __attribute__((packed)) massage_t;
+#define MASSAGE_IS_OFF(m) ((m).intensity == 0)
+
 typedef union {
     ac_temp_t ac;
     fan_speed_t fan;
     airflow_dir_t airflow;
     butt_temp_t butt;
+    massage_t massage;
     uint8_t _max; // for simpler equality check
 } union_temp_t;
 
@@ -86,6 +104,7 @@ typedef enum {
     HANDLER_TYPE_FAN,
     HANDLER_TYPE_AIRFLOW,
     HANDLER_TYPE_BUTTHEAT,
+    HANDLER_TYPE_MASSAGE,
 } handler_type_t;
 
 typedef struct {
@@ -101,6 +120,7 @@ typedef enum {
     DU_DISABLE_TWOZONE, // toggle two-zone AC off (only if currently on)
     DU_FANSPEED,
     DU_AIRFLOW,
+    DU_MASSAGE,
     DU_SEAT_MEMORY,
     DU_CAN_ERROR, // put display to "can error" state
     DU_LONGPRESS_STAGE,    // overlay while holding: seat_mem_slot 0=clear, 1-3=slot
@@ -115,6 +135,7 @@ typedef struct {
         fan_speed_t fan_speed;
         airflow_dir_t airflow_dir;
         butt_temp_t butt_temp;
+        massage_t massage;
         uint8_t seat_mem_slot;
         bool ac_ack;
     };
@@ -127,6 +148,8 @@ typedef struct {
 #define CAN_ID_AC_STATUS 0x385
 #define CAN_ID_AC_CONTROL 0x1EE
 #define CAN_ID_SEAT_MEMORY 0x1ED
+// TODO: real ID + filter wiring once the bus has been observed.
+#define CAN_ID_MASSAGE_STATUS 0x000
 
 // RX message struct for ISR → task queue transfer
 typedef struct {
@@ -159,6 +182,11 @@ static handler_config_t left_butt_handler = {
 static handler_config_t right_butt_handler = {
     .type = HANDLER_TYPE_BUTTHEAT,
     .leftside = false,
+};
+// Driver-side massage only; no right-seat counterpart on this vehicle.
+static handler_config_t massage_handler = {
+    .type = HANDLER_TYPE_MASSAGE,
+    .leftside = true,
 };
 
 static QueueHandle_t tx_task_queue;
@@ -197,6 +225,35 @@ static IRAM_ATTR bool twai_rx_isr_cb(twai_node_handle_t handle,
     return false;
 }
 
+#ifdef CAN_DEBUG
+// Per-CAN-ID cache for debug change-detection. Small fixed table keyed by ID;
+// linear scan is fine — we filter aggressively so only a handful of IDs reach us.
+typedef struct {
+    uint32_t id;
+    uint8_t data[8];
+    bool valid;
+} can_cache_entry_t;
+
+static bool can_data_changed(uint32_t id, const uint8_t *data) {
+    static can_cache_entry_t cache[8] = {0};
+    static int n_entries = 0;
+    for(int i = 0; i < n_entries; i++) {
+        if(cache[i].id == id) {
+            if(memcmp(cache[i].data, data, 8) == 0) return false;
+            memcpy(cache[i].data, data, 8);
+            return true;
+        }
+    }
+    if(n_entries < (int)(sizeof(cache) / sizeof(cache[0]))) {
+        cache[n_entries].id = id;
+        memcpy(cache[n_entries].data, data, 8);
+        cache[n_entries].valid = true;
+        n_entries++;
+    }
+    return true; // first time we see this ID — log it
+}
+#endif
+
 static void twai_receive_task(void *arg)
 {
     bool prev_ac_ack = false;
@@ -212,6 +269,14 @@ static void twai_receive_task(void *arg)
             ESP_LOGI(TAG, "TWAI recv unexpected len %d", rx_msg.dlc);
             continue;
         }
+#ifdef CAN_DEBUG
+        if(can_data_changed(rx_msg.id, rx_msg.data)) {
+            ESP_LOGI(TAG, "CAN 0x%03lX: %02X %02X %02X %02X %02X %02X %02X %02X",
+                     (unsigned long)rx_msg.id,
+                     rx_msg.data[0], rx_msg.data[1], rx_msg.data[2], rx_msg.data[3],
+                     rx_msg.data[4], rx_msg.data[5], rx_msg.data[6], rx_msg.data[7]);
+        }
+#endif
         switch(rx_msg.id) {
             case CAN_ID_HEATER_STATUS:
                 // parse message
@@ -269,6 +334,12 @@ static void twai_receive_task(void *arg)
             case CAN_ID_AIRFLOW_STATUS:
                 airflow_dir_t airflow = AIRFLOW_FROM_CAN(rx_msg.data[2]);
                 xQueueOverwrite(airflow_handler.can_queue, &airflow);
+                break;
+            case CAN_ID_MASSAGE_STATUS:
+                // TODO: real parse once the bus layout is known. For now produce
+                // an "off" value so the wiring exercises end-to-end.
+                massage_t massage = { .intensity = 0, .mode = 0 };
+                xQueueOverwrite(massage_handler.can_queue, &massage);
                 break;
             default:
                 // unsupported message, ignore
@@ -485,9 +556,69 @@ static void draw_heat_dots(SSD1306_t *dev, int x, int level) {
     }
 }
 
+// Draw massage indicator in a narrow column (driver side, x=50..58).
+// Layout (subject to change once the real CAN format is decoded):
+//   Left 5px  (x..x+4)  — intensity: up to 3 stacked rectangles, filled
+//                         from the bottom.
+//   2px gap   (x+5..x+6)
+//   Right 2px (x+7..x+8) — mode: vertical line, full y=0..23
+//      GENERAL  — solid
+//      SHOULDER — upper half only
+//      WAIST    — lower half only
+//      DOTS     — every other pixel
+//      WAVES    — dashed (2 on, 1 off)
+static void draw_massage_indicator(SSD1306_t *dev, int x, massage_t m) {
+    if(MASSAGE_IS_OFF(m)) return;
+
+    // Intensity rectangles, filled from bottom. Each 5x6 with 2px vertical gaps.
+    int rect_w = 5;
+    int rect_h = 6;
+    int rect_gap = 2;
+    for(int i = 0; i < m.intensity && i < 3; i++) {
+        int yb = 23 - i * (rect_h + rect_gap);
+        int yt = yb - (rect_h - 1);
+        for(int dy = yt; dy <= yb; dy++) {
+            _ssd1306_line(dev, x, dy, x + rect_w - 1, dy, false);
+        }
+    }
+
+    // Mode vertical line at x+7..x+8, full height (y=0..23).
+    int lx0 = x + 7, lx1 = x + 8;
+    int y_lo = 0, y_hi = 23;
+    int y_mid = (y_lo + y_hi) / 2;
+
+    switch(m.mode) {
+        case MASSAGE_MODE_GENERAL:
+            _ssd1306_line(dev, lx0, y_lo, lx0, y_hi, false);
+            _ssd1306_line(dev, lx1, y_lo, lx1, y_hi, false);
+            break;
+        case MASSAGE_MODE_SHOULDER:
+            _ssd1306_line(dev, lx0, y_lo, lx0, y_mid, false);
+            _ssd1306_line(dev, lx1, y_lo, lx1, y_mid, false);
+            break;
+        case MASSAGE_MODE_WAIST:
+            _ssd1306_line(dev, lx0, y_mid + 1, lx0, y_hi, false);
+            _ssd1306_line(dev, lx1, y_mid + 1, lx1, y_hi, false);
+            break;
+        case MASSAGE_MODE_DOTS:
+            for(int y = y_lo; y <= y_hi; y += 2) {
+                _ssd1306_pixel(dev, lx0, y, false);
+                _ssd1306_pixel(dev, lx1, y, false);
+            }
+            break;
+        case MASSAGE_MODE_WAVES:
+            // Zigzag: alternate left/right column every 2 rows
+            for(int y = y_lo; y <= y_hi; y++) {
+                int lx = ((y / 2) % 2) ? lx1 : lx0;
+                _ssd1306_pixel(dev, lx, y, false);
+            }
+            break;
+    }
+}
+
 // Draw airflow direction icon between the two seats.
-// cx: horizontal center. 64 centers it; pass ~70 when massage indicator
-// occupies the left strip (~x=50..58) so airflow shifts right to make room.
+// cx: horizontal center. 64 centers it (no massage); 70 shifts it right
+// when the massage indicator occupies x=50..58 (leaves ~4px gap).
 // Footprint: 14px wide, y=0..22 (full inter-seat vertical space). 2px strokes.
 static void draw_airflow_icon(SSD1306_t *dev, int cx, airflow_dir_t dir) {
     if(dir == AIRFLOW_OFF) return;
@@ -565,6 +696,7 @@ static void draw_active_display(SSD1306_t *dev,
                                  ac_temp_t ac_left, ac_temp_t ac_right,
                                  butt_temp_t butt_left, butt_temp_t butt_right,
                                  fan_speed_t fan_speed, airflow_dir_t airflow_dir,
+                                 massage_t massage,
                                  bool show_just_updated,
                                  uint8_t left_overlay, uint8_t right_overlay) {
     // Clear buffer without sending to display
@@ -633,9 +765,16 @@ static void draw_active_display(SSD1306_t *dev,
         _ssd1306_disc(dev, 127, 8, 2, OLED_DRAW_ALL, false);
     }
 
+    // Massage indicator in the left strip (driver side), and shift airflow right
+    // to free that space.
+    int airflow_cx = 64;
+    if(!MASSAGE_IS_OFF(massage)) {
+        draw_massage_indicator(dev, 50, massage);
+        airflow_cx = 70;
+    }
+
     // Airflow direction icon between the seats.
-    // cx=64 centers it; will shift right when a massage indicator is drawn on the left.
-    draw_airflow_icon(dev, 64, airflow_dir);
+    draw_airflow_icon(dev, airflow_cx, airflow_dir);
 
     // Fan speed indicator at the very bottom
     draw_fan_speed(dev, fan_speed);
@@ -664,6 +803,7 @@ static void display_task(void *arg) {
     butt_temp_t butt_left_temp = 0, butt_right_temp = 0;
     fan_speed_t fan_speed = 0;
     airflow_dir_t airflow_dir = AIRFLOW_OFF;
+    massage_t massage = {0};
     bool show_ac_ack = false;
 
     // Long press overlay state
@@ -687,7 +827,7 @@ static void display_task(void *arg) {
             ssd1306_hardware_scroll(&dev, SCROLL_STOP);
             draw_active_display(&dev, ac_left_temp, ac_right_temp,
                                 butt_left_temp, butt_right_temp,
-                                fan_speed, airflow_dir, show_ac_ack,
+                                fan_speed, airflow_dir, massage, show_ac_ack,
                                 left_overlay, right_overlay);
             need_redraw = false;
         } else if(!active && need_redraw) {
@@ -744,6 +884,13 @@ static void display_task(void *arg) {
                 case DU_AIRFLOW:
                     ESP_LOGI(TAG, "Recvd AIRFLOW = %d", msg.airflow_dir);
                     airflow_dir = msg.airflow_dir;
+                    active = true;
+                    need_redraw = true;
+                    break;
+                case DU_MASSAGE:
+                    ESP_LOGI(TAG, "Recvd MASSAGE mode=%d intensity=%d",
+                             msg.massage.mode, msg.massage.intensity);
+                    massage = msg.massage;
                     active = true;
                     need_redraw = true;
                     break;
@@ -1023,14 +1170,16 @@ void generic_handler_task(void *ctx) {
     bool is_ac = self->type == HANDLER_TYPE_AC;
     bool is_fan = self->type == HANDLER_TYPE_FAN;
     bool is_airflow = self->type == HANDLER_TYPE_AIRFLOW;
-    char *kind = is_ac ? "AC" : is_fan ? "FAN" : is_airflow ? "AIRFLOW" : "BUTT";
+    bool is_massage = self->type == HANDLER_TYPE_MASSAGE;
+    char *kind = is_ac ? "AC" : is_fan ? "FAN" : is_airflow ? "AIRFLOW" : is_massage ? "MASSAGE" : "BUTT";
 
     union_temp_t value = {0};
     rotary_value_t rotdiff;
     union_temp_t canval;
     data_update_t evt;
 
-    evt.kind = is_ac ? DU_AC : is_fan ? DU_FANSPEED : is_airflow ? DU_AIRFLOW : DU_BUTTHEAT;
+    evt.kind = is_ac ? DU_AC : is_fan ? DU_FANSPEED : is_airflow ? DU_AIRFLOW
+             : is_massage ? DU_MASSAGE : DU_BUTTHEAT;
     evt.leftside = self->leftside;
 
     QueueSetHandle_t qset = xQueueCreateSet(8 + 1);  // sum of control_queue (8) + can_queue (1)
@@ -1088,6 +1237,7 @@ void generic_handler_task(void *ctx) {
             if(is_ac)            evt.ac_temp = value.ac;
             else if(is_fan)      evt.fan_speed = value.fan;
             else if(is_airflow)  evt.airflow_dir = value.airflow;
+            else if(is_massage)  evt.massage = value.massage;
             else                 evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
         } else if(active_queue == self->control_queue) {
@@ -1109,6 +1259,9 @@ void generic_handler_task(void *ctx) {
             } else if(is_airflow) {
                 // TODO: airflow control via encoder (not yet wired)
                 value.airflow = MAX(AIRFLOW_FACE, MIN(AIRFLOW_WINDSHIELD, value.airflow + rotdiff));
+            } else if(is_massage) {
+                // Massage is show-only for now; ignore control input.
+                continue;
             } else {
                 // Cycle heat: 3 → 2 → 1 → 0 → 3. If fan is on (negative), reset to 3.
                 if(value.butt <= 0) {
@@ -1122,6 +1275,7 @@ void generic_handler_task(void *ctx) {
             if(is_ac)            evt.ac_temp = value.ac;
             else if(is_fan)      evt.fan_speed = value.fan;
             else if(is_airflow)  evt.airflow_dir = value.airflow;
+            else if(is_massage)  evt.massage = value.massage;
             else                 evt.butt_temp = value.butt;
             xQueueSend(display_queue, &evt, 0);
 
@@ -1159,6 +1313,8 @@ void app_main(void)
     left_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
     right_butt_handler.control_queue = xQueueCreate(8, sizeof(uint8_t));
     right_butt_handler.can_queue = xQueueCreate(1, sizeof(butt_temp_t));
+    massage_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
+    massage_handler.can_queue = xQueueCreate(1, sizeof(massage_t));
     done_sem  = xSemaphoreCreateBinary();
 
     // TWAI node init (new driver API)
@@ -1198,6 +1354,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(generic_handler_task, "AIRFLOW", 4096, (void*)&airflow_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_left", 4096, (void*)&left_butt_handler, 3, NULL, tskNO_AFFINITY);
     xTaskCreatePinnedToCore(generic_handler_task, "BUTT_right", 4096, (void*)&right_butt_handler, 3, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(generic_handler_task, "MASSAGE", 4096, (void*)&massage_handler, 3, NULL, tskNO_AFFINITY);
 
     // Enable TWAI after all tasks are created and have set up their queue sets.
     // On single-core ESP32-C3, higher-priority tasks (handler tasks at prio 3)
