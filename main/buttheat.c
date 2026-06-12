@@ -432,7 +432,10 @@ static void twai_transmit_task(void *arg)
                 } else {
                     butt_temp_right = action.butt_temp;
                 }
-                data_buttheat[1] = (butt_temp_left << 6) | (butt_temp_right << 3);
+                // TODO: for now we don't support emitting butt-fan updates
+                butt_temp_t tleft = butt_temp_left > 0 ? butt_temp_left : 0;
+                butt_temp_t tright = butt_temp_right > 0 ? butt_temp_right : 0;
+                data_buttheat[1] = (tleft << 6) | (tright << 3);
                 twai_node_transmit(twai_node, &msg_buttheat_set, -1);
                 break;
             case DU_FANSPEED:
