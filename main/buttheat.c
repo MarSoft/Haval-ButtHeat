@@ -385,7 +385,26 @@ static void twai_transmit_task(void *arg)
     data_update_t action;
 
     // TX data buffers (backing storage for twai_frame_t.buffer pointers)
-    uint8_t data_buttheat[8] = {0, 0, 0x20, 0, 0, 0, 0, 0x40};
+
+    uint8_t data_buttheat[8] = {
+        0,
+        // Control frame 0x36D layout (reverse-engineered by probing; note it
+        // differs from status frame 0x2D1):
+        // byte[1] = LL?RR?ll: bits 7-6 left heat, bits 4-3 right heat,
+        //   bits 1-0 LEFT fan level; bits 5 and 2 are no-ops.
+        0,
+        // byte[2] = rr______: bits 7-6 RIGHT fan level (1..3);
+        //   bit 5 (the default 0x20) is NOT required for fan control — kept only
+        //   to match the stock unit's frames; bits 4-0 inert.
+        // Fan wins over heat when both are set for a side (confirmed both sides).
+        // bytes 0, 3-7: no seat effect.
+        0x20,
+        0,
+        0,
+        0,
+        0,
+        0x40,
+    };
     uint8_t data_ac[8] = {0, 0x41, 0, 2, 0, 0, 0, 0}; // data[0]: 8 = enable heat steering, 4 = disable heat steering
     uint8_t data_fan[8] = {
         0,     // 8 = steering heat on, 4 = steering wheel heat off?
@@ -439,10 +458,13 @@ static void twai_transmit_task(void *arg)
                 } else {
                     butt_tx_right = action.butt_temp;
                 }
-                // TODO: for now we don't support emitting butt-fan updates
-                butt_temp_t tleft = butt_temp_left > 0 ? butt_temp_left : 0;
-                butt_temp_t tright = butt_temp_right > 0 ? butt_temp_right : 0;
-                data_buttheat[1] = (tleft << 6) | (tright << 3);
+                // See the data_buttheat initializer for the 0x36D layout.
+                uint8_t heat_left  = butt_tx_left  > 0 ? (uint8_t) butt_tx_left  : 0;
+                uint8_t heat_right = butt_tx_right > 0 ? (uint8_t) butt_tx_right : 0;
+                uint8_t fan_left   = butt_tx_left  < 0 ? (uint8_t)-butt_tx_left  : 0;
+                uint8_t fan_right  = butt_tx_right < 0 ? (uint8_t)-butt_tx_right : 0;
+                data_buttheat[1] = (heat_left << 6) | (heat_right << 3) | fan_left;
+                data_buttheat[2] = 0x20 | (fan_right << 6);
                 twai_node_transmit(twai_node, &msg_buttheat_set, -1);
                 break;
             case DU_FANSPEED:
