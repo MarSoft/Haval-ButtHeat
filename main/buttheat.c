@@ -195,6 +195,11 @@ static SemaphoreHandle_t done_sem;
 static bool twozone_active = false; // updated by twai_receive_task, read by twai_transmit_task
 static bool ac_just_updated = false; // set by twai_receive_task when AC controller acks a change
 static fan_speed_t current_fan_speed = 0; // updated by twai_receive_task
+// Latest seat heater/fan state per side (positive=heat, negative=fan).
+// Mirrored from CAN status, overridden by our own commands; read by
+// twai_transmit_task when building 0x36D frames.
+static butt_temp_t butt_tx_left = 0;
+static butt_temp_t butt_tx_right = 0;
 
 /* --------------------------- Tasks and Functions -------------------------- */
 
@@ -302,6 +307,9 @@ static void twai_receive_task(void *arg)
                     butt_right = -butt_fan_right;
                 }
 
+                butt_tx_left = butt_left;
+                butt_tx_right = butt_right;
+
                 // send to the queue, overwrite any stale value
                 xQueueOverwrite(left_butt_handler.can_queue, &butt_left);
                 xQueueOverwrite(right_butt_handler.can_queue, &butt_right);
@@ -374,7 +382,6 @@ static void ensure_fan_on(uint8_t *fan_data, twai_frame_t *msg_fan_set) {
 
 static void twai_transmit_task(void *arg)
 {
-    butt_temp_t butt_temp_left = 0, butt_temp_right = 0;
     data_update_t action;
 
     // TX data buffers (backing storage for twai_frame_t.buffer pointers)
@@ -428,9 +435,9 @@ static void twai_transmit_task(void *arg)
                 break;
             case DU_BUTTHEAT:
                 if(action.leftside) {
-                    butt_temp_left = action.butt_temp;
+                    butt_tx_left = action.butt_temp;
                 } else {
-                    butt_temp_right = action.butt_temp;
+                    butt_tx_right = action.butt_temp;
                 }
                 // TODO: for now we don't support emitting butt-fan updates
                 butt_temp_t tleft = butt_temp_left > 0 ? butt_temp_left : 0;
