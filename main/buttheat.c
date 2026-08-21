@@ -1301,8 +1301,10 @@ void generic_handler_task(void *ctx) {
                 // Massage is show-only for now; ignore control input.
                 continue;
             } else {
-                // Cycle heat: 3 → 2 → 1 → 0 → 3. If fan is on (negative), reset to 3.
-                if(value.butt <= 0) {
+                // Cycle heat: 3 → 2 → 1 → 0 → 3. If fan is on (negative), decrease till 0.
+                if(value.butt < 0) {
+                    value.butt++;  // decrease fan speed
+                } else if(value.butt == 0) {
                     value.butt = 3;
                 } else {
                     value.butt--;
