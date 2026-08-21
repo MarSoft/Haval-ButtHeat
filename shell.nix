@@ -6,6 +6,7 @@ let
     # rev = "<commit hash>";
     #ref = "v5.5.2";
     #rev = "b7a2e7caf5b730948fbffeae10edd30d7ede1f83";  # just before v5.5.2, see #113 # not needed anymore?..
+    ref = "refs/pull/121/head";  # use a PR to avoid pulling now-removed python3.10
   };
 
   pkgs = import <nixpkgs> { overlays = [ (import "${nixpkgs-esp-dev}/overlay.nix") ]; };
