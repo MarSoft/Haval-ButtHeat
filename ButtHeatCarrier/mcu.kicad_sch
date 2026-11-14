@@ -3673,7 +3673,7 @@
 				)
 			)
 		)
-		(property "Footprint" "RF_Module:ESP32-C3-WROOM-02"
+		(property "Footprint" "ButtHeat:ESP32-C3-WROOM-02_Via0.3"
 			(at 190.5 122.555 0)
 			(hide yes)
 			(show_name no)
