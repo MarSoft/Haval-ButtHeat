@@ -1,7 +1,7 @@
 (kicad_sch
 	(version 20260306)
-	(generator "kcaa")
-	(generator_version "0.2.0")
+	(generator "eeschema")
+	(generator_version "10.0")
 	(uuid "7264e522-9456-4b56-ab7e-0da0938b1600")
 	(paper "A4")
 	(title_block
@@ -430,6 +430,105 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Mechanical:MountingHole"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "H"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "MountingHole"
+				(at 0 3.175 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Mounting Hole without connection"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "mounting hole"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "MountingHole*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "MountingHole_0_1"
+				(circle
+					(center 0 0)
+					(radius 1.27)
+					(stroke
+						(width 1.27)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Switch:SW_Push"
 			(pin_numbers
 				(hide yes)
@@ -594,120 +693,603 @@
 			)
 			(embedded_fonts no)
 		)
-	
-        	(symbol "Mechanical:MountingHole"
-    		(pin_names
-    			(offset 1.016)
-    		)
-    		(exclude_from_sim no)
-    		(in_bom no)
-    		(on_board yes)
-    		(in_pos_files yes)
-    		(duplicate_pin_numbers_are_jumpers no)
-    		(property "Reference" "H"
-    			(at 0 5.08 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(property "Value" "MountingHole"
-    			(at 0 3.175 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(property "Footprint" ""
-    			(at 0 0 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(hide yes)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(property "Datasheet" ""
-    			(at 0 0 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(hide yes)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(property "Description" "Mounting Hole without connection"
-    			(at 0 0 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(hide yes)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(property "ki_keywords" "mounting hole"
-    			(at 0 0 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(hide yes)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(property "ki_fp_filters" "MountingHole*"
-    			(at 0 0 0)
-    			(show_name no)
-    			(do_not_autoplace no)
-    			(hide yes)
-    			(effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    		)
-    		(symbol "MountingHole_0_1"
-    			(circle
-    				(center 0 0)
-    				(radius 1.27)
-    				(stroke
-    					(width 1.27)
-    					(type default)
-    				)
-    				(fill
-    					(type none)
-    				)
-    			)
-    		)
-    		(embedded_fonts no)
-    	)
-  )
+	)
+	(global_label "ENC3_A"
+		(shape bidirectional)
+		(at 134.62 50.8 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "18d94be9-6ef5-4a2f-9a6d-14f57af9f265")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 134.62 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC1_SW"
+		(shape bidirectional)
+		(at 58.42 48.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "197688d2-926e-447e-9d23-4521f74db754")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 58.42 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC1_B"
+		(shape bidirectional)
+		(at 43.18 53.34 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "24a16eef-2faf-4838-8623-45cd74beade2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 58.42 91.44 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "309a4785-413e-42a7-9eb1-52e99ba4cd68")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 58.42 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 50.8 96.52 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "49ff88f2-28a5-40d9-96c1-ab2471bca8b3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50.8 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC3_SW"
+		(shape bidirectional)
+		(at 58.42 124.46 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "709623dd-e977-400c-9a50-58a50bd1cc5c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 58.42 124.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 58.42 129.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "78a3a169-a46d-4a02-8b58-5a2d68c11c8e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 58.42 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC3_A"
+		(shape bidirectional)
+		(at 43.18 124.46 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7bd1cb12-4629-47da-bada-371cee512adb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 124.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC3_B"
+		(shape bidirectional)
+		(at 134.62 96.52 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7f484154-2bc9-49da-8571-ed225d6ea87e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 134.62 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 144.78 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "80727b3d-6b9f-4bb0-9f70-db1df8f5c29f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.78 111.76 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 144.78 96.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "83355dc1-e2e8-4df6-b999-98a85b95eb25")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.78 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC3_B"
+		(shape bidirectional)
+		(at 43.18 129.54 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "8f9482d3-c657-425a-811d-2e1c59f9266e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 43.18 127 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "98f65328-34e9-40b6-80fa-af6e1d58a755")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 127 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 144.78 50.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9a7ad9e6-4039-4b99-9dd8-570457b336f3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.78 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 43.18 50.8 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "9df912e2-5b41-4b04-b517-e71ff10a502d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC1_A"
+		(shape bidirectional)
+		(at 43.18 48.26 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "a51ad420-217c-4b7b-a5a1-6607fd3e9f26")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC2_SW"
+		(shape bidirectional)
+		(at 58.42 86.36 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a6d3947c-cf4d-4361-a7a9-cd37fcb93753")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 58.42 86.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC3_A"
+		(shape bidirectional)
+		(at 134.62 66.04 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "af1081b4-a226-4bf2-90dc-2683e4a6bc63")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 134.62 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 50.8 58.42 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "bb0f6bdc-d5d9-4de6-be55-58565b8709b5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50.8 58.42 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC3_B"
+		(shape bidirectional)
+		(at 134.62 111.76 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c885ae82-69b4-4150-9264-c44036a85122")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 134.62 111.76 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 50.8 134.62 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c9595703-689e-46a4-b00e-599a40cb57c6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50.8 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 43.18 88.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "cc400eec-49c2-469e-9732-beadc5390677")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC2_A"
+		(shape bidirectional)
+		(at 43.18 86.36 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ce0ff7a8-add6-41a9-98ec-6bc84a2ef3cb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 86.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 58.42 53.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ea45e895-d9be-41f1-affb-21a9cf60903a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 58.42 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 144.78 66.04 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ed9b7f6e-a99b-47c4-8089-2195402c632e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.78 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ENC2_B"
+		(shape bidirectional)
+		(at 43.18 91.44 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f7a361c7-e613-4825-9368-d5e9bf911199")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.18 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
 	(symbol
-		(lib_id "Device:RotaryEncoder_Switch_MP")
-		(at 50.8 50.8 0)
+		(lib_id "Switch:SW_Push")
+		(at 139.7 111.76 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
-		(uuid "a22e8702-2743-4c48-a946-845b36742689")
-		(property "Reference" "ENC1"
-			(at 50.8 45.72 0)
+		(dnp yes)
+		(uuid "1a1163c9-23c6-419c-b71e-f4ffc7ce193a")
+		(property "Reference" "SW4"
+			(at 139.7 109.22 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BTN_R SMD (DNP)"
+			(at 139.7 114.3 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -716,18 +1298,8 @@
 				)
 			)
 		)
-		(property "Value" "EC12S 24/24 sw"
-			(at 50.8 60.96 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
-			(at 46.99 54.864 0)
+		(property "Footprint" "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92"
+			(at 139.7 116.84 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -738,7 +1310,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 50.8 38.1 0)
+			(at 139.7 116.84 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -748,8 +1320,8 @@
 				)
 			)
 		)
-		(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch and MP Pin"
-			(at 50.8 35.56 0)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 139.7 111.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -759,46 +1331,45 @@
 				)
 			)
 		)
-		(pin "A"
-			(uuid "dafd39d2-39ed-4201-980a-86034e703857")
+		(pin "1"
+			(uuid "09f688e5-4fed-43d0-a4b6-0cbb90aee1bd")
 		)
-		(pin "B"
-			(uuid "a6ed2878-1d1a-4041-9e8e-01d41da2eaf5")
-		)
-		(pin "C"
-			(uuid "25c585a5-1eb8-404e-a78d-0ac6d37419ad")
-		)
-		(pin "MP"
-			(uuid "69d850c3-09bc-4087-b1b0-5361841e0a48")
-		)
-		(pin "S1"
-			(uuid "6dd89ca0-f14e-476a-b4a0-01345aea3be1")
-		)
-		(pin "S2"
-			(uuid "654e95c2-f977-47c1-b162-8c5fb7ef6cd5")
+		(pin "2"
+			(uuid "300929e3-7873-4616-8b7c-4bc37e403749")
 		)
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "ENC1")
+					(reference "SW4")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "Device:RotaryEncoder_Switch_MP")
-		(at 50.8 88.9 0)
+		(lib_id "Switch:SW_Push")
+		(at 139.7 96.52 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
-		(uuid "cea9b2de-ea32-4619-879f-214d1b2fe192")
-		(property "Reference" "ENC2"
-			(at 50.8 83.82 0)
+		(dnp yes)
+		(uuid "4b27837b-669b-4efa-ac4e-e41145476106")
+		(property "Reference" "SW3"
+			(at 139.7 93.98 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BTN_R THT (DNP)"
+			(at 139.7 99.06 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -807,18 +1378,8 @@
 				)
 			)
 		)
-		(property "Value" "EC12S 24/24 sw"
-			(at 50.8 99.06 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
-			(at 46.99 92.964 0)
+		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm"
+			(at 139.7 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -829,7 +1390,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 50.8 76.2 0)
+			(at 139.7 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -839,8 +1400,8 @@
 				)
 			)
 		)
-		(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch and MP Pin"
-			(at 50.8 73.66 0)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 139.7 96.52 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -850,28 +1411,89 @@
 				)
 			)
 		)
-		(pin "A"
-			(uuid "10a676ba-0b04-48c1-ae54-23bc0655b6a3")
+		(pin "1"
+			(uuid "89070c49-1475-4528-906f-4353323e0fe2")
 		)
-		(pin "B"
-			(uuid "8fa66b84-9b4b-4acc-92ed-13cb4f03deeb")
-		)
-		(pin "C"
-			(uuid "a8c85786-3fdc-4115-93e3-2596e80079fd")
-		)
-		(pin "MP"
-			(uuid "f61de510-bc0b-4976-b579-eaef80021e1e")
-		)
-		(pin "S1"
-			(uuid "972b01ca-5b9a-4d5e-8d85-ceadf194b5f2")
-		)
-		(pin "S2"
-			(uuid "3f24249a-eb2d-49f1-a092-03bf7d5c1c5d")
+		(pin "2"
+			(uuid "c45ee975-3458-40f1-ac52-5d24150b7e15")
 		)
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "ENC2")
+					(reference "SW3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole")
+		(at 215.9 50.8 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "5564ad2c-6b9e-4b8d-b33d-c4512aa7768b")
+		(property "Reference" "H2"
+			(at 215.9 48.26 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "M2 (unthreaded-encoder fallback)"
+			(at 215.9 53.34 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_2.2mm_M2"
+			(at 215.9 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 215.9 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 215.9 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "ButtHeatCarrier"
+				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
+					(reference "H2")
 					(unit 1)
 				)
 			)
@@ -969,8 +1591,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 139.7 50.8 0)
+		(lib_id "Device:RotaryEncoder_Switch_MP")
+		(at 50.8 50.8 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -978,20 +1600,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "d3826d3b-4a46-43ad-8e9e-4d9d58d82b12")
-		(property "Reference" "SW1"
-			(at 139.7 48.26 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BTN_L THT (DNP)"
-			(at 139.7 53.34 0)
+		(uuid "a22e8702-2743-4c48-a946-845b36742689")
+		(property "Reference" "ENC1"
+			(at 50.8 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1000,8 +1611,18 @@
 				)
 			)
 		)
-		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm"
-			(at 139.7 55.88 0)
+		(property "Value" "EC12S 24/24 sw"
+			(at 50.8 60.96 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
+			(at 46.99 54.864 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1012,7 +1633,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 139.7 55.88 0)
+			(at 50.8 38.1 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1022,8 +1643,8 @@
 				)
 			)
 		)
-		(property "Description" "Push button switch, generic, two pins"
-			(at 139.7 50.8 0)
+		(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch and MP Pin"
+			(at 50.8 35.56 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1033,16 +1654,28 @@
 				)
 			)
 		)
-		(pin "1"
-			(uuid "96242a4e-6f6d-4e97-9901-ed67495c7c57")
+		(pin "A"
+			(uuid "dafd39d2-39ed-4201-980a-86034e703857")
 		)
-		(pin "2"
-			(uuid "8f9ccef2-c7a3-4667-bb27-5d9b31bf43c1")
+		(pin "B"
+			(uuid "a6ed2878-1d1a-4041-9e8e-01d41da2eaf5")
+		)
+		(pin "C"
+			(uuid "25c585a5-1eb8-404e-a78d-0ac6d37419ad")
+		)
+		(pin "MP"
+			(uuid "69d850c3-09bc-4087-b1b0-5361841e0a48")
+		)
+		(pin "S1"
+			(uuid "6dd89ca0-f14e-476a-b4a0-01345aea3be1")
+		)
+		(pin "S2"
+			(uuid "654e95c2-f977-47c1-b162-8c5fb7ef6cd5")
 		)
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW1")
+					(reference "ENC1")
 					(unit 1)
 				)
 			)
@@ -1057,7 +1690,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "a5ffcfad-dadd-48c8-b2c6-8e279ee686a8")
 		(property "Reference" "SW2"
 			(at 139.7 63.5 0)
@@ -1129,8 +1762,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 139.7 96.52 0)
+		(lib_id "Device:RotaryEncoder_Switch_MP")
+		(at 50.8 88.9 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1138,9 +1771,100 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4b27837b-669b-4efa-ac4e-e41145476106")
-		(property "Reference" "SW3"
-			(at 139.7 93.98 0)
+		(uuid "cea9b2de-ea32-4619-879f-214d1b2fe192")
+		(property "Reference" "ENC2"
+			(at 50.8 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "EC12S 24/24 sw"
+			(at 50.8 99.06 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
+			(at 46.99 92.964 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 50.8 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs, with switch and MP Pin"
+			(at 50.8 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "A"
+			(uuid "10a676ba-0b04-48c1-ae54-23bc0655b6a3")
+		)
+		(pin "B"
+			(uuid "8fa66b84-9b4b-4acc-92ed-13cb4f03deeb")
+		)
+		(pin "C"
+			(uuid "a8c85786-3fdc-4115-93e3-2596e80079fd")
+		)
+		(pin "MP"
+			(uuid "f61de510-bc0b-4976-b579-eaef80021e1e")
+		)
+		(pin "S1"
+			(uuid "972b01ca-5b9a-4d5e-8d85-ceadf194b5f2")
+		)
+		(pin "S2"
+			(uuid "3f24249a-eb2d-49f1-a092-03bf7d5c1c5d")
+		)
+		(instances
+			(project "ButtHeatCarrier"
+				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
+					(reference "ENC2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 139.7 50.8 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp yes)
+		(uuid "d3826d3b-4a46-43ad-8e9e-4d9d58d82b12")
+		(property "Reference" "SW1"
+			(at 139.7 48.26 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1150,8 +1874,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "BTN_R THT (DNP)"
-			(at 139.7 99.06 0)
+		(property "Value" "BTN_L THT (DNP)"
+			(at 139.7 53.34 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1161,7 +1885,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm"
-			(at 139.7 101.6 0)
+			(at 139.7 55.88 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1172,7 +1896,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 139.7 101.6 0)
+			(at 139.7 55.88 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1183,7 +1907,7 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
-			(at 139.7 96.52 0)
+			(at 139.7 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1194,23 +1918,23 @@
 			)
 		)
 		(pin "1"
-			(uuid "89070c49-1475-4528-906f-4353323e0fe2")
+			(uuid "96242a4e-6f6d-4e97-9901-ed67495c7c57")
 		)
 		(pin "2"
-			(uuid "c45ee975-3458-40f1-ac52-5d24150b7e15")
+			(uuid "8f9ccef2-c7a3-4667-bb27-5d9b31bf43c1")
 		)
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW3")
+					(reference "SW1")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 139.7 111.76 0)
+		(lib_id "Mechanical:MountingHole")
+		(at 203.2 50.8 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1218,20 +1942,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "1a1163c9-23c6-419c-b71e-f4ffc7ce193a")
-		(property "Reference" "SW4"
-			(at 139.7 109.22 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BTN_R SMD (DNP)"
-			(at 139.7 114.3 0)
+		(uuid "ea46f427-fa75-47bf-8c29-7a8f1bcf2d02")
+		(property "Reference" "H1"
+			(at 203.2 48.26 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1240,8 +1953,18 @@
 				)
 			)
 		)
-		(property "Footprint" "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92"
-			(at 139.7 116.84 0)
+		(property "Value" "M2 (unthreaded-encoder fallback)"
+			(at 203.2 53.34 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_2.2mm_M2"
+			(at 203.2 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1252,7 +1975,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 139.7 116.84 0)
+			(at 203.2 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1262,8 +1985,8 @@
 				)
 			)
 		)
-		(property "Description" "Push button switch, generic, two pins"
-			(at 139.7 111.76 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 203.2 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1272,416 +1995,14 @@
 					(size 1.27 1.27)
 				)
 			)
-		)
-		(pin "1"
-			(uuid "09f688e5-4fed-43d0-a4b6-0cbb90aee1bd")
-		)
-		(pin "2"
-			(uuid "300929e3-7873-4616-8b7c-4bc37e403749")
 		)
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW4")
+					(reference "H1")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(global_label "ENC1_A"
-		(at 43.18 48.26 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "a51ad420-217c-4b7b-a5a1-6607fd3e9f26")
-	)
-	(global_label "ENC1_B"
-		(at 43.18 53.339999999999996 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "24a16eef-2faf-4838-8623-45cd74beade2")
-	)
-	(global_label "GND"
-		(at 43.18 50.8 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "9df912e2-5b41-4b04-b517-e71ff10a502d")
-	)
-	(global_label "GND"
-		(at 50.8 58.419999999999995 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "bb0f6bdc-d5d9-4de6-be55-58565b8709b5")
-	)
-	(global_label "ENC1_SW"
-		(at 58.419999999999995 48.26 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "197688d2-926e-447e-9d23-4521f74db754")
-	)
-	(global_label "GND"
-		(at 58.419999999999995 53.339999999999996 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "ea45e895-d9be-41f1-affb-21a9cf60903a")
-	)
-	(global_label "ENC2_A"
-		(at 43.18 86.36 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "ce0ff7a8-add6-41a9-98ec-6bc84a2ef3cb")
-	)
-	(global_label "ENC2_B"
-		(at 43.18 91.44000000000001 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "f7a361c7-e613-4825-9368-d5e9bf911199")
-	)
-	(global_label "GND"
-		(at 43.18 88.9 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "cc400eec-49c2-469e-9732-beadc5390677")
-	)
-	(global_label "GND"
-		(at 50.8 96.52000000000001 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "49ff88f2-28a5-40d9-96c1-ab2471bca8b3")
-	)
-	(global_label "ENC2_SW"
-		(at 58.419999999999995 86.36 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "a6d3947c-cf4d-4361-a7a9-cd37fcb93753")
-	)
-	(global_label "GND"
-		(at 58.419999999999995 91.44000000000001 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "309a4785-413e-42a7-9eb1-52e99ba4cd68")
-	)
-	(global_label "ENC3_A"
-		(at 43.18 124.46 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "7bd1cb12-4629-47da-bada-371cee512adb")
-	)
-	(global_label "ENC3_B"
-		(at 43.18 129.54 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "8f9482d3-c657-425a-811d-2e1c59f9266e")
-	)
-	(global_label "GND"
-		(at 43.18 127.0 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "98f65328-34e9-40b6-80fa-af6e1d58a755")
-	)
-	(global_label "GND"
-		(at 50.8 134.62 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "c9595703-689e-46a4-b00e-599a40cb57c6")
-	)
-	(global_label "ENC3_SW"
-		(at 58.419999999999995 124.46 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "709623dd-e977-400c-9a50-58a50bd1cc5c")
-	)
-	(global_label "GND"
-		(at 58.419999999999995 129.54 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "78a3a169-a46d-4a02-8b58-5a2d68c11c8e")
-	)
-	(global_label "ENC3_A"
-		(at 134.61999999999998 50.8 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "18d94be9-6ef5-4a2f-9a6d-14f57af9f265")
-	)
-	(global_label "GND"
-		(at 144.78 50.8 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "9a7ad9e6-4039-4b99-9dd8-570457b336f3")
-	)
-	(global_label "ENC3_A"
-		(at 134.61999999999998 66.04 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "af1081b4-a226-4bf2-90dc-2683e4a6bc63")
-	)
-	(global_label "GND"
-		(at 144.78 66.04 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "ed9b7f6e-a99b-47c4-8089-2195402c632e")
-	)
-	(global_label "ENC3_B"
-		(at 134.61999999999998 96.52 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "7f484154-2bc9-49da-8571-ed225d6ea87e")
-	)
-	(global_label "GND"
-		(at 144.78 96.52 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "83355dc1-e2e8-4df6-b999-98a85b95eb25")
-	)
-	(global_label "ENC3_B"
-		(at 134.61999999999998 111.76 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "c885ae82-69b4-4150-9264-c44036a85122")
-	)
-	(global_label "GND"
-		(at 144.78 111.76 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "80727b3d-6b9f-4bb0-9f70-db1df8f5c29f")
-	)
-	  (symbol (lib_id "Mechanical:MountingHole") (at 203.2 50.8 0) (unit 1)
-    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
-    (uuid "ea46f427-fa75-47bf-8c29-7a8f1bcf2d02")
-    (property "Reference" "H1"
-      (at 203.2 48.26 0)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Value" "M2 (unthreaded-encoder fallback)"
-      (at 203.2 53.34 0)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Footprint" "MountingHole:MountingHole_2.2mm_M2"
-      (at 203.2 50.8 0)
-      (hide yes)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Datasheet" ""
-      (at 203.2 50.8 0)
-      (hide yes)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Description" "Mounting Hole without connection"
-      (at 203.2 50.8 0)
-      (hide yes)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (instances
-      (project "ButtHeatCarrier"
-        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-          (reference "H1")
-          (unit 1)
-        )
-      )
-    )
-  )
-    (symbol (lib_id "Mechanical:MountingHole") (at 215.9 50.8 0) (unit 1)
-    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
-    (uuid "5564ad2c-6b9e-4b8d-b33d-c4512aa7768b")
-    (property "Reference" "H2"
-      (at 215.9 48.26 0)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Value" "M2 (unthreaded-encoder fallback)"
-      (at 215.9 53.34 0)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Footprint" "MountingHole:MountingHole_2.2mm_M2"
-      (at 215.9 50.8 0)
-      (hide yes)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Datasheet" ""
-      (at 215.9 50.8 0)
-      (hide yes)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (property "Description" "Mounting Hole without connection"
-      (at 215.9 50.8 0)
-      (hide yes)
-      (show_name no)
-      (do_not_autoplace no)
-      (effects
-    				(font
-    					(size 1.27 1.27)
-    				)
-    			)
-    )
-    (instances
-      (project "ButtHeatCarrier"
-        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-          (reference "H2")
-          (unit 1)
-        )
-      )
-    )
-  )
-  (sheet_instances
-		(path "/7264e522-9456-4b56-ab7e-0da0938b1600"
-			(page "1")
-		)
-	)
-	(embedded_fonts no)
 )

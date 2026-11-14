@@ -15,7 +15,12 @@ Spec (single source of truth): [SPEC.md](SPEC.md). This file only tracks where w
   board (pad-by-pad comparison script: only intended differences). Custom symbols in
   `ButtHeat.kicad_sym` (SuperMini, MP2307, XC6206). Built with the mixelpixx `kicad` MCP.
 - New parts not yet on the board: R12/C19 (WROOM EN), R13/R14 (USB-C CC 5.1k), D5 (VBUS→+5V).
-- ERC: only U5/U6 outputs tied (intended alternatives → exclusion) + 3 off-grid pins on custom symbols.
+- ERC: only U5/U6 outputs tied (intended alternatives → exclusion).
+- Power, MCU, CAN, Display redrawn as wired schematics (power symbols for rails, global labels only
+  for inter-sheet nets); Controls stays label-based. Pin-by-pin netlist identical to the label
+  version except R12's two pins swapped (harmless). Sheet-local nets now carry /Power/, /MCU/,
+  /CAN/, /Display/ prefixes → Update PCB will rename those nets on the board.
+- Manual fix needed: stray single-line "\n" note near JP1 on the CAN sheet (no MCP can delete text).
 - DNP flags not set (no MCP support): U1/U2 per variant, U5 vs U6, J3 vs J4 group, RV1, R7, SW1–4.
 
 ## Next steps

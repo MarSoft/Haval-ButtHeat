@@ -146,6 +146,9 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
     at ≈ x −19.29 … 18.71, y 16 … 28 (can shift in X — flex has slack). **J3** = 4 THT holes
     matching its header, 2.0 mm from its left edge: x −17.29, y 25.81 / 23.27 / 20.73 / 18.19 =
     SDA, SCL, VCC, GND (top → bottom). Pins through both boards carry signals and hold it.
+    **VCC = +3V3** (decided): the module's 662K/XC6206 (3.3 V out, ≤ 6 V in) then just passes
+    ~3.25 V through — fine for the panel (rated 3.3 V), as in the prototype. If the display ever
+    runs dim/unstable: switch to option 3 or wire-mod J3 pin 3 to +5V.
   - **(3) option, DNP**: no driver board. The flex is soldered on the carrier's **front**, under
     the glass's right end, exactly as on the driver board (flex loops out past the glass end and
     back under it — it does not wrap under the board): **J4** `ButtHeat:OLED_FPC_14P_P0.62mm`

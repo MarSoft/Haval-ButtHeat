@@ -3,6 +3,9 @@
 	(generator "kicad_symbol_editor")
 	(generator_version "10.0")
 	(symbol "ESP32_C3_SuperMini"
+		(pin_numbers
+			(hide yes)
+		)
 		(pin_names
 			(offset 0.254)
 		)

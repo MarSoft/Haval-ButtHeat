@@ -1,21 +1,204 @@
-(kicad_sch (version 20260306) (generator "eeschema") (generator_version "10.0") (uuid "48c8f88e-55fc-4d7f-bb36-4aeb3e595ada") (paper "A4") (lib_symbols) (sheet_instances (path "/" (page "1"))) (embedded_fonts no) (sheet (at 25.4 25.4) (size 40.64 25.4) (stroke (width 0) (type dash)) (fill (type none)) (uuid "eea3677a-519f-44ed-ac76-65ffc711a581") 
-
-(property "Sheet name" "Power" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) 
-
-(property "Sheet file" "power.kicad_sch" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) (instances (project "ButtHeatCarrier" (path "/eea3677a-519f-44ed-ac76-65ffc711a581" (page "1"))))) (sheet (at 76.2 25.4) (size 40.64 25.4) (stroke (width 0) (type dash)) (fill (type none)) (uuid "efe4e90d-39e3-49ca-baaf-86f2ddc00062") 
-
-(property "Sheet name" "MCU" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) 
-
-(property "Sheet file" "mcu.kicad_sch" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) (instances (project "ButtHeatCarrier" (path "/efe4e90d-39e3-49ca-baaf-86f2ddc00062" (page "1"))))) (sheet (at 127.0 25.4) (size 40.64 25.4) (stroke (width 0) (type dash)) (fill (type none)) (uuid "25059c70-eafb-41c0-b14a-2320e44295e8") 
-
-(property "Sheet name" "CAN" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) 
-
-(property "Sheet file" "can.kicad_sch" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) (instances (project "ButtHeatCarrier" (path "/25059c70-eafb-41c0-b14a-2320e44295e8" (page "1"))))) (sheet (at 25.4 63.5) (size 40.64 25.4) (stroke (width 0) (type dash)) (fill (type none)) (uuid "84fe1fe9-82d5-4b98-8c3a-d29c239e8338") 
-
-(property "Sheet name" "Display" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) 
-
-(property "Sheet file" "display.kicad_sch" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) (instances (project "ButtHeatCarrier" (path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338" (page "1"))))) (sheet (at 76.2 63.5) (size 40.64 25.4) (stroke (width 0) (type dash)) (fill (type none)) (uuid "e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e") 
-
-(property "Sheet name" "Controls" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) 
-
-(property "Sheet file" "controls.kicad_sch" (at 0 0 0) (show_name no) (do_not_autoplace yes) (effects (font (size 1.27 1.27)) (justify left))) (instances (project "ButtHeatCarrier" (path "/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e" (page "1"))))))
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "48c8f88e-55fc-4d7f-bb36-4aeb3e595ada")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 127 25.4)
+		(size 40.64 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "25059c70-eafb-41c0-b14a-2320e44295e8")
+		(property "Sheetname" "CAN"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Sheetfile" "can.kicad_sch"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(sheet
+		(at 25.4 63.5)
+		(size 40.64 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "84fe1fe9-82d5-4b98-8c3a-d29c239e8338")
+		(property "Sheetname" "Display"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Sheetfile" "display.kicad_sch"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(sheet
+		(at 76.2 63.5)
+		(size 40.64 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e")
+		(property "Sheetname" "Controls"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Sheetfile" "controls.kicad_sch"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(sheet
+		(at 25.4 25.4)
+		(size 40.64 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "eea3677a-519f-44ed-ac76-65ffc711a581")
+		(property "Sheetname" "Power"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Sheetfile" "power.kicad_sch"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(sheet
+		(at 76.2 25.4)
+		(size 40.64 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "efe4e90d-39e3-49ca-baaf-86f2ddc00062")
+		(property "Sheetname" "MCU"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Sheetfile" "mcu.kicad_sch"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
