@@ -18,7 +18,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "U"
-				(at 0.635 2.54 0)
+				(at 0 12.7 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -28,7 +28,7 @@
 				)
 			)
 			(property "Value" "ESP32-C3-SuperMini"
-				(at 0.635 -2.54 0)
+				(at 0 -12.7 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -72,8 +72,8 @@
 			)
 			(symbol "ESP32_C3_SuperMini_0_1"
 				(rectangle
-					(start -3.175 10.16)
-					(end 3.175 -10.16)
+					(start -7.62 11.43)
+					(end 7.62 -11.43)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -85,7 +85,7 @@
 			)
 			(symbol "ESP32_C3_SuperMini_1_1"
 				(pin power_in line
-					(at -5.715 3.81 0)
+					(at -10.16 3.81 0)
 					(length 2.54)
 					(name "3V3"
 						(effects
@@ -103,7 +103,7 @@
 					)
 				)
 				(pin power_in line
-					(at -5.715 8.89 0)
+					(at -10.16 8.89 0)
 					(length 2.54)
 					(name "5V"
 						(effects
@@ -121,7 +121,7 @@
 					)
 				)
 				(pin power_in line
-					(at -5.715 6.35 0)
+					(at -10.16 6.35 0)
 					(length 2.54)
 					(name "GND"
 						(effects
@@ -139,7 +139,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at -5.715 -8.89 0)
+					(at -10.16 -8.89 0)
 					(length 2.54)
 					(name "IO0"
 						(effects
@@ -157,7 +157,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at -5.715 -6.35 0)
+					(at -10.16 -6.35 0)
 					(length 2.54)
 					(name "IO1"
 						(effects
@@ -175,7 +175,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at -5.715 -3.81 0)
+					(at -10.16 -3.81 0)
 					(length 2.54)
 					(name "IO2"
 						(effects
@@ -193,7 +193,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at -5.715 -1.27 0)
+					(at -10.16 -1.27 0)
 					(length 2.54)
 					(name "IO3"
 						(effects
@@ -211,7 +211,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at -5.715 1.27 0)
+					(at -10.16 1.27 0)
 					(length 2.54)
 					(name "IO4"
 						(effects
@@ -229,7 +229,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 8.89 180)
+					(at 10.16 8.89 180)
 					(length 2.54)
 					(name "IO5"
 						(effects
@@ -247,7 +247,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 6.35 180)
+					(at 10.16 6.35 180)
 					(length 2.54)
 					(name "IO6"
 						(effects
@@ -265,7 +265,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 3.81 180)
+					(at 10.16 3.81 180)
 					(length 2.54)
 					(name "IO7"
 						(effects
@@ -283,7 +283,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 1.27 180)
+					(at 10.16 1.27 180)
 					(length 2.54)
 					(name "IO8"
 						(effects
@@ -301,7 +301,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 -1.27 180)
+					(at 10.16 -1.27 180)
 					(length 2.54)
 					(name "IO9"
 						(effects
@@ -319,7 +319,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 -3.81 180)
+					(at 10.16 -3.81 180)
 					(length 2.54)
 					(name "IO10"
 						(effects
@@ -337,7 +337,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 -6.35 180)
+					(at 10.16 -6.35 180)
 					(length 2.54)
 					(name "IO20/RX"
 						(effects
@@ -355,7 +355,7 @@
 					)
 				)
 				(pin bidirectional line
-					(at 5.715 -8.89 180)
+					(at 10.16 -8.89 180)
 					(length 2.54)
 					(name "IO21/TX"
 						(effects
