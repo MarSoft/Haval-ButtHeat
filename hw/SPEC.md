@@ -159,6 +159,14 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
     the module), R8 560k IREF, R9 4.7k RES# pull-up, D4 SOD-523 RES# discharge diode,
     R10/R11 4.7k SCL/SDA pull-ups. No LDO (VBAT/VDD from +3V3). VBREF (pin 6) left open.
 
+### WROOM support parts (variant B, added with the schematic)
+- R12 10k EN pull-up + C19 1 µF EN delay: front, above the WROOM's top pad row at (−64, 26.2) /
+  (−60, 26.2) — free in variant B (module ends at y 22.4), outside the SuperMini body and its
+  antenna keep-out in variant A. EN trace runs ~20 mm under the module to pin 2 (bottom row).
+  Not under the WROOM-02 antenna end (module reaches x −72.8).
+- R13/R14 5.1k USB-C CC pull-downs + D5 VBUS→+5V Schottky (SOD-123): between ENC2 and ENC3 at
+  (55, 14) / (55, 12) / (55, 9.3); ~11 mm CC runs to J2, D5's +5V side next to the buck output.
+
 ### 3.3 V LDO (variant B / WROOM only)
 - Two alternative footprints on the same nets, fit one: **U5 SOT-23-5** (ME6211 / AP2112K, 500 mA —
   enough for Wi-Fi) or **U6 SOT-23** (the display module's 662K / XC6206, ~200 mA — fine without
