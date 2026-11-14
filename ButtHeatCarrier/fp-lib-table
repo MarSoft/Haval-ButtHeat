@@ -1,0 +1,4 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "ButtHeat") (type "KiCad") (uri "${KIPRJMOD}/ButtHeat.pretty") (options "") (descr "Created by KiCad MCP footprint export (ButtHeat)"))
+)
