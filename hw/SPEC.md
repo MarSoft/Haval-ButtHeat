@@ -59,7 +59,9 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   (moved from (66, 4) for J2).
   Post 2 (78.5, 24) is beside the board on the ear.
 - Encoder **shaft positions** (markers only, not holes): (−43, 11), (43, 11), (65, 15).
-- M2 fallback mounting holes Ø2.2 at (±27, 14) — footprints H1/H2 (`MountingHole_2.2mm_M2`).
+- M2 fallback mounting holes Ø2.2 at (±27, 13) — footprints H1/H2 (`MountingHole_2.2mm_M2`).
+- Glass rule area (F.Cu, no footprints) drawn by hand in the GUI (MCP `add_zone` writes an
+  invalid keepout for KiCad 10).
 
 ## 4. Components
 
@@ -102,8 +104,9 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   2 mm for J2; its knob must still clear the car's display frame above — ≤ 2 mm allowed).
 - Footprint: stock `Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm` — matches the
   hand-measured FreeCAD model (A/B/C at −7.5 from the shaft, switch pins at +7.0, tabs ±5.7).
-  All three **rotated 270°**: A/B/C row 7.5 above the shaft, switch pins 7.0 below, tabs left/right.
-  This keeps ENC1 1.15 mm clear of the SuperMini pads and ENC3's side tabs 1.15 mm from the edge.
+  ENC1 and ENC3 **rotated 270°** (A/B/C row 7.5 above the shaft, switch pins 7.0 below, tabs
+  left/right): keeps ENC1 1.15 mm clear of the SuperMini pads and ENC3's side tabs 1.15 mm from
+  the edge. ENC2 at **0°** (A/B/C left, switch right, tabs above/below) to free room for the buck.
 
 ### Buttons (optional, DNP by default)
 - Secondary option to ENC3. Leave footprints for **both SMD and THT** 6×6 tact switches at
@@ -126,19 +129,54 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   numbers above for the flex.
 - Active area (`TheScreen` Face17): 23.2 × 6.5, glass-local x 7.8 … 31.0 on glass 6 … 36;
   inactive border 3.0 at the bottom (knob side), 1.5 at the top.
-- Prototype glass position: x −13.4 … 16.6, y 16.5 … 27.5 (module board y 16 … 28)
-  → active area x −11.6 … 11.6, y 19.5 … 26.0.
+- v2 glass position: x −13.292 … 16.708, **y 16.25 … 27.75** → active area x −11.192 … 11.192,
+  y 20.07 … 25.65. KiCad rule area (F.Cu, no footprints, tracks/vias allowed) x −13.5 … 16.8,
+  y 16.05 … 27.95.
 - Mounting (decided): glass unglued and lying **on** the carrier, active area centred at x = 0.
   The board supports two variants:
   - **(1) primary**: driver board under the carrier (rear-plate pocket ≈ 1.2 mm), flex through the
     slot right of the glass (§3).
-  - **(3) option, DNP**: no driver board; flex soldered to 14 pads on the carrier right of the glass
-    (≈ x 19.5 … 23, y 16 … 25.5) + its passives (no LDO, 3.3 V exists). Needs flex pitch.
+    Driver board (38 × 12, header on the **left** end, flex on the right) sits under the carrier
+    at ≈ x −19.29 … 18.71, y 16 … 28 (can shift in X — flex has slack). **J3** = 4 THT holes
+    matching its header, 2.0 mm from its left edge: x −17.29, y 25.81 / 23.27 / 20.73 / 18.19 =
+    SDA, SCL, VCC, GND (top → bottom). Pins through both boards carry signals and hold it.
+  - **(3) option, DNP**: no driver board; its parts (desoldered from the module) go on the carrier's
+    **rear side in the driver board's footprint** (mutually exclusive with (1)), flex soldered to
+    14 rear-side pads at 0.62 pitch. To do: flex-pad footprint + passives on B.Cu.
 
-### Buck 12 V → 5 V/3.3 V
-- Prototype uses a **Mini560**-class module (likely a clone). Currently a module zone
-  x 40 … 57.5, y 18 … 28 (keep-out underneath). **Position not fixed**; may be replaced by
-  discrete parts on the carrier.
+### Buck 12 V → 5 V (discrete, Mini360 donor parts)
+- Prototype uses a **Mini360** module (MP2307). It doesn't fit anywhere on the carrier without
+  displacing a button, so v2 has the **same circuit discretely**, populated with parts
+  desoldered from a Mini360 (sizes from its STEP: SOIC-8, IHLP-2525 inductor, 1206 / 0603).
+- MP2307 SOIC-8: 1 BS, 2 IN, 3 SW, 4 GND, 5 FB, 6 COMP, 7 EN, 8 SS.
+  Board refs (Mini360 ref → ours): U4 MP2307; L1 2 µH IHLP-2525 (SW→+5V); C3 12 µF 1206 input
+  (C1); C4 12 µF 1206 output (C2); C5 4.7 nF 0603 COMP→RC (C3); R3 8.2k 0603 RC→GND; C6 0.1 µF
+  0603 SS (C4); C7 10 nF 0603 BS–SW (C5); R4 100k 0603 EN→VIN; R2 8.2k 0603 FB→GND;
+  **R5 36k 0603 FB→+5V (fixed 4.99 V)**, RV1 220k trimmer (TC33X-class footprint for the EVM-3E)
+  in parallel position, normally **DNP**.
+- Input protection ahead of it: D2 reverse-polarity Schottky (SMA, e.g. SS34), D3 TVS (SMA,
+  e.g. SMAJ18A — MP2307 input max ~23 V). No fuse (1 A fuse at the car tap).
+- Placement: top band right of the display — D2/D3 at x 20 … 34 above the right button,
+  L1/U4/caps at x 34 … 51, 0603 column + RV1 at x 51 … 58 (y 17.5 … 28). ENC2 rotated back to
+  **0°** (pins left/right) to free the band above it.
+- Module 3D/STEP kept in `ButtHeatCarrier/3d/mini360.{step,f3z}`; footprint
+  `ButtHeat:Mini360` (gen_mini360_fp.py) kept for reference, not used.
+
+### CAN (above ENC1)
+- U3 SOIC-8 at (−40, 24.9); default part **TJA1051T/3**, footprint also takes SN65HVD230
+  (and 5 V-only TJA1050/TJA1051T via the RXD divider).
+  - JP1 (3-pad solder jumper, below U3): U3 pin 3 VCC ← +5 V (TJA) or +3V3 (SN65).
+  - JP2 (2-pad): pin 5 → +3V3 — closed for TJA1051T/3 (VIO), **open** for SN65 (Vref).
+  - R6 0603 RXD series (0 Ω default) + R7 0603 RXD→GND (DNP): divider for 5 V RXD parts.
+  - R1 0603 pin 8 (S / Rs) → GND. C1 / C2 0603 100 nF on VCC / VIO.
+  - D1 CAN TVS SOT-23 (PESD2CAN-class) at (−48.8, 20.3), left of ENC1's pins.
+  - No termination (car bus already terminated).
+- 0603 column at x −33.7: C1, C2, R1, JP2, R6 (top → bottom).
+
+### Buttons (DNP by default)
+- Dual footprints at (−27, 19) SW1 THT `SW_PUSH_6mm` + SW2 SMD `SW_SPST_PTS645Sx43SMTR92`, and
+  (27, 19) SW3 + SW4. Same nets on overlapping pads (pin 1 BTN_L/BTN_R, pin 2 GND).
+- M2 fallback holes moved to **(±27, 13)** to clear the button pins.
 
 ## 5. Case interfaces
 - Left wall / top-left ear: opening for the JST plug.
@@ -166,6 +204,16 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
    (y −0.5), pins 0.54 below ENC3's switch pins. **Post 4 moved to (58, 4).**
    Wanted instead: a reduced-pin THT part (VBUS, GND, D+/D−, CC1/CC2) — the USB4085's 0.85-pitch
    pins have 0.15 mm gaps (DRC clearance errors at the 0.2 default; JLC can do it, but it's fiddly).
+10. **Post 3 (−35, 4) collides with ENC1's body** (body x −49.6 … −36.4, y 4.8 … 17.2 vs post
+    Ø6.5): move it right (≈ x ≥ −32.5) — later, together with the case.
+11. **CAN transceiver** on the carrier (prototype used a TJA1050 5 V module — its RXD is 5 V, not
+    safe for the ESP32-C3). Proposed SOIC-8 footprint that takes either TJA1051T/3 (automotive,
+    5 V + VIO 3.3 V) or SN65HVD230 (3.3 V only); bus TVS (PESD2CAN-class, SOT-23), split
+    termination DNP (car bus is already terminated). Prototype pins: TWAI TX GPIO20, RX GPIO21;
+    I2C SDA GPIO8, SCL GPIO9.
+12. **12 V input protection**: a 1 A fuse already sits at the car-side tap, so no on-board fuse
+    (optional PTC footprint DNP at most). On board: reverse-polarity diode + TVS; Mini560 input
+    is only rated ~20–24 V, so the TVS choice matters (load dump).
 9. Check the SuperMini underside for exposed copper (USB shell legs etc.) over the WROOM's
    centre GND pad / vias.
 
