@@ -84,6 +84,12 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   Its USB is **not usable in the car** (cable hits the car buttons) — flash on the bench / OTA.
 - **B: ESP32-C3-WROOM-02U** (U1), **rotated 90°** and centred on the SuperMini: its pad rows
   (y = 13.4 ± 8.75, x −66.95 … −54.05) never touch the SuperMini pad columns (≥ 0.75 mm).
+  **Three build variants** (the U1 footprint is the WROOM-02's; a WROOM-02U uses the same pads):
+  | Variant | Module | Antenna | J1 |
+  |---|---|---|---|
+  | A | SuperMini (U2) | its own | fitted |
+  | B1 | WROOM-02 (U1) | on-board, covers J1 pins 3/4 | **not fitted**: cable soldered into J1's holes from the back, trimmed flush on top before the module goes on |
+  | B2 | WROOM-02U (U1) | u.FL pigtail or none | fitted (the shorter module clears it) |
   Placed as **WROOM-02 (on-board antenna)**, anchor at (−59.7, 13.4), antenna end pointing left
   and **inside the board** (module x −72.8 … −52.8; nothing may protrude past the board/case
   edge — the car's air ducts are there). Its pad rows clear the SuperMini pads by ≥ 0.55 because
@@ -189,6 +195,19 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 - Dual footprints at (−27, 19) SW1 THT `SW_PUSH_6mm` + SW2 SMD `SW_SPST_PTS645Sx43SMTR92`, and
   (27, 19) SW3 + SW4. Same nets on overlapping pads (pin 1 BTN_L/BTN_R, pin 2 GND).
 - M2 fallback holes moved to **(±27, 13)** to clear the button pins.
+
+### GPIO map (ESP32-C3, same for SuperMini and WROOM)
+| Function | GPIO | Note |
+|---|---|---|
+| ENC1 A / B / SW | 2 / 3 / 4 | prototype |
+| ENC2 A / B / SW | 5 / 6 / 7 | prototype |
+| ENC3 A / B / SW | 0 / 1 / 10 | new |
+| Buttons L / R | 0 / 1 | shared with ENC3 A / B (never fitted together) |
+| I2C SDA / SCL | 8 / 9 | fixed (prototype) |
+| CAN TX / RX | 20 / 21 | fixed (prototype sdkconfig; Kconfig defaults differ) |
+| USB D− / D+ | 18 / 19 | WROOM only (J2) |
+GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no external pull-ups
+(internal ones are enabled in firmware), but the prototype boots fine with ENC1-A on GPIO2.
 
 ## 5. Case interfaces
 - Left wall / top-left ear: opening for the JST plug.

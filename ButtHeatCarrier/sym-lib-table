@@ -1,0 +1,3 @@
+(sym_lib_table
+	(lib (name "ButtHeat") (type "KiCad") (uri "${KIPRJMOD}/ButtHeat.kicad_sym") (options "") (descr "Created by KiCad MCP symbol export (ButtHeat)"))
+)
