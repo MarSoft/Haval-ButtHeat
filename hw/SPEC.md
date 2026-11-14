@@ -140,9 +140,21 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
     at ≈ x −19.29 … 18.71, y 16 … 28 (can shift in X — flex has slack). **J3** = 4 THT holes
     matching its header, 2.0 mm from its left edge: x −17.29, y 25.81 / 23.27 / 20.73 / 18.19 =
     SDA, SCL, VCC, GND (top → bottom). Pins through both boards carry signals and hold it.
-  - **(3) option, DNP**: no driver board; its parts (desoldered from the module) go on the carrier's
-    **rear side in the driver board's footprint** (mutually exclusive with (1)), flex soldered to
-    14 rear-side pads at 0.62 pitch. To do: flex-pad footprint + passives on B.Cu.
+  - **(3) option, DNP**: no driver board. The flex is soldered on the carrier's **front**, under
+    the glass's right end, exactly as on the driver board (flex loops out past the glass end and
+    back under it — it does not wrap under the board): **J4** `ButtHeat:OLED_FPC_14P_P0.62mm`
+    (gen_oled_fpc_fp.py) at (14.45, 20.25), pin 1 = C2P at the **bottom**; sits inside the glass
+    rule area on purpose (DRC exclusion). Its passives (0603, desoldered from the module) are on
+    the **rear side under the glass**, in the driver board's spot (mutually exclusive with (1)):
+    C10 C2P–C2N, C11 C1P–C1N, C12 VBAT, C13/C14 VDD, C15 RES#, C16 VCOMH, C17/C18 VCC (values per
+    the module), R8 560k IREF, R9 4.7k RES# pull-up, D4 SOD-523 RES# discharge diode,
+    R10/R11 4.7k SCL/SDA pull-ups. No LDO (VBAT/VDD from +3V3). VBREF (pin 6) left open.
+
+### 3.3 V LDO (variant B / WROOM only)
+- Two alternative footprints on the same nets, fit one: **U5 SOT-23-5** (ME6211 / AP2112K, 500 mA —
+  enough for Wi-Fi) or **U6 SOT-23** (the display module's 662K / XC6206, ~200 mA — fine without
+  radio). Pinouts differ, so they can't be stacked. C8 (5 V in) / C9 (3.3 V out) 0603 shared.
+  Front, below J3, x −22 … −14, y 10 … 16.
 
 ### Buck 12 V → 5 V (discrete, Mini360 donor parts)
 - Prototype uses a **Mini360** module (MP2307). It doesn't fit anywhere on the carrier without
