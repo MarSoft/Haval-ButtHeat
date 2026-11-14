@@ -4,3 +4,16 @@
 (rule "J2 USB4085 0.85mm pin pitch"
 	(condition "A.Parent == 'J2' && B.Parent == 'J2'")
 	(constraint clearance (min 0.14mm)))
+
+# Intentional courtyard overlaps (parts themselves have physical clearance or are build variants).
+# Dual button footprints: THT + SMD switch overlaid on the same nets, only one is fitted.
+(rule "Dual button footprints"
+	(condition "(A.Reference == 'SW1' && B.Reference == 'SW2') || (A.Reference == 'SW3' && B.Reference == 'SW4')")
+	(constraint courtyard_clearance (min -10mm))
+	(severity ignore))
+
+# Courtyard-only touches with physical clearance between the parts.
+(rule "Accepted courtyard touches"
+	(condition "(A.Reference == 'SW3' && B.Reference == 'H2') || (A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1')")
+	(constraint courtyard_clearance (min -10mm))
+	(severity ignore))
