@@ -861,7 +861,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "U"
-				(at 0 7.62 0)
+				(at 0 10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -871,7 +871,7 @@
 				)
 			)
 			(property "Value" "MP2307"
-				(at 0 -7.62 0)
+				(at 0 12.7 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -915,8 +915,8 @@
 			)
 			(symbol "MP2307_0_1"
 				(rectangle
-					(start -5.08 6.35)
-					(end 5.08 -6.35)
+					(start -5.08 8.89)
+					(end 5.08 -8.89)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -982,7 +982,7 @@
 					)
 				)
 				(pin power_in line
-					(at 0 -8.89 90)
+					(at 0 -11.43 90)
 					(length 2.54)
 					(name "GND"
 						(effects
@@ -1669,7 +1669,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "U"
-				(at 0 3.81 0)
+				(at 0 6.35 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -1679,7 +1679,7 @@
 				)
 			)
 			(property "Value" "XC6206P332MR (662K)"
-				(at 0 -3.81 0)
+				(at 0 8.89 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -1723,8 +1723,8 @@
 			)
 			(symbol "XC6206P332MR_0_1"
 				(rectangle
-					(start -5.08 2.54)
-					(end 5.08 -2.54)
+					(start -5.08 5.08)
+					(end 5.08 -5.08)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -1736,7 +1736,7 @@
 			)
 			(symbol "XC6206P332MR_1_1"
 				(pin power_in line
-					(at 0 -5.08 90)
+					(at 0 -7.62 90)
 					(length 2.54)
 					(name "GND"
 						(effects
@@ -2452,7 +2452,7 @@
 		(dnp no)
 		(uuid "c936f66f-2b05-4fc5-acb3-8bd264497911")
 		(property "Reference" "J1"
-			(at 30.48 59.69 0)
+			(at 30.48 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2462,7 +2462,7 @@
 			)
 		)
 		(property "Value" "JST-PH 4p (12V GND CANH CANL)"
-			(at 30.48 58.419999999999995 0)
+			(at 24.13 81.28 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2537,7 +2537,7 @@
 		(dnp no)
 		(uuid "bd318fc1-44b6-42c8-9bd1-3a0773943747")
 		(property "Reference" "D2"
-			(at 55.88 68.58 0)
+			(at 55.88 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2626,7 +2626,7 @@
 			)
 		)
 		(property "Value" "SMAJ18A (TVS)"
-			(at 58.42 76.2 0)
+			(at 71.12 83.82 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2695,7 +2695,7 @@
 		(dnp no)
 		(uuid "7385cc17-84af-4d98-8ca4-13dfc2cd70e4")
 		(property "Reference" "C3"
-			(at 80.01 74.93 0)
+			(at 79.38 73.66 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2706,7 +2706,7 @@
 			)
 		)
 		(property "Value" "12uF 1206"
-			(at 82.55 76.2 0)
+			(at 83.82 79.38 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2776,7 +2776,7 @@
 		(dnp no)
 		(uuid "14c66116-d72d-4d95-ab03-b202b223f9e9")
 		(property "Reference" "R4"
-			(at 95.25 74.93 0)
+			(at 97.79 73.66 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2786,7 +2786,7 @@
 			)
 		)
 		(property "Value" "100k"
-			(at 95.25 76.2 0)
+			(at 97.79 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2855,7 +2855,7 @@
 		(dnp no)
 		(uuid "2c459e80-0f94-4d39-80ff-ce33358af1e5")
 		(property "Reference" "U4"
-			(at 127.0 81.28 0)
+			(at 127 78.74 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2865,7 +2865,7 @@
 			)
 		)
 		(property "Value" "MP2307"
-			(at 127.0 80.01 0)
+			(at 127 81.28 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2952,7 +2952,7 @@
 		(dnp no)
 		(uuid "30aac6ae-1e88-45c7-a1fd-b8a12227fb36")
 		(property "Reference" "C6"
-			(at 107.95 99.06 0)
+			(at 96.52 97.79 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2963,7 +2963,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 107.95 100.33 0)
+			(at 96.52 100.33 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3193,7 +3193,7 @@
 		(dnp no)
 		(uuid "86af88e7-7381-4125-ad30-8dab8e0db394")
 		(property "Reference" "C7"
-			(at 143.51 92.71 0)
+			(at 146.05 91.44 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3204,7 +3204,7 @@
 			)
 		)
 		(property "Value" "10nF"
-			(at 143.51 93.97999999999999 0)
+			(at 146.05 93.98 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3274,7 +3274,7 @@
 		(dnp no)
 		(uuid "f8a8b168-b5d4-4aa5-bbc1-e434e3d6180c")
 		(property "Reference" "L1"
-			(at 151.13 86.36 0)
+			(at 151.13 85.09 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3284,7 +3284,7 @@
 			)
 		)
 		(property "Value" "2.2uH IHLP-2525"
-			(at 151.13 85.09 0)
+			(at 157.48 95.25 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3434,7 +3434,7 @@
 		(dnp no)
 		(uuid "fe8a4a0a-bd4b-4f26-a84a-ed201a7b9d91")
 		(property "Reference" "RV1"
-			(at 160.02 71.12 0)
+			(at 154.94 77.47 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3444,7 +3444,7 @@
 			)
 		)
 		(property "Value" "220k trim (DNP)"
-			(at 160.02 69.85000000000001 0)
+			(at 160.02 69.85 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3516,7 +3516,7 @@
 		(dnp no)
 		(uuid "cc7ce9e4-265c-403e-925f-775931109ed2")
 		(property "Reference" "R5"
-			(at 179.07 77.47 0)
+			(at 178.31 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3526,7 +3526,7 @@
 			)
 		)
 		(property "Value" "36k (5.0V)"
-			(at 181.61 78.74 0)
+			(at 182.88 78.74 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3595,7 +3595,7 @@
 		(dnp no)
 		(uuid "adbcea16-1684-4669-bc97-3d48d1825882")
 		(property "Reference" "R2"
-			(at 194.31 77.47 0)
+			(at 193.04 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3605,7 +3605,7 @@
 			)
 		)
 		(property "Value" "8.2k"
-			(at 194.31 78.74 0)
+			(at 193.04 78.74 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3674,7 +3674,7 @@
 		(dnp no)
 		(uuid "cbd968ca-2493-4186-b50c-425108472321")
 		(property "Reference" "U5"
-			(at 88.9 127.0 0)
+			(at 88.9 124.46 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3685,7 +3685,7 @@
 			)
 		)
 		(property "Value" "AP2112K-3.3 / ME6211 (WROOM only)"
-			(at 88.9 125.73 0)
+			(at 88.9 121.92 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3764,7 +3764,7 @@
 		(dnp no)
 		(uuid "badffabd-cfc7-4565-8375-24bc2dffd0d4")
 		(property "Reference" "U6"
-			(at 88.9 149.86 0)
+			(at 88.9 147.32 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3774,7 +3774,7 @@
 			)
 		)
 		(property "Value" "XC6206P332MR 662K (WROOM, alt. to U5)"
-			(at 88.9 148.59 0)
+			(at 88.9 144.78 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3927,7 +3927,7 @@
 		(dnp no)
 		(uuid "f5cde1d2-054a-4233-b520-20130c788dfd")
 		(property "Reference" "C9"
-			(at 107.95 133.35 0)
+			(at 107.95 135.89 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3938,7 +3938,7 @@
 			)
 		)
 		(property "Value" "1uF"
-			(at 107.95 134.62 0)
+			(at 107.95 138.43 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

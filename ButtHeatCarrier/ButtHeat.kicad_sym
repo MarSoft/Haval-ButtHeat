@@ -379,7 +379,7 @@
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
 		(property "Reference" "U"
-			(at 0 7.62 0)
+			(at 0 10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -389,7 +389,7 @@
 			)
 		)
 		(property "Value" "MP2307"
-			(at 0 -7.62 0)
+			(at 0 12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -433,8 +433,8 @@
 		)
 		(symbol "MP2307_0_1"
 			(rectangle
-				(start -5.08 6.35)
-				(end 5.08 -6.35)
+				(start -5.08 8.89)
+				(end 5.08 -8.89)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -500,7 +500,7 @@
 				)
 			)
 			(pin power_in line
-				(at 0 -8.89 90)
+				(at 0 -11.43 90)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -602,7 +602,7 @@
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
 		(property "Reference" "U"
-			(at 0 3.81 0)
+			(at 0 6.35 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -612,7 +612,7 @@
 			)
 		)
 		(property "Value" "XC6206P332MR (662K)"
-			(at 0 -3.81 0)
+			(at 0 8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -656,8 +656,8 @@
 		)
 		(symbol "XC6206P332MR_0_1"
 			(rectangle
-				(start -5.08 2.54)
-				(end 5.08 -2.54)
+				(start -5.08 5.08)
+				(end 5.08 -5.08)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -669,7 +669,7 @@
 		)
 		(symbol "XC6206P332MR_1_1"
 			(pin power_in line
-				(at 0 -5.08 90)
+				(at 0 -7.62 90)
 				(length 2.54)
 				(name "GND"
 					(effects
