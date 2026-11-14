@@ -519,28 +519,8 @@
       },
       {
         "bus_width": 12,
-        "clearance": 0.2,
-        "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "Power",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 0,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.5,
-        "tuning_profile": "",
-        "via_diameter": 0.6,
-        "via_drill": 0.3,
-        "wire_width": 6
-      },
-      {
-        "bus_width": 12,
         "clearance": 0.25,
         "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
         "line_style": 0,
         "microvia_diameter": 0.3,
@@ -550,6 +530,24 @@
         "priority": 0,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.6,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "Power",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.5,
         "tuning_profile": "",
         "via_diameter": 0.6,
         "via_drill": 0.3,
@@ -677,7 +675,7 @@
       "include_excluded_from_bom": true,
       "name": "Default Editing",
       "sort_asc": true,
-      "sort_field": "\u041e\u0431\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0435"
+      "sort_field": "Обозначение"
     },
     "bus_aliases": {},
     "connection_grid_size": 50.0,
@@ -716,7 +714,7 @@
     "top_level_sheets": [
       {
         "filename": "ButtHeatCarrier.kicad_sch",
-        "name": "\u041a\u043e\u0440\u043d\u0435\u0432\u043e\u0439 \u043b\u0438\u0441\u0442",
+        "name": "Корневой лист",
         "uuid": "48c8f88e-55fc-4d7f-bb36-4aeb3e595ada"
       }
     ],
@@ -726,7 +724,7 @@
   "sheets": [
     [
       "48c8f88e-55fc-4d7f-bb36-4aeb3e595ada",
-      "\u041a\u043e\u0440\u043d\u0435\u0432\u043e\u0439 \u043b\u0438\u0441\u0442"
+      "Корневой лист"
     ],
     [
       "eea3677a-519f-44ed-ac76-65ffc711a581",
