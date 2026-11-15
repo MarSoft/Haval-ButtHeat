@@ -1,8 +1,9 @@
 """ButtHeat v2 rear plate (PETG, FDM), generated into the open ButtHeatModel document.
 
-Run inside FreeCAD (MCP execute_code):  exec(open('/home/mars/my/buttheat/hw/cad/v2_rear_plate.py').read(), {})
-Re-running replaces the objects. Driving numbers come from V2Vars where they exist; the rest are
-the constants below (move them to V2Vars once they settle).
+Run headless (MCP execute_code_headless or freecadcmd); it writes hw/cad/out/RearPlate_{A,B}.brep.
+Load them into the GUI with hw/cad/v2_load.py (no booleans in the GUI process: they crashed it).
+Driving numbers come from V2Vars (read from the saved .FCStd when headless); the rest are the
+constants below (move them to V2Vars once they settle).
 
 Coordinates: case = KiCad grid origin = car knob centre; z = 0 car console surface, rear plate
 z 0..plate_t, carrier PCB bottom at plate_t + gap. Display frame plane: y = 29.75 + z*tan(15 deg).
@@ -15,7 +16,10 @@ import math
 import FreeCAD as App
 import Part
 
-doc = App.getDocument('ButtHeatModel')
+MODEL = '/home/mars/tmp/3dp/buttheat/ButtHeatModel.FCStd'
+OUT = '/home/mars/my/buttheat/hw/cad/out/'
+doc = (App.getDocument('ButtHeatModel') if 'ButtHeatModel' in App.listDocuments()
+       else App.openDocument(MODEL))
 V = doc.getObject('V2Vars')
 v = lambda n: float(getattr(V, n).Value)
 
@@ -24,12 +28,18 @@ GAP = 0.5                         # PCB bottom above plate top
 PCB_T = v('pcb_t')                # 1.0
 TAPE_GAP = 0.2                    # clearance to the display frame (thin tape)
 FRAME_Y0, FRAME_TAN = 29.75, math.tan(math.radians(15))
-LIP_DEPTH, LIP_H = 2.5, 6.0       # lip along the top edge, leaning on the frame
+LIP_Y0, LIP_H = 28.3, 6.0         # lip: wedge from just behind the PCB top edge (y 28 + 0.3) to the frame
+LIP_J1 = (-74.3, -65.2, 3.3)      # J1 (ZH) body overhangs the board edge from z 3.5: lip lowered there
 EAR_X, EAR_R = 96.0, 20.0         # ear: R20 quarter disc, v1 thin strip to x 106 removed
 MAIN_X = 76.0
-POST_D = v('post_d')              # 6.5
-INSERT_D = v('insert_pilot_d')    # 4.6 (M3 x 3 x 4.5 heat-set)
-INSERT_DEPTH = 5.0
+POST_D = 7.0                      # spacer tube; board notches are D7.5 (V2Vars.notch_d)
+BOSS_D, BOSS_TOP = 10.0, None     # boss under the board (top set below to the PCB bottom)
+INSERT_D = v('insert_pilot_d')    # 4.6 (M3 x 3 x 4.5 heat-set), pressed in from the plate underside
+INSERT_DEPTH = 3.5                # from z 0 up; the screw pull pushes it into the boss, not out
+SCREW_CLR = 3.4                   # M3 clearance through the spacer tube
+SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
+SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
+LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
 SIDE_TOP = 12.4                   # side parts' outer top (v1)
 WALL = 1.5                        # SLA wall
 POST_TOP = SIDE_TOP - WALL        # posts reach the side parts' inner ceiling
@@ -85,21 +95,46 @@ def plate_body():
     assert base.isValid(), 'plate base invalid'
     # lip along the top edge, leaning on the display frame
     P = App.Vector
-    prof = Part.makePolygon([P(0, FRAME_Y0 - TAPE_GAP - LIP_DEPTH, 0), P(0, FRAME_Y0 - TAPE_GAP, 0),
+    prof = Part.makePolygon([P(0, LIP_Y0, 0), P(0, FRAME_Y0 - TAPE_GAP, 0),
                              P(0, FRAME_Y0 - TAPE_GAP + LIP_H * FRAME_TAN, LIP_H),
-                             P(0, FRAME_Y0 - TAPE_GAP - LIP_DEPTH, LIP_H), P(0, FRAME_Y0 - TAPE_GAP - LIP_DEPTH, 0)])
+                             P(0, LIP_Y0, LIP_H), P(0, LIP_Y0, 0)])
     lip = Part.Face(prof).extrude(P(2 * MAIN_X, 0, 0))
     lip.translate(P(-MAIN_X, 0, 0))
+    x0, x1, zj = LIP_J1
+
+    def wedge_cut(xa, xb, z0, rising_right):
+        """45 deg end cut over x xa..xb starting at height z0 (material kept below the slope)."""
+        h = LIP_H - z0 + 1
+        if rising_right:   # slope goes up towards +x: remove the triangle above it, on the left
+            pts = [P(xa, 0, z0), P(xb, 0, z0 + (xb - xa)), P(xb, 0, LIP_H + 1), P(xa, 0, LIP_H + 1)]
+        else:
+            pts = [P(xa, 0, z0 + (xb - xa)), P(xb, 0, z0), P(xb, 0, LIP_H + 1), P(xa, 0, LIP_H + 1)]
+        f = Part.Face(Part.makePolygon(pts + [pts[0]]))
+        s = f.extrude(P(0, 10, 0)); s.translate(P(0, LIP_Y0 - 2, 0))
+        return s
+
+    run = LIP_H                                     # 45 deg over the full lip height at the outer ends
+    lip = lip.cut(wedge_cut(-MAIN_X - 0.01, -MAIN_X + run, 0.0, True))
+    lip = lip.cut(wedge_cut(MAIN_X - run, MAIN_X + 0.01, 0.0, False))
+    jrun = LIP_H - zj                               # J1 step: down from LIP_H to zj on both sides
+    lip = lip.cut(Part.makeBox(x1 - x0, 6, LIP_H, P(x0, LIP_Y0 - 1, zj)))
+    lip = lip.cut(wedge_cut(x0 - jrun, x0, zj, False))
+    lip = lip.cut(wedge_cut(x1, x1 + jrun, zj, True))
     solid = base.fuse(lip)
+    boss_top = PLATE_T + GAP - 0.05                 # just under the PCB
+    footprint = Part.Face(w0).extrude(P(0, 0, boss_top + 0.1))   # bosses never leave the plate outline
     for (x, y) in POSTS:
-        post = Part.makeCylinder(POST_D / 2, POST_TOP - PLATE_T, P(x, y, PLATE_T))
-        solid = solid.fuse(post)
+        solid = solid.fuse(Part.makeCylinder(BOSS_D / 2, boss_top, P(x, y, 0)).common(footprint))
+        solid = solid.fuse(Part.makeCylinder(POST_D / 2, POST_TOP - PLATE_T, P(x, y, PLATE_T)))
     for (x, y) in ENC_PADS:
         solid = solid.fuse(Part.makeCylinder(ENC_PAD_D / 2, PAD_H, P(x, y, PLATE_T)))
     for (x, y) in BTN_PADS:
         solid = solid.fuse(Part.makeCylinder(BTN_PAD_D / 2, PAD_H, P(x, y, PLATE_T)))
     for (x, y) in POSTS:
-        solid = solid.cut(Part.makeCylinder(INSERT_D / 2, INSERT_DEPTH, P(x, y, POST_TOP - INSERT_DEPTH)))
+        solid = solid.cut(Part.makeCylinder(INSERT_D / 2, INSERT_DEPTH, P(x, y, -0.01)))
+        solid = solid.cut(Part.makeCylinder(SCREW_CLR / 2, POST_TOP + 1, P(x, y, 0)))
+    for (x, y) in SCREW_HEAD_POCKETS:
+        solid = solid.cut(Part.makeCylinder(SCREW_HEAD_D / 2, PLATE_T + 1, P(x, y, -0.5)))
     x, y, w, h = D1
     solid = solid.cut(Part.makeBox(w, h, D1_POCKET, P(x - w / 2, y - h / 2, PLATE_T - D1_POCKET)))
     return solid.removeSplitter()
@@ -114,15 +149,8 @@ base = plate_body()
 A = base.cut(box(DRV_BOARD, -1, PLATE_T + 2)).removeSplitter()
 B = base.cut(box(PASSIVES, PLATE_T - PASSIVES_POCKET, PASSIVES_POCKET + 0.01)).removeSplitter()
 
-grp = doc.getObject('V2_Case') or doc.addObject('App::DocumentObjectGroup', 'V2_Case')
-grp.Label = 'V2 Case'
-for name, shape, label in (('RearPlate_A', A, 'Rear plate A (display option 1: driver-board cut-out)'),
-                           ('RearPlate_B', B, 'Rear plate B (display option 3: passives pocket)')):
-    o = doc.getObject(name)
-    if o is None:
-        o = doc.addObject('Part::Feature', name)
-        grp.addObject(o)
-    o.Label = label
-    o.Shape = shape
-print('A', A.isValid(), round(A.Volume, 1), A.BoundBox)
-print('B', B.isValid(), round(B.Volume, 1), B.BoundBox)
+import os
+os.makedirs(OUT, exist_ok=True)
+for name, shape in (('RearPlate_A', A), ('RearPlate_B', B)):
+    shape.exportBrep(OUT + name + '.brep')
+    print(name, shape.isValid(), round(shape.Volume, 1), shape.BoundBox)
