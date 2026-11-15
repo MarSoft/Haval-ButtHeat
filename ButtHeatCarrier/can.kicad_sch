@@ -2074,7 +2074,7 @@
 		)
 		(uuid "900d829f-0e01-41e0-95d8-8173890e06dd")
 	)
-	(global_label "CANL"
+	(global_label "CAN-"
 		(shape bidirectional)
 		(at 175.26 104.14 0)
 		(effects
@@ -2140,7 +2140,7 @@
 			)
 		)
 	)
-	(global_label "CANH"
+	(global_label "CAN+"
 		(shape bidirectional)
 		(at 175.26 99.06 0)
 		(effects

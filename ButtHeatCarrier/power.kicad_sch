@@ -3278,7 +3278,7 @@
 		)
 		(uuid "e033588e-3978-426d-b8df-8304a7b10042")
 	)
-	(global_label "CANL"
+	(global_label "CAN-"
 		(shape bidirectional)
 		(at 36.83 55.88 0)
 		(effects
@@ -3300,11 +3300,12 @@
 			)
 		)
 	)
-	(global_label "CANH"
+	(global_label "CAN+"
 		(shape bidirectional)
 		(at 38.1 58.42 0)
 		(effects
 			(font
+				(face "Source Code Pro Black")
 				(size 1.27 1.27)
 			)
 			(justify left)
