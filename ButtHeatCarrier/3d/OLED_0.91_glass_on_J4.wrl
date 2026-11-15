@@ -1,0 +1,50 @@
+#VRML V2.0 utf8
+# 0.91in OLED glass on J4 -- hw/tools/gen_oled_glass_wrl.py
+# glass
+Transform {
+  translation -5.01654 0.68898 0.25197
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0.55 0.62 0.66 specularColor 0.3 0.3 0.3 shininess 0.4 transparency 0.35 } }
+    geometry Box { size 11.81102 4.52756 0.50394 }
+  }
+}
+# visible_l
+Transform {
+  translation -10.29213 1.02677 0.50787
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0.02 0.02 0.02 specularColor 0.3 0.3 0.3 shininess 0.4 transparency 0.0 } }
+    geometry Box { size 0.39370 2.98583 0.00787 }
+  }
+}
+# visible_r
+Transform {
+  translation -1.08583 1.02677 0.50787
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0.02 0.02 0.02 specularColor 0.3 0.3 0.3 shininess 0.4 transparency 0.0 } }
+    geometry Box { size 0.39370 2.98583 0.00787 }
+  }
+}
+# visible_b
+Transform {
+  translation -5.68898 -0.26929 0.50787
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0.02 0.02 0.02 specularColor 0.3 0.3 0.3 shininess 0.4 transparency 0.0 } }
+    geometry Box { size 8.81260 0.39370 0.00787 }
+  }
+}
+# visible_t
+Transform {
+  translation -5.68898 2.32283 0.50787
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0.02 0.02 0.02 specularColor 0.3 0.3 0.3 shininess 0.4 transparency 0.0 } }
+    geometry Box { size 8.81260 0.39370 0.00787 }
+  }
+}
+# active
+Transform {
+  translation -5.68898 1.02677 0.50787
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0.05 0.15 0.45 specularColor 0.3 0.3 0.3 shininess 0.4 transparency 0.0 } }
+    geometry Box { size 8.81260 2.19843 0.00787 }
+  }
+}

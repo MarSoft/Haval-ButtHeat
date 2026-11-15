@@ -637,6 +637,18 @@
 		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/3d/OLED_0.91_glass_on_J4.step"
+			(hide yes)
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/3d/OLED_0.91_glass_on_J4.wrl"
 			(offset
 				(xyz 0 0 0)
 			)

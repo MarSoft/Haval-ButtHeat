@@ -140,7 +140,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   y 16.05 … 27.95.
 - Mounting (decided): glass unglued and lying **on** the carrier, active area centred at x = 0.
   The board supports two variants:
-  - **(1) primary**: driver board under the carrier (rear-plate pocket ≈ 1.2 mm), flex through the
+  - **(1) primary**: driver board under the carrier (it hangs 2.2 mm below the carrier: 1.0 board + 1.2 parts; with the 0.5 mm carrier-to-plate gap that's 1.7 mm into the 2 mm plate → rear-plate version A gets a full cut-out there; version B (option 3) only pockets for the rear passives), flex through the
     slot right of the glass (§3).
     Driver board (38 × 12, header on the **left** end, flex on the right) sits under the carrier
     at ≈ x −19.29 … 18.71, y 16 … 28 (can shift in X — flex has slack). **J3** = 4 THT holes
