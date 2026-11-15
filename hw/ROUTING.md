@@ -130,3 +130,27 @@ shift a little). Headlines:
 - Left of the slot (under the glass) there's room on both layers; mind J4's front pads (x 13–16),
   J3's pins (one 0.25 track fits between neighbours) and the rear option-3 parts (x 2–12).
 - Fallback if it doesn't fit: drop the slot (display option 1) and keep option 3 only.
+
+### +12V / CAN (done by hand)
+- +12V runs on the rear along the top edge, then switches to the front before the display. Keep rear
+  tracks at the edge so the GND pour stays in one piece; cross the CANH/CANL pair at an angle, not
+  under it lengthwise.
+
+### Display option 3 (J4 + rear passives), placement 2026-11-15
+All J4 nets leave the pads to the **left on the front** (only ~1 mm between the pads and the slot),
+then drop to the rear part with a via next to its pad. The top band (y > 25.5) is taken by +12V, +5V and
+ENC3_B (front) and the encoder bus (rear), so the passives sit at y ≤ 24, stacked in J4 pin order:
+
+| case y | x ≈ −4 | x ≈ −0.5 | x ≈ 3 | x ≈ 6.5 | x ≈ 10 | x ≈ 9.6 / 11.6 | J4 pins |
+|---|---|---|---|---|---|---|---|
+| 23.6 | R11 (SDA pull-up) | C18 | C17 | C16 | R8 | | 14 VCCI, 13 VCOMH, 12 IREF |
+| ~22 | *SDA/SCL on the front, straight left* | | | | | | 11, 10 |
+| 20.0 | R10 (SCL pull-up) | | D4 | R9 | C15 | | 9 RES |
+| 18.3 | | | C12 | C13 | C14 | | 8 3V3, 7 GND, 5 3V3 |
+| 15.9 | | | | | | C11 / C10 (vertical) | 4–1 charge pump |
+
+- Each signal pad (pad 1; on the pump caps both pads) faces J4. GND pads face left, one GND via each.
+- Front fan-out: spread the 0.62 mm pitch to ≥ 0.9 mm before dropping vias. The bottom track of the
+  upper group (IREF) turns down first; the same applies to the other groups, so nothing crosses.
+- J4 GND (pin 7): via right at the pad end. 3V3 pins 8 and 5: one front track each to the caps.
+- Rear below the slot, x 12–17, y 9–14: keep free, it's the GND pour's path to the channel under the slot.
