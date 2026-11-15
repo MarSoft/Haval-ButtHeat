@@ -308,3 +308,22 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - A rib in the front case should press the ZH plug down, since ZH has no latch.
   - Check that the mated plug plus the wire bend fit under the front case.
 - **3D**: KiCad's library has no B4B-ZR model; download it (JST / LCSC) like the USB one, then re-export the board STEP.
+- **Measured (2026-11-16, ZH + ZHR-4 models on J1):** header + plug x −73.55…−66.05, y 25.4…28.9, plug top **z 9.4** (board top z 3.5). In the band y 24–30, the car has no geometry above **z ≈ 10** to the left of the board (checked to x −110); the frame starts at y ≈ 32.7 there.
+- **Cable route (user, 2026-11-16):** the cable leaves at the **top-left corner, to the left, above the air vent**; this is the only possible exit. Wires leave the plug upwards, bend left at z ≈ 10.5–12, y ≈ 26–28. The front case's inside ceiling at the top-left corner must be at z ≥ 13.
+- **Strain relief (plan):** anchor the cable to the **rear plate's left ear** (car-fixed): a saddle clamp with a screw into a heat-set insert, or a cable tie through slots, plus a zig-zag channel. Leave a 3–5 cm service loop to J1, so the front + PCB can lift off and J1 can be unplugged. Exit slot at the top-left corner (z ≥ 10) guides the cable but doesn't clamp it. A front-case rib (forked around the wires) holds the ZH plug down. Clamp size depends on the cable's diameter (to be decided).
+
+## Rear-plate support pads (2026-11-16, user)
+- Encoders (push switches) and buttons must not let the PCB flex when pressed. The rear plate gets **support pads 0.5 mm high** (PCB-to-plate gap) under each one:
+  - encoders: annular pad about 6–8 mm across, centred on the shaft axis, inside the ring of pins and lugs, at (−43, 11), (43, 11), (65, 15);
+  - buttons: under each button centre (−27, 19) and (27, 19), between the legs.
+- Keep the pads clear of through-hole solder fillets and the rear-plate pockets/cut-out. Pressing on the back-side solder mask over copper is fine.
+
+## Cable and strain relief (decided 2026-11-16)
+- Cable: spare USB 2.0 cable, 4 cores (12V/GND on the power pair, CAN on D+/D−, probably twisted), probably unshielded, textile jacket, about 4–5 mm OD (to be measured).
+- **Disconnect point stays at the car end** (car-grade locking connector). J1 (ZH) stays plugged in for good; a front-case rib holds the plug down.
+- **The cable is clamped to the removable front assembly**, in the left front part at the exit, using a **replaceable printed split-clamp insert, 6 mm bore** (inner ribs for the textile jacket, closed by one M2 screw or squeezed by the parts). Another cable needs only a new insert, not a new case. Removing the device: undo the 4 screws and take out the front assembly with the cable attached; unplug at the car end. No zip ties (no room).
+- **Exit as low as possible** (user). Measured free gap between the air vent and the display frame:
+  - at x −74…−78 everything below y ≈ 30.5 is free down to z ≈ 1;
+  - a 6 mm window needs its centre at z ≈ 4.5 (x −86), ≈ 6–6.5 (x −92), ≈ 6.5–7 (x −100), y ≈ 25–32.
+  - So: exit in the left wall at x ≈ −76…−78, cable centre **z ≈ 6, y ≈ 28**. Inside, the wires leave J1's plug upwards (top z 9.4) and U-turn down to the clamp.
+- The v1 `CaseBase` left ear's **leftmost leg** must go in the v2 design (it was broken off the prototype to make room for this cable).
