@@ -380,6 +380,18 @@
 		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x04_P2.54mm_Vertical.stpZ"
+			(hide yes)
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/3d/OLED_0.91_driver_board_on_J3.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -624,6 +636,17 @@
 			(uuid "72e673cd-fc11-429b-b325-514928a74c36")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3d/OLED_0.91_glass_on_J4.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
 		(layer "F.Cu")
