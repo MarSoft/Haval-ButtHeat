@@ -295,3 +295,16 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - Case construction: the PETG rear plate (heat-set inserts) is taped in the car; the 3-part SLA front + PCB is held by 4 countersunk screws from the front. Posts can move but must stay.
 
 - D1 (PESD2CAN) moved to the back next to J1 (2026-11-15); its pins 1/2 swapped in the schematic (symmetric part). The rear plate needs a ~1.2 mm pocket under it (PCB-to-plate gap is 0.5 mm).
+
+## J1 = JST ZH vertical (2026-11-16)
+- The JST PH side-entry J1 was unusable: its mouth faced the car's air-vent wall (x ≈ −78 at board level) with no room for the plug.
+- J1 is now **JST ZH 4-pin vertical, through-hole (B4B-ZR, 1.5 mm pitch)**, rotated 180°, pin 1 (+12V) at (−67.55, 26.70); pins 2/3/4 = GND, CAN+, CAN− towards the left (x −69.05/−70.55/−72.05).
+  - Body x −73.55 … −65.74, y 25.09 … 28.9: it overhangs the top edge by 0.9 mm and the left edge by about 0.5 mm, and clears the SuperMini body by 0.29 mm.
+  - The plug goes in from the front.
+- D1 (back) moved next to it: (−71.0, 23.3), rotated −90°.
+- **Antenna WROOM-02 builds**: J1 is not fitted (the cable is soldered from the back), as before. DRC rule "J1 pins in WROOM antenna courtyard" plus the accepted J1/U1 and J1/U2 courtyard touches.
+- **Case**:
+  - The car's display frame is 1.8 mm above J1's body top at board level (frame bottom y 30.69 at z 3.5, rising about 0.27 mm per mm of height). The top wall must thin or notch there; that's also the natural cable exit.
+  - A rib in the front case should press the ZH plug down, since ZH has no latch.
+  - Check that the mated plug plus the wire bend fit under the front case.
+- **3D**: KiCad's library has no B4B-ZR model; download it (JST / LCSC) like the USB one, then re-export the board STEP.
