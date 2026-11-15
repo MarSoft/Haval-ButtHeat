@@ -1598,6 +1598,172 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Diode:SS14"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SS14"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Diode_SMD:D_SMA"
+				(at 0 -4.445 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.vishay.com/docs/88746/ss12.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "40V 1A Schottky Diode, SMA"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "diode Schottky"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "D*SMA*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SS14_0_1"
+				(polyline
+					(pts
+						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "SS14_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Regulator_Linear:AP2112K-3.3"
 			(pin_names
 				(offset 0.254)
@@ -2447,10 +2613,10 @@
 		(uuid "075f38b4-0a33-4bd2-97e9-825989fade61")
 	)
 	(junction
-		(at 175.26 88.9)
+		(at 173.99 88.9)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "0ec3e7b0-01c1-4b93-8955-6b7253e9293d")
+		(uuid "09bcd96f-3683-454b-afba-85abb0bfbf90")
 	)
 	(junction
 		(at 48.26 71.12)
@@ -2483,6 +2649,12 @@
 		(uuid "4036d245-7bd1-4851-9ba6-3a14f59cbb3a")
 	)
 	(junction
+		(at 181.61 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "40cedc7f-a283-4d3e-9b28-4d3090b1a5d7")
+	)
+	(junction
 		(at 91.44 71.12)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2493,12 +2665,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5312aa0d-363f-42c9-a38a-b2b05203b825")
-	)
-	(junction
-		(at 175.26 73.66)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6a32c078-4ba2-4730-bfc9-1f31d832f387")
 	)
 	(junction
 		(at 139.7 88.9)
@@ -2531,10 +2697,10 @@
 		(uuid "d25618bd-e457-4c61-b517-2986dd738c5e")
 	)
 	(junction
-		(at 180.34 88.9)
+		(at 173.99 73.66)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "d90686d1-0b31-40ef-90f6-873387204167")
+		(uuid "dc7bb934-cc09-492a-bea3-89fca7aac2c6")
 	)
 	(junction
 		(at 160.02 73.66)
@@ -2664,16 +2830,6 @@
 	)
 	(wire
 		(pts
-			(xy 175.26 73.66) (xy 190.5 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2d1c0d2c-154b-4331-ae8f-6ce13508b906")
-	)
-	(wire
-		(pts
 			(xy 114.3 71.12) (xy 114.3 85.09)
 		)
 		(stroke
@@ -2681,16 +2837,6 @@
 			(type default)
 		)
 		(uuid "2e648660-b078-4363-9868-c10762c0617e")
-	)
-	(wire
-		(pts
-			(xy 175.26 88.9) (xy 180.34 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3d4a7ba7-9721-4535-959b-9595a8d7d7d3")
 	)
 	(wire
 		(pts
@@ -2711,16 +2857,6 @@
 			(type default)
 		)
 		(uuid "41e782e1-e006-440b-8dc7-7e2c2bc9cb89")
-	)
-	(wire
-		(pts
-			(xy 180.34 88.9) (xy 185.42 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "441d5733-65ab-4e96-842e-fbad218ae681")
 	)
 	(wire
 		(pts
@@ -2764,7 +2900,7 @@
 	)
 	(wire
 		(pts
-			(xy 167.64 88.9) (xy 175.26 88.9)
+			(xy 167.64 88.9) (xy 173.99 88.9)
 		)
 		(stroke
 			(width 0)
@@ -2834,6 +2970,16 @@
 	)
 	(wire
 		(pts
+			(xy 173.99 73.66) (xy 194.31 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b62608f-6212-46ee-bfa4-f3e23556aad5")
+	)
+	(wire
+		(pts
 			(xy 91.44 71.12) (xy 114.3 71.12)
 		)
 		(stroke
@@ -2841,6 +2987,16 @@
 			(type default)
 		)
 		(uuid "7dbc91ae-aaa5-4791-b2de-a19bd69674eb")
+	)
+	(wire
+		(pts
+			(xy 181.61 88.9) (xy 185.42 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7f1bafec-0927-4aa0-a515-d41f4c664ef3")
 	)
 	(wire
 		(pts
@@ -2924,7 +3080,7 @@
 	)
 	(wire
 		(pts
-			(xy 175.26 81.28) (xy 175.26 88.9)
+			(xy 173.99 81.28) (xy 173.99 88.9)
 		)
 		(stroke
 			(width 0)
@@ -2954,7 +3110,7 @@
 	)
 	(wire
 		(pts
-			(xy 160.02 73.66) (xy 175.26 73.66)
+			(xy 160.02 73.66) (xy 173.99 73.66)
 		)
 		(stroke
 			(width 0)
@@ -3101,6 +3257,16 @@
 			(justify left bottom)
 		)
 		(uuid "69790db6-f68e-4c55-9d08-6cb0a7941eba")
+	)
+	(label "+5V_BUCK"
+		(at 173.99 88.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8b56f337-96b2-4921-9717-bf0b6f869965")
 	)
 	(label "BUCK_RC"
 		(at 114.3 107.95 0)
@@ -3960,7 +4126,7 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 180.34 88.9 0)
+		(at 181.61 88.9 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3970,7 +4136,7 @@
 		(dnp no)
 		(uuid "5f78a1e0-e150-4ae0-b421-885cd99040f8")
 		(property "Reference" "#FLG04"
-			(at 180.34 86.36 0)
+			(at 181.61 86.36 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3981,7 +4147,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 180.34 85.09 0)
+			(at 181.61 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3992,7 +4158,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 180.34 88.9 0)
+			(at 181.61 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4003,7 +4169,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 180.34 88.9 0)
+			(at 181.61 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4014,7 +4180,7 @@
 			)
 		)
 		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 180.34 88.9 0)
+			(at 181.61 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5058,7 +5224,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 190.5 77.47 0)
+		(at 194.31 77.47 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5068,7 +5234,7 @@
 		(dnp no)
 		(uuid "adbcea16-1684-4669-bc97-3d48d1825882")
 		(property "Reference" "R2"
-			(at 193.04 76.2 0)
+			(at 196.85 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5078,7 +5244,7 @@
 			)
 		)
 		(property "Value" "8.2k"
-			(at 193.04 78.74 0)
+			(at 196.85 78.74 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5088,7 +5254,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 188.722 77.47 90)
+			(at 192.532 77.47 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5099,7 +5265,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 190.5 77.47 0)
+			(at 194.31 77.47 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5110,7 +5276,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 190.5 77.47 0)
+			(at 194.31 77.47 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5290,6 +5456,86 @@
 		)
 	)
 	(symbol
+		(lib_id "Diode:SS14")
+		(at 177.8 88.9 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b984ad58-f786-4860-8753-5922360a2eec")
+		(property "Reference" "D6"
+			(at 177.4825 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SS14"
+			(at 177.4825 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 177.8 93.345 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.vishay.com/docs/88746/ss12.pdf"
+			(at 177.8 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "40V 1A Schottky Diode, SMA"
+			(at 177.8 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "81a0d1a1-9cd1-48e2-8a01-765b31b618ea")
+		)
+		(pin "1"
+			(uuid "9fe067e3-055e-404d-9912-c1c0b1f98f24")
+		)
+		(instances
+			(project "ButtHeatCarrier"
+				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/eea3677a-519f-44ed-ac76-65ffc711a581"
+					(reference "D6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "ButtHeat:XC6206P332MR")
 		(at 88.9 152.4 0)
 		(unit 1)
@@ -5452,7 +5698,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 190.5 81.28 0)
+		(at 194.31 81.28 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5462,7 +5708,7 @@
 		(dnp no)
 		(uuid "bdaa80a0-5fa1-4e9d-b813-9e8db6acb114")
 		(property "Reference" "#PWR08"
-			(at 190.5 78.74 0)
+			(at 194.31 78.74 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5473,7 +5719,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 190.5 83.82 0)
+			(at 194.31 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5483,7 +5729,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 190.5 81.28 0)
+			(at 194.31 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5494,7 +5740,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 190.5 81.28 0)
+			(at 194.31 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5505,7 +5751,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 190.5 81.28 0)
+			(at 194.31 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5859,7 +6105,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 175.26 77.47 0)
+		(at 173.99 77.47 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5869,7 +6115,7 @@
 		(dnp no)
 		(uuid "cc7ce9e4-265c-403e-925f-775931109ed2")
 		(property "Reference" "R5"
-			(at 178.31 76.2 0)
+			(at 177.04 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5878,8 +6124,8 @@
 				)
 			)
 		)
-		(property "Value" "36k (5.0V)"
-			(at 182.88 78.74 0)
+		(property "Value" "39k (5.27V before D6)"
+			(at 181.61 78.74 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5889,7 +6135,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 173.482 77.47 90)
+			(at 172.212 77.47 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5900,7 +6146,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 175.26 77.47 0)
+			(at 173.99 77.47 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5911,7 +6157,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 175.26 77.47 0)
+			(at 173.99 77.47 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

@@ -259,7 +259,7 @@
         "max_error": 0.005,
         "min_clearance": 0.15,
         "min_connection": 0.0,
-        "min_copper_edge_clearance": 0.5,
+        "min_copper_edge_clearance": 0.3,
         "min_groove_width": 0.0,
         "min_hole_clearance": 0.25,
         "min_hole_to_hole": 0.25,
@@ -823,6 +823,14 @@
     "meta": {
       "version": 1
     },
+    "ngspice": {
+      "fix_include_paths": true,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 4,
+      "workbook_filename": ""
+    },
     "page_layout_descr_file": "",
     "plot_directory": "",
     "reuse_designators": true,
@@ -835,7 +843,7 @@
         "uuid": "48c8f88e-55fc-4d7f-bb36-4aeb3e595ada"
       }
     ],
-    "used_designators": "",
+    "used_designators": "D6",
     "variants": []
   },
   "sheets": [

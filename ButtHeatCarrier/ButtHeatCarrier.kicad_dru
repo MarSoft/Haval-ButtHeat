@@ -17,3 +17,18 @@
 	(condition "(A.Reference == 'SW3' && B.Reference == 'H2') || (A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1')")
 	(constraint courtyard_clearance (min -10mm))
 	(severity ignore))
+
+# Display-neck crossing at the flex slot: everything from left (MCU) to right (buck, encoders,
+# USB) squeezes past the slot. Inside the rule area named NECK (drawn in pcbnew, no constraints of
+# its own): signal tracks 0.2 mm, power tracks 0.4 mm, 0.15 mm clearance.
+(rule "Neck: signal tracks"
+	(condition "A.intersectsArea('NECK') && A.NetClass == 'Default'")
+	(constraint track_width (min 0.15mm) (opt 0.2mm)))
+
+(rule "Neck: power tracks"
+	(condition "A.intersectsArea('NECK') && A.NetClass == 'Power'")
+	(constraint track_width (min 0.3mm) (opt 0.4mm)))
+
+(rule "Neck: clearance"
+	(condition "A.intersectsArea('NECK') || B.intersectsArea('NECK')")
+	(constraint clearance (min 0.15mm)))

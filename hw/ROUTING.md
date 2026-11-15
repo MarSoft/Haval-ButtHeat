@@ -98,3 +98,35 @@ shift a little). Headlines:
 - **Display**: J4 pads are 0.35 mm wide at 0.62 mm pitch — use 0.2 mm tracks there (Default class
   minimum allows 0.15). Rear passives connect with vias to the J4 nets.
 - **Encoders/buttons**: plain 0.25 mm signals to the MCU; switch common pins to GND vias.
+
+## Updates (2026-11-15)
+
+### Buck output diode D6 (USB back-feed fix)
+- New net **`/Power/+5V_BUCK`** = L1 pad 1, C4 pad 1, R5/RV1 (feedback top), D6 anode.
+  **`+5V`** (rail) starts at D6's cathode. R5 = 39 k → buck at ~5.27 V, rail ~4.9–5.0 V after D6.
+- Feedback still senses **before** D6 (stable loop): take R5/RV1's top from C4's pad.
+- The old +5V tracks from L1/C4 to the rail must go: route L1 → C4 → D6 anode, and the rail from D6's
+  cathode. D6 sits near (39.5, 16.3)-ish; place it where the old +5V track left C4.
+
+### J2 CC2 (pin B5) escape
+- The two pin rows (y 8.11 / 6.76) leave a 0.65 mm channel between them. From B5 (x 68.9) go right along
+  y ≈ 7.43, past the last pin pair (x ≈ 70.6), then up through the 0.55 mm gap between pin A12 and the
+  right shell leg, then into the board towards R14. Use **0.15 mm** track for that piece (board minimum),
+  which keeps the default 0.2 mm clearance.
+
+### Display neck / flex slot
+- Board copper-to-edge clearance is now **0.3 mm** (slot edges included): above the slot y 25.3–27.7
+  (2.4 mm), below it y ≈ 10.7–12.1 (~1.4 mm).
+- Rule area **`NECK`** (draw it: *Place → Rule Area*, name `NECK`, no constraints ticked, both copper
+  layers) over x 12.5…21.5, y 8…28 (KiCad X 162.5…171.5, Y 72…92). Inside it the custom rules give
+  signal tracks 0.2 mm, power tracks 0.4 mm, clearance 0.15 mm.
+- Channel plan at the slot:
+  | Where | Layer | Nets |
+  |---|---|---|
+  | above slot | front | +12V, +5V (0.4), USB D+, D− (0.2) |
+  | above slot | back | ENC2_A/B/SW, ENC3_A/B/SW (0.2) |
+  | below slot | back | **GND pour channel** — keep free of tracks |
+  | below slot | front | spare / second GND path |
+- Left of the slot (under the glass) there's room on both layers; mind J4's front pads (x 13–16),
+  J3's pins (one 0.25 track fits between neighbours) and the rear option-3 parts (x 2–12).
+- Fallback if it doesn't fit: drop the slot (display option 1) and keep option 3 only.
