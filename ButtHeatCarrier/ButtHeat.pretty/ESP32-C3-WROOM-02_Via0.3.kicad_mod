@@ -678,11 +678,11 @@
 		)
 		(min_thickness 0.254)
 		(keepout
-			(tracks not_allowed)
-			(vias not_allowed)
-			(pads not_allowed)
+			(tracks allowed)
+			(vias allowed)
+			(pads allowed)
 			(copperpour not_allowed)
-			(footprints not_allowed)
+			(footprints allowed)
 		)
 		(placement
 			(enabled no)
@@ -707,7 +707,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "b84b5af8-c1b6-48cf-bdba-54cbcf5fa951")
+		(uuid "8e8ca4f2-11f4-4f39-b067-43c831cd1e41")
 	)
 	(pad "19" thru_hole circle
 		(at -0.1400 0.2000)
@@ -717,7 +717,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "1a36894f-6663-417f-a2d5-00ea68862ac3")
+		(uuid "cbcd150a-87d8-44f3-923f-929bddf2864e")
 	)
 	(pad "19" thru_hole circle
 		(at -0.1400 1.3000)
@@ -727,7 +727,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "63649d01-21bf-41c2-9021-be0b6a75273a")
+		(uuid "d3369047-db24-4f4e-a002-816880356dad")
 	)
 	(pad "19" thru_hole circle
 		(at 0.9600 -0.9000)
@@ -737,7 +737,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "49a9db6e-1872-4738-ae20-151959440bb2")
+		(uuid "9f4f2847-5da3-47f6-a9e1-b19c5dfeb9da")
 	)
 	(pad "19" thru_hole circle
 		(at 0.9600 0.2000)
@@ -747,7 +747,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "ef6447ae-25b9-451a-8296-1f25d046da33")
+		(uuid "bb7b6346-8a48-4dee-a297-22f03e9ba341")
 	)
 	(pad "19" thru_hole circle
 		(at 0.9600 1.3000)
@@ -757,7 +757,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "c2a3e930-30a0-4276-8ccd-deb68bebf984")
+		(uuid "3a2d807e-adfb-4374-9126-206108979fb8")
 	)
 	(pad "19" thru_hole circle
 		(at 2.0600 -0.9000)
@@ -767,7 +767,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "a76ce4ca-5d31-45dc-95f0-70c68c96029d")
+		(uuid "dda566bb-4122-46a1-8445-c0c26d1a9870")
 	)
 	(pad "19" thru_hole circle
 		(at 2.0600 0.2000)
@@ -777,7 +777,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "73bdfd04-4ce8-44f4-ae18-9140ea107daa")
+		(uuid "90c84c76-e5dc-4308-9bd9-e7c6447f9dd1")
 	)
 	(pad "19" thru_hole circle
 		(at 2.0600 1.3000)
@@ -787,7 +787,7 @@
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(zone_connect 2)
-		(uuid "b6b7a16a-af86-452a-a7a2-3bb94131a45c")
+		(uuid "acda8ca3-c811-40c0-a4a6-69dbbd000652")
 	)
 	(embedded_fonts no)
 	(model "${KICAD10_3DMODEL_DIR}/RF_Module.3dshapes/ESP32-C3-WROOM-02.stpZ"

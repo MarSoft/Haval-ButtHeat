@@ -85,13 +85,13 @@ for side, names in ((-1, LEFT), (1, RIGHT)):
         out.append(f'\t(pad "{n}" smd roundrect (at {xc:.4f} {y:.4f}) (size {pw:.3f} {PAD_H:.3f}) '
                    f'(layers "F.Cu" "F.Mask" "F.Paste") (roundrect_rratio 0.15) {u()})')
 
-# antenna keep-out: no copper at all under the antenna end
+# antenna keep-out: no copper pour under the antenna end (tracks, vias and pads are allowed)
 ka = [(-W / 2, -yb), (W / 2, -yb), (W / 2, -yb + ANT), (-W / 2, -yb + ANT)]
 pts = " ".join(f"(xy {x:.4f} {y:.4f})" for x, y in ka)
 out.append(f'\t(zone (net 0) (net_name "") (layers "F.Cu" "B.Cu") {u()} (name "SuperMini antenna")\n'
            f'\t\t(hatch edge 0.5) (connect_pads (clearance 0))\n'
            f'\t\t(min_thickness 0.25) (filled_areas_thickness no)\n'
-           f'\t\t(keepout (tracks not_allowed) (vias not_allowed) (pads allowed) '
+           f'\t\t(keepout (tracks allowed) (vias allowed) (pads allowed) '
            f'(copperpour not_allowed) (footprints allowed))\n'
            f'\t\t(fill (thermal_gap 0.5) (thermal_bridge_width 0.5))\n'
            f'\t\t(polygon (pts {pts})))')

@@ -279,3 +279,11 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   (67.8, 4.175) = KiCad (217.8, 95.825), rot 0. Front shell tabs start at y 2.3 (on board), rear
   signal pads end at y ≈ 8.42 (0.58 below ENC3's switch pins), shell tabs 0.38 from the right edge.
 - Replaces GCT USB4085 (hard to order; its custom J2 pin-pitch DRC rule removed).
+
+### WROOM-02 antenna keep-out relaxed to pour-only (2026-11-15)
+- `ButtHeat:ESP32-C3-WROOM-02_Via0.3` keeps the antenna keep-out area, but it now forbids only copper
+  pour; tracks, vias and pads are allowed. So J1 (pins under the antenna end) can be routed, while the
+  GND plane stays away from the antenna (a plane under it would make the radio practically dead).
+  Expect reduced range in build B1 (J1's pads/cable and a few tracks near the antenna); radio isn't used.
+  If Wi-Fi/BLE is ever needed in earnest, use build B2 (WROOM-02U + u.FL pigtail).
+- Keep tracks in that area few and short; J1 pin 2 (GND) needs a real track (the pour can't reach it).
