@@ -289,7 +289,9 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - Keep tracks in that area few and short; J1 pin 2 (GND) needs a real track (the pour can't reach it).
 
 ## Post 3 moved (2026-11-15)
-- Bottom-left screw post 3 moved from (-35, 4) to **(-33, 4)**, Ø6.5 post, Ø7.5 board notch. At the old spot it overlapped ENC1's body (x <= -36.8, y >= 4.4) by about 1.4 mm.
-- The board notch now runs straight into the knob-arch edge: bottom edge to x -36.17, arc over y 7.75, then the arch line from (-29.28, 4.48).
+- Bottom-left screw post 3 moved from (-35, 4) to **(-33, 5)** (y raised 4 -> 5 so the Ø6.5 post stays ~0.7 mm inside the case-base outline), Ø6.5 post, Ø7.5 board notch. At the old spot it overlapped ENC1's body (x <= -36.8, y >= 4.4) by about 1.4 mm.
+- The board notch now runs straight into the knob-arch edge: bottom edge to x -35.25, arc over y 8.75, then the arch line from (-29.29, 4.48).
 - FreeCAD: `V2Vars.post3_left` = 33 mm; `PCB_Constraints` notes updated. The post-3 cylinder (`V2 Layout Draft`) and its notch circle in `BoardSkeleton/Cutouts` are now bound to `V2Vars.post3_left`/`post3_y`/`notch_d` (posts 1, 2 and 4 still have fixed placements).
 - Case construction: the PETG rear plate (heat-set inserts) is taped in the car; the 3-part SLA front + PCB is held by 4 countersunk screws from the front. Posts can move but must stay.
+
+- D1 (PESD2CAN) moved to the back next to J1 (2026-11-15); its pins 1/2 swapped in the schematic (symmetric part). The rear plate needs a ~1.2 mm pocket under it (PCB-to-plate gap is 0.5 mm).
