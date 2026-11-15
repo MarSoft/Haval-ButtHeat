@@ -6858,6 +6858,17 @@
 			)
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3d/esp32 c3 supermini.step"
+			(offset
+				(xyz 9 -11.2 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz -0 -0 -90)
+			)
+		)
 	)
 	(footprint "Button_Switch_THT:SW_PUSH_6mm"
 		(layer "F.Cu")
@@ -10340,6 +10351,7 @@
 		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_XKB_U262-16XN-4BVC11.stpZ"
+			(hide yes)
 			(offset
 				(xyz 0 0 0)
 			)
