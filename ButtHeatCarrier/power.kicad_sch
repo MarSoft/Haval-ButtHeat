@@ -5950,8 +5950,9 @@
 				)
 			)
 		)
-		(property "Value" "JST-PH 4p (12V GND CANH CANL)"
+		(property "Value" "JST-ZH 4p (12V GND CANH CANL)"
 			(at 24.13 81.28 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5960,7 +5961,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_PH_S4B-PH-K_1x04_P2.00mm_Horizontal"
+		(property "Footprint" "Connector_JST:JST_ZH_B4B-ZR_1x04_P1.50mm_Vertical"
 			(at 30.48 68.58 0)
 			(hide yes)
 			(show_name no)

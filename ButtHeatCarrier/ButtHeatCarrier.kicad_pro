@@ -86,10 +86,6 @@
           ""
         ],
         [
-          "courtyards_overlap|80345000|72355000|1c52ec24-abce-45ae-a1d3-aa662a0083a9|34b63fc3-0b27-4ef5-919f-e2e5fa1cf3a3",
-          ""
-        ],
-        [
           "courtyards_overlap|83525000|96275000|1c52ec24-abce-45ae-a1d3-aa662a0083a9|c969558c-9e62-4ce8-abfd-73bfa8721046",
           ""
         ],
@@ -108,22 +104,6 @@
         [
           "items_not_allowed|165309792|83335000|034fe8da-c754-4d79-ac07-2f3d20e9f827|00000000-0000-0000-0000-000000000000",
           "J1 is unsoldered if WROOM-with-antenna is used"
-        ],
-        [
-          "pth_inside_courtyard|78500000|74500000|b5ea0763-44b9-4e8f-9efc-cc7d40ed3016|1c52ec24-abce-45ae-a1d3-aa662a0083a9",
-          ""
-        ],
-        [
-          "pth_inside_courtyard|78500000|76500000|b377b268-205b-4673-9ac5-6709706997c1|1c52ec24-abce-45ae-a1d3-aa662a0083a9",
-          ""
-        ],
-        [
-          "pth_inside_courtyard|78500000|78500000|2bd5eee8-813f-4df8-89ed-5e6bbb5c19c8|1c52ec24-abce-45ae-a1d3-aa662a0083a9",
-          ""
-        ],
-        [
-          "pth_inside_courtyard|78500000|80500000|b33d1e3e-403e-4551-a7dd-d58b47a0c6f8|1c52ec24-abce-45ae-a1d3-aa662a0083a9",
-          ""
         ]
       ],
       "meta": {
