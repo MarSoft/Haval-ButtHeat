@@ -1,10 +1,5 @@
 (version 1)
 
-# GCT USB4085 (J2): 0.7 mm pads on 0.85 mm pitch leave 0.15 mm between neighbours.
-(rule "J2 USB4085 0.85mm pin pitch"
-	(condition "A.Parent == 'J2' && B.Parent == 'J2'")
-	(constraint clearance (min 0.14mm)))
-
 # Intentional courtyard overlaps (parts themselves have physical clearance or are build variants).
 # Dual button footprints: THT + SMD switch overlaid on the same nets, only one is fitted.
 (rule "Dual button footprints"

@@ -4107,7 +4107,7 @@
 				)
 			)
 		)
-		(property "Value" "USB-C debug/flash (variant B)"
+		(property "Value" "USB-C XKB U262-161N-4BVC11 (variant B)"
 			(at 50.8 172.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4117,7 +4117,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_USB:USB_C_Receptacle_GCT_USB4085"
+		(property "Footprint" "ButtHeat:USB_C_XKB_U262-16XN-4BVC11_noSBU"
 			(at 54.61 139.7 0)
 			(hide yes)
 			(show_name no)
