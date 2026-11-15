@@ -4320,7 +4320,7 @@
 				)
 			)
 		)
-		(property "Footprint" "ButtHeat:ESP32-C3-WROOM-02_Via0.3"
+		(property "Footprint" "RF_Module:ESP32-C3-WROOM-02"
 			(at 190.5 122.555 0)
 			(hide yes)
 			(show_name no)
@@ -5294,7 +5294,7 @@
 				)
 			)
 		)
-		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
+		(property "Description" "USB 2.0-only 14P Type-C Receptacle connector"
 			(at 50.8 139.7 0)
 			(hide yes)
 			(show_name no)
