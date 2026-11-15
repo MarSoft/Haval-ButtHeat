@@ -27,3 +27,8 @@
 (rule "Neck: clearance"
 	(condition "A.intersectsArea('NECK') || B.intersectsArea('NECK')")
 	(constraint clearance (min 0.15mm)))
+
+# XKB U262-16XN (J2) stock land pattern: corner GND pads sit 0.165 mm from the locating-peg drills.
+(rule "J2 XKB peg to pad"
+	(condition "A.Parent == 'J2' && B.Parent == 'J2'")
+	(constraint hole_clearance (min 0.15mm)))
