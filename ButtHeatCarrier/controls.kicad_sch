@@ -1520,7 +1520,7 @@
 				)
 			)
 		)
-		(property "Value" "EC12S 24/24 sw"
+		(property "Value" "EC11/EC12 24/24 sw"
 			(at 50.8 137.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1530,7 +1530,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
+		(property "Footprint" "ButtHeat:RotaryEncoder_EC11_EC12-Switch_Vertical_H20mm"
 			(at 46.99 131.064 0)
 			(hide yes)
 			(show_name no)
@@ -1611,7 +1611,7 @@
 				)
 			)
 		)
-		(property "Value" "EC12S 24/24 sw"
+		(property "Value" "EC11/EC12 24/24 sw"
 			(at 50.8 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1621,7 +1621,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
+		(property "Footprint" "ButtHeat:RotaryEncoder_EC11_EC12-Switch_Vertical_H20mm"
 			(at 46.99 54.864 0)
 			(hide yes)
 			(show_name no)
@@ -1782,7 +1782,7 @@
 				)
 			)
 		)
-		(property "Value" "EC12S 24/24 sw"
+		(property "Value" "EC11/EC12 24/24 sw"
 			(at 50.8 99.06 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1792,7 +1792,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm"
+		(property "Footprint" "ButtHeat:RotaryEncoder_EC11_EC12-Switch_Vertical_H20mm"
 			(at 46.99 92.964 0)
 			(hide yes)
 			(show_name no)
