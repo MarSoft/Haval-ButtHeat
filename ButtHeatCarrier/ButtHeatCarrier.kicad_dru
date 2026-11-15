@@ -8,8 +8,10 @@
 	(severity ignore))
 
 # Courtyard-only touches with physical clearance between the parts.
+# U4/C3: buck input cap hugs U4 on purpose (small input loop); ~0.8 mm pad-to-pad.
+# JP1/U3: JP1 is a flat solder jumper, no body; ~0.65 mm from U3 pin 4.
 (rule "Accepted courtyard touches"
-	(condition "(A.Reference == 'SW3' && B.Reference == 'H2') || (A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1')")
+	(condition "(A.Reference == 'SW3' && B.Reference == 'H2') || (A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1') || (A.Reference == 'U4' && B.Reference == 'C3') || (A.Reference == 'JP1' && B.Reference == 'U3')")
 	(constraint courtyard_clearance (min -10mm))
 	(severity ignore))
 
