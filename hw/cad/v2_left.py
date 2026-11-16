@@ -38,10 +38,11 @@ ROOF_DZ_IN = 1.6                # cavity roof: WALL measured normal to the ~19 d
 
 ENC1 = (-43.0, 11.0); BUSHING_HOLE = 7.4
 POSTS = [(-48.0, 26.0), (-33.0, 5.0)]
-PLATE_POST_TOP, PLATE_POST_D = 6.0, 6.6              # rear plate spacer tubes (v2_rear_plate.POST_TOP)
-FRONT_POST_D, FRONT_POST_Z0 = 8.0, 6.1               # front posts continue down to the plate posts
-SCREW_CLR, CSK_D, HEAD_Z = 3.4, 6.3, 9.0             # M3x8 DIN 7991 (head 6.0, 90 deg), head top at z 9
-CBORE_D = 6.6                                        # access counterbore above the head
+PLATE_POST_TOP, PLATE_POST_D = 6.0, 6.0              # rear plate spacer tubes (v2_rear_plate POST_TOP, POST_D)
+FRONT_POST_D, FRONT_POST_Z0 = 7.6, 6.1               # front posts continue down to the plate posts
+SCREW_CLR, CSK_D, HEAD_Z = 2.9, 5.0, 9.5             # M2.5x8 DIN 965 (head 4.7, 90 deg), head top at z 9.5
+CBORE_D = 6.0                                        # access counterbore: 0.65 mm headroom around the head
+RIM_CHAMFER = 0.6                                    # 45 deg chamfer below the lowest point of each rim
 SW = dict(x=-27.0, y=19.0, body=6.0, body_top=7.1, clr=0.2,     # 6x6 tact switch (SW1/SW2), DNP by default
           top=(-29.6, -24.4, 16.3, 21.7, 7.8))                 # THT cover features up to z 7.6: second tier
 ENC1_BODY = (-49.5, -36.5, 4.05, 17.95, 9.8)                     # x0, x1, y0, y1, z top (+0.25 clearance)
@@ -50,8 +51,15 @@ H1 = dict(x=-27.0, y=13.0, boss_d=5.0, pilot_d=1.7, top=7.6)   # fallback M2x5 t
 USB_OPEN = (-66.0, -54.5, 2.0, 9.0)                  # SuperMini USB-C (x -64.7..-55.8, z 3.6..7.7) + plug
 J1_BUMP = (-75.0, -62.0, 21.0, 14.5)                 # x0, x1, y0, outer top: room for the wires' U-turn
 J1_CLR = (-74.5, -65.0, 24.9, 29.1, 3.3)             # x0, x1, y0, y1, z0 (ZH header y 25.09..28.9, plug top 9.4)
-CABLE = dict(y=25.2, z=7.0, seat_x=(-79.0, -74.6),   # seat for the replaceable split clamp insert (OD 8.6)
-             seat_d=8.8, boss_d=11.0, exit_d=6.5)     # exit hole in the arc wall; its rim takes the pull
+# cable: seat for the replaceable split clamp insert (OD 8.6) down on the plate; a SLOT_W slot from every
+# cable path down to z min lets the (already crimped) cable be laid in from below; the insert (OD 8.6 >
+# slot) can't drop out and its outer end bears on the seat's end face (takes the pull)
+CABLE = dict(y=25.2, z=6.35, seat_x=(-79.0, -74.6), seat_d=8.8, boss_d=11.0, exit_d=6.0, slot_w=5.0)
+_S = (CABLE['seat_x'][0], CABLE['y'], CABLE['z'])
+CABLE_PATHS = [
+    [_S, (-96.5, 27.8, 2.5), (-106.0, 27.8, 2.5)],   # A: down into the V between display frame and vent
+                                                      #    housing: at x -96 it touches the frame and z ~0
+    [_S, (-84.75, 25.43, 2.5), (-92.0, 25.43, 2.5)]]  # B: straight into the housing (if it gets a cut-out)
 
 
 def frame_y(z, inset=0.0):
@@ -155,9 +163,14 @@ step('bump')
 part = outer.cut(cav)
 step('shell')
 
-# --- seam: tongue into the middle part's rebate ------------------------------------------------
-part = part.fuse(mid['tongue'](-1, FIT))
-step('tongue')
+# --- seam: socket for the middle part's spigot, under this part's skin -------------------------------
+# solid wedge between the sloped skin and the spigot (the middle part's envelope shrunk by WALL/2), so the
+# screwed-down side parts hold the middle part down
+sx = X_SEAM - mid['SPIGOT'] - FIT
+zb = mid['BOARD_TOP'] + 0.05
+part = part.fuse(outer.common(Part.makeBox(X_SEAM + 1 - (sx + 0.2), 70, 30, P(sx + 0.2, -6, zb))))
+part = part.cut(mid['envelope'](WALL / 2 - FIT, sx, X_SEAM + 1, mid['BOARD_TOP'] - 1, mid['LIP_FRONT'] + WALL / 2 + FIT))
+step('socket')
 # board corner at the seam (board arch edge (-22.51, 8.33) -> (-18.93, 8.71)): no wall below the board top there
 seam_board = Part.Face(Part.makePolygon([P(-24.5, 8.33 - 0.15, 0), P(-22.51, 8.33 - 0.15, 0), P(-18.93, 8.71 - 0.15, 0),
                                          P(-18.93, 30, 0), P(-24.5, 30, 0), P(-24.5, 8.33 - 0.15, 0)]))
@@ -175,7 +188,7 @@ x0, x1, y0, y1, zt = SW['top']
 part = part.cut(Part.makeBox(x1 - x0, y1 - y0, zt - 3.0, P(x0, y0, 3.0)))
 step('clearances')
 
-# --- posts: the front part's post meets the short plate post; M3x8 CSK sunk to z 9 ------------------
+# --- posts: the front part's post meets the short plate post; M2.5x8 CSK sunk to z 9.5 --------------
 for (x, y) in POSTS:
     part = part.fuse(Part.makeCylinder(FRONT_POST_D / 2, 20, P(x, y, FRONT_POST_Z0)).common(outer))
 x0, x1, y0, y1, zt = ENC1_BODY                       # post 3's front post passes next to ENC1's body
@@ -185,6 +198,16 @@ for (x, y) in POSTS:
     depth = (CSK_D - SCREW_CLR) / 2
     part = part.cut(Part.makeCone(SCREW_CLR / 2, CSK_D / 2, depth, P(x, y, HEAD_Z - depth)))
     part = part.cut(Part.makeCylinder(CBORE_D / 2, 10, P(x, y, HEAD_Z - 0.01)))
+    # rim chamfer: probe the outer surface around the rim, chamfer 45 deg from RIM_CHAMFER below its lowest point
+    rim = []
+    for i in range(32):
+        a = 2 * math.pi * i / 32
+        px, py = x + (CBORE_D / 2 + 0.05) * math.cos(a), y + (CBORE_D / 2 + 0.05) * math.sin(a)
+        zs = [v.Z for v in outer.section(Part.makeLine(P(px, py, -1), P(px, py, 30))).Vertexes]
+        if zs: rim.append(max(zs))
+    zf = max(HEAD_Z + 0.2, min(rim) - RIM_CHAMFER)
+    part = part.cut(Part.makeCone(CBORE_D / 2, CBORE_D / 2 + 10, 10, P(x, y, zf)))
+    print('post', (x, y), 'rim z', round(min(rim), 2), '..', round(max(rim), 2), 'chamfer from z', round(zf, 2))
 step('posts')
 
 # --- H1: boss for the fallback M2 screw from the board's back ----------------------------------------
@@ -204,13 +227,31 @@ usb = Part.makeBox(ux1 - ux0, 8, uz1 - uz0, P(ux0, -1, uz0)).common(prism(profil
 part = part.cut(usb)
 step('knock-outs')
 
-# --- cable: seat for the split clamp insert, exit through the ear's arc wall -------------------------
+# --- cable: seat for the split clamp insert, exit paths, slot from below ----------------------------
+def path_cut(shape, pts, r, slot_w):
+    """Cut a round channel (radius r) along the polyline pts and a slot_w wide slot below it to z -1."""
+    pts = [P(*p) for p in pts]
+    for p0, p1 in zip(pts, pts[1:]):
+        d = p1 - p0
+        shape = shape.cut(Part.makeCylinder(r, d.Length, p0, d))
+        h = P(d.x, d.y, 0); h.normalize()
+        n = P(-h.y, h.x, 0) * (slot_w / 2)
+        q = [p0 - n, p1 - n, P(p1.x, p1.y, -1) - P(n.x, n.y, 0), P(p0.x, p0.y, -1) - P(n.x, n.y, 0)]
+        q = [P(v.x, v.y, z) for v, z in zip(q, (p0.z, p1.z, -1, -1))]
+        shape = shape.cut(Part.Face(Part.makePolygon(q + [q[0]])).extrude(n * 2))
+    for p in pts[1:-1]:
+        shape = shape.cut(Part.makeSphere(r, p))
+    return shape
+
+
 c = CABLE
 sx0, sx1 = c['seat_x']
 boss = Part.makeCylinder(c['boss_d'] / 2, sx1 - sx0 + 12, P(sx0 - 12, c['y'], c['z']), P(1, 0, 0))
 part = part.fuse(boss.common(outer))
-part = part.cut(Part.makeCylinder(c['seat_d'] / 2, sx1 - sx0 + 0.5, P(sx0, c['y'], c['z']), P(1, 0, 0)))
-part = part.cut(Part.makeCylinder(c['exit_d'] / 2, 20, P(sx0 - 19.99, c['y'], c['z']), P(1, 0, 0)))
+part = path_cut(part, [(sx1 + 0.5, c['y'], c['z']), (sx0, c['y'], c['z'])], c['seat_d'] / 2, c['slot_w'])
+part = part.cut(Part.makeSphere(c['exit_d'] / 2, P(sx0, c['y'], c['z'])))   # junction of the exit paths
+for pts in CABLE_PATHS:
+    part = path_cut(part, [(sx0 + 0.5, c['y'], c['z'])] + pts[1:], c['exit_d'] / 2, c['slot_w'])
 step('cable')
 
 part = part.removeSplitter()

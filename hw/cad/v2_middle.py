@@ -10,10 +10,8 @@ Shape (case coordinates, z 0 = car console surface, board top z 3.5):
   - back face on the 15 deg display frame (0.2 tape gap); the skin rests on the rear plate's lip
     (lip must be <= z TOP - WALL in this zone);
   - display window = visible area + 0.2, 45 deg flare outwards;
-  - seams: the inner half of the wall (0.75) is removed for SPIGOT mm at each end (rebate); the side
-    parts' tongues (their inner wall half, continued past the seam) slide into it. The tongues belong to
-    the side parts because their shoulders slope up from the seam, so a sleeve on this part would end
-    up floating below the side parts' skin.
+  - spigots: the inner half of the wall (0.75) continues SPIGOT mm past each seam into the side parts,
+    under their (sloped) skin: the side parts, screwed down, hold this part down (it has no screws).
 """
 import math
 import FreeCAD as App
@@ -90,19 +88,9 @@ print('rounded outer envelope valid', outer.isValid())
 cavity = envelope(WALL, -SEAM - SPIGOT - 1, SEAM + SPIGOT + 1, BOARD_TOP - 1, LIP_FRONT)
 part = outer.cut(cavity)
 for sgn in (-1, 1):
-    xa, xb = (SEAM - SPIGOT, SEAM + 1) if sgn > 0 else (-SEAM - 1, -SEAM + SPIGOT)
-    part = part.cut(envelope(WALL / 2, xa, xb, BOARD_TOP - 1, LIP_FRONT + WALL / 2))   # rebate
-
-
-def tongue(sgn, fit):
-    """Side part's tongue for the seam at x = sgn*SEAM: inner wall half, `fit` smaller than the rebate,
-    from 0.5 mm inside the side part to SPIGOT - fit into this part."""
-    xa, xb = (SEAM - SPIGOT + fit, SEAM + 0.5) if sgn > 0 else (-SEAM - 0.5, -SEAM + SPIGOT - fit)
-    t = envelope(WALL / 2 + fit, xa, xb, BOARD_TOP, LIP_FRONT + WALL / 2 - fit).cut(
-        envelope(WALL, xa - 1, xb + 1, BOARD_TOP - 1, LIP_FRONT))
-    for x0, x1, y0, y1, zt in KEEPOUT:
-        t = t.cut(Part.makeBox(x1 - x0, y1 - y0, zt - (BOARD_TOP - 0.5), P(x0, y0, BOARD_TOP - 0.5)))
-    return t
+    xa, xb = (SEAM, SEAM + SPIGOT) if sgn > 0 else (-SEAM - SPIGOT, -SEAM)
+    sleeve = envelope(WALL / 2, xa, xb, BOARD_TOP, LIP_FRONT + WALL / 2).cut(cavity)
+    part = part.fuse(sleeve)
 # part-specific clearances (case coordinates): x0, x1, y0, y1, z top of the cut
 KEEPOUT = [(-13.5, 16.9, 16.05, 27.95, TOP - WALL),    # glass + 0.2: the front wall stops above it
            (20.4, 25.8, 24.6, 27.8, TOP - 0.3),        # D2 (SMA, top 5.71) under the right spigot

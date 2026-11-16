@@ -33,17 +33,17 @@ LIP_J1 = (-74.3, -65.2, 3.3)      # J1 (ZH) body overhangs the board edge from z
 MID_SEAM, MID_LIP = 23.0, 5.0     # middle front part x -20..20 + 3 mm spigots: its skin (z 5.0..6.5) rests on the lip
 EAR_X, EAR_R = 96.0, 20.0         # ear: R20 quarter disc, v1 thin strip to x 106 removed
 MAIN_X = 76.0
-POST_D = 6.6                      # spacer tube (1.0 wall around the insert); board notches are D7.5 (V2Vars.notch_d)
+POST_D = 6.0                      # spacer tube (1.2 wall around the insert); board notches are D7.5 (V2Vars.notch_d)
 BOSS_D, BOSS_TOP = 10.0, None     # boss under the board (top set below to the PCB bottom)
-INSERT_D = v('insert_pilot_d')    # 4.6 (M3 x 3 x 4.5 heat-set), pressed in from the plate underside
+INSERT_D = v('insert_pilot_d')    # 3.6 (M2.5 x 3 x 3.5 heat-set), pressed in from the plate underside
 INSERT_DEPTH = 5.0                # pilot from z 0 up to a shoulder at z 5: the 3 mm insert is pressed in
                                   # from below up to it (sits z 2..5); the screw pull pushes it into the boss
-SCREW_CLR = 3.4                   # M3 clearance through the spacer tube
+SCREW_CLR = 2.9                   # M2.5 clearance through the spacer tube
 SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
 SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
 POST_TOP = 6.0                    # short posts (easy to lift the front + board off); the front parts' posts
-                                  # continue from z 6.1. Screws M3x8 CSK, head top at z 9.0 (tip at z 1.0)
+                                  # continue from z 6.1. Screws M2.5x8 DIN 965, head top at z 9.5 (tip at z 1.5)
 POSTS = [(-v('post1_left'), v('post1_y')), (v('post2_x'), v('post2_y')),
          (-v('post3_left'), v('post3_y')), (v('post4_x'), v('post4_y'))]
 PAD_H = GAP                       # support pads touch the PCB bottom
@@ -148,12 +148,29 @@ def plate_body():
     return solid.removeSplitter()
 
 
+# cable paths at the left ear (keep in sync with v2_left.CABLE_PATHS): the plate ear gets notched where
+# the cable runs down into the V between the display frame and the vent housing (A) or into the housing (B)
+CABLE_PATHS = [[(-79.0, 25.2, 6.35), (-96.5, 27.8, 2.5), (-106.0, 27.8, 2.5)],
+               [(-79.0, 25.2, 6.35), (-84.75, 25.43, 2.5), (-92.0, 25.43, 2.5)]]
+CABLE_R = 3.0
+
+
+def cable_notches(solid):
+    for pts in CABLE_PATHS:
+        pts = [App.Vector(*p) for p in pts]
+        for p0, p1 in zip(pts, pts[1:]):
+            solid = solid.cut(Part.makeCylinder(CABLE_R, (p1 - p0).Length, p0, p1 - p0))
+        for p in pts[1:-1]:
+            solid = solid.cut(Part.makeSphere(CABLE_R, p))
+    return solid
+
+
 def box(r, z0, dz):
     x0, x1, y0, y1 = r
     return Part.makeBox(x1 - x0, y1 - y0, dz, App.Vector(x0, y0, z0))
 
 
-base = plate_body()
+base = cable_notches(plate_body())
 A = base.cut(box(DRV_BOARD, -1, PLATE_T + 2)).removeSplitter()
 B = base.cut(box(PASSIVES, PLATE_T - PASSIVES_POCKET, PASSIVES_POCKET + 0.01)).removeSplitter()
 
