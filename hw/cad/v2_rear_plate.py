@@ -43,7 +43,7 @@ SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
 SIDE_TOP = 12.4                   # side parts' outer top (v1)
 WALL = 1.5                        # SLA wall
-POST_TOP = SIDE_TOP - WALL        # posts reach the side parts' inner ceiling
+POST_TOP = SIDE_TOP - 2.0         # posts end under the side parts' 2 mm countersink bosses (z 10.4)
 POSTS = [(-v('post1_left'), v('post1_y')), (v('post2_x'), v('post2_y')),
          (-v('post3_left'), v('post3_y')), (v('post4_x'), v('post4_y'))]
 PAD_H = GAP                       # support pads touch the PCB bottom
