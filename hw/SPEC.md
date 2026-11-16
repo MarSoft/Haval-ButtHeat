@@ -55,7 +55,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   (11.5 × 1.3) threads through with ≈ 0.3 mm spare per end; the flex (7.8 wide) passes within it.
   Board left: 3.0 above, ≈ 2.1 below.
 - Post notches Ø7.5 (case posts Ø6.5, M3 heat-set inserts):
-  (−48, 26) top, (−35, 4) bottom (overlaps the start of the scallop), **(58, 4)** bottom
+  (−48, 26) top, **(−33, 5)** bottom (moved from (−35, 4), §“Post 3 moved”), **(58, 4)** bottom
   (moved from (66, 4) for J2).
   Post 2 (78.5, 24) is beside the board on the ear.
 - Encoder **shaft positions** (markers only, not holes): (−43, 11), (43, 11), (65, 15).
@@ -66,12 +66,15 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 ## 4. Components
 
 ### J1 — power/CAN connector
-- JST-PH 2.0 mm **side-entry THT**, S4B-PH-K (`Connector_JST:JST_PH_S4B-PH-K_1x04_P2.00mm_Horizontal`).
-- Rotation 270 → plug enters along +X from the **left wall** (cable comes from the top-left ear).
-  Body deliberately overhangs the left board edge.
-- Pin 1 at case (−71.5, 25.5), pins 2…4 at y 23.5 / 21.5 / 19.5; body x −77.75 … −70.15,
-  y 17.55 … 27.45; pads 0.625 from the board edge and 0.625 from the SuperMini pads.
-  Solder the SuperMini before J1 (J1 housing ends 0.15 mm from its left pads).
+- **JST-ZH 4-pin vertical THT, B4B-ZR, 1.5 mm pitch** (`Connector_JST:JST_ZH_B4B-ZR_1x04_P1.50mm_Vertical`),
+  rotated 180°: pin 1 (+12 V) at case (−67.55, 26.70), pins 2/3/4 (GND, CAN+, CAN−) towards the
+  left edge (x −69.05 / −70.55 / −72.05). Body x −73.55 … −65.74, y 25.09 … 28.9: overhangs the
+  top edge by 0.9 mm and the left edge by ~0.5 mm, clears the SuperMini body by 0.29 mm, sits
+  inside U1's antenna keep-out courtyard (DRC-excluded; antenna-WROOM builds don't fit J1).
+- Plug inserts **from the front**; the case is adapted (top-left cable exit, split clamp, rib over
+  the plug) — see §“J1 = JST ZH vertical (2026-11-16)” for measurements and cable routing.
+- Replaces the side-entry JST-PH S4B-PH-K (its mouth faced the car's air-vent wall — no room for
+  the plug).
 - Pinout: 1 = +12 V, 2 = GND, 3 = CANH, 4 = CANL.
 
 ### MCU — exactly one of two variants is fitted (same PCB)
@@ -174,6 +177,8 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   radio). Pinouts differ, so they can't be stacked. C8 (5 V in) / C9 (3.3 V out) 0603 shared.
   Front, above the left button: U5 (−28.6, 25.0), C8 (−25.7, 25.1), C9 (−24.2, 25.1), U6 (−21.6, 25.0)
   (moved 2026-11-16 from below J3 so the middle case part can bevel towards the knob).
+  U5's EN is fed from +5V through a short **0.15 mm** stub (EN input current only — deliberate,
+  2026-11-17; keep its DRC exclusion when re-running checks against the Power class).
 
 ### Buck 12 V → 5 V (discrete, Mini360 donor parts)
 - Prototype uses a **Mini360** module (MP2307). It doesn't fit anywhere on the carrier without
@@ -224,10 +229,13 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 (internal ones are enabled in firmware), but the prototype boots fine with ENC1-A on GPIO2.
 
 ## 5. Case interfaces
-- Left wall / top-left ear: opening for the JST plug.
-- Bottom wall: USB-C cutout (variant A: under the SuperMini; variant B: bottom-left).
-- Rear plate: VHB to the car panel; posts/bosses for M3 × 10 CSK; ears ±106.
-- Front: 3-piece SLA, seams ±48, 5 mm laps, display window, scallop + facet for knob grip.
+- J1 (vertical ZH): plug goes in from the front; cable exits at the top-left corner through the
+  split clamp (§“Cable and strain relief (decided 2026-11-16)”).
+- Bottom wall: USB-C cutout (variant A: under the SuperMini; variant B: bottom-right, §“J2 USB-C”).
+- Rear plate: VHB to the car panel; M2.5 heat-set inserts + M2.5×8 CSK posts (§“Rear plate v2”),
+  ears ending at the R20 arc, x ±96.
+- Front: 3-piece SLA; seams at ±20 (middle-part spigots to ±23 slide under the side skins,
+  §“Case design status”); display window, scallop + facet for knob grip.
 
 ## 6. Open decisions / to verify
 1. ~~Display mounting~~ → options (1) + (3), see §4 Display. (Glass through the board was ruled
@@ -243,14 +251,11 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
    22.384 × 5.584 (model's 23.2 × 6.5 is likely the visible window).
 6. ~~Glass active-area position~~ → from the FreeCAD model, see §4 Display.
 
-8. **Variant-B USB-C (J2)** at the bottom-right corner, facing down (end walls are blocked by
-   the car's air ducts; a real-world check says a cable fits at the board's extreme ends).
-   Placed: GCT USB4085 (stock, fully THT), centre x 67.6, face 0.5 past the case bottom line
-   (y −0.5), pins 0.54 below ENC3's switch pins. **Post 4 moved to (58, 4).**
-   Wanted instead: a reduced-pin THT part (VBUS, GND, D+/D−, CC1/CC2) — the USB4085's 0.85-pitch
-   pins have 0.15 mm gaps (DRC clearance errors at the 0.2 default; JLC can do it, but it's fiddly).
-10. **Post 3 (−35, 4) collides with ENC1's body** (body x −49.6 … −36.4, y 4.8 … 17.2 vs post
-    Ø6.5): move it right (≈ x ≥ −32.5) — later, together with the case.
+8. ~~Variant-B USB-C (J2)~~ → **XKB U262-161N-4BVC11**, bottom-right corner, facing down (end walls
+   blocked by the car's air ducts; a cable fits at the board's extreme ends) — §“J2 USB-C (variant B)
+   — final part (2026-11-15)”. **Post 4 moved to (58, 4).** (First pick, GCT USB4085, proved unorderable.)
+10. ~~Post 3 (−35, 4) collides with ENC1's body~~ → moved to **(−33, 5)**, §“Post 3 moved
+    (2026-11-15)”.
 11. **CAN transceiver** on the carrier (prototype used a TJA1050 5 V module — its RXD is 5 V, not
     safe for the ESP32-C3). Proposed SOIC-8 footprint that takes either TJA1051T/3 (automotive,
     5 V + VIO 3.3 V) or SN65HVD230 (3.3 V only); bus TVS (PESD2CAN-class, SOT-23), split
