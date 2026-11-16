@@ -172,7 +172,8 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 - Two alternative footprints on the same nets, fit one: **U5 SOT-23-5** (ME6211 / AP2112K, 500 mA —
   enough for Wi-Fi) or **U6 SOT-23** (the display module's 662K / XC6206, ~200 mA — fine without
   radio). Pinouts differ, so they can't be stacked. C8 (5 V in) / C9 (3.3 V out) 0603 shared.
-  Front, below J3, x −22 … −14, y 10 … 16.
+  Front, above the left button: U5 (−28.6, 25.0), C8 (−25.7, 25.1), C9 (−24.2, 25.1), U6 (−21.6, 25.0)
+  (moved 2026-11-16 from below J3 so the middle case part can bevel towards the knob).
 
 ### Buck 12 V → 5 V (discrete, Mini360 donor parts)
 - Prototype uses a **Mini360** module (MP2307). It doesn't fit anywhere on the carrier without
@@ -182,7 +183,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   Board refs (Mini360 ref → ours): U4 MP2307; L1 2 µH IHLP-2525 (SW→+5V); C3 12 µF 1206 input
   (C1); C4 12 µF 1206 output (C2); C5 4.7 nF 0603 COMP→RC (C3); R3 8.2k 0603 RC→GND; C6 0.1 µF
   0603 SS (C4); C7 10 nF 0603 BS–SW (C5); R4 100k 0603 EN→VIN; R2 8.2k 0603 FB→GND;
-  **R5 36k 0603 FB→+5V (fixed 4.99 V)**, RV1 220k trimmer (TC33X-class footprint for the EVM-3E)
+  **R5 39k 0603 FB→+5V_BUCK (≈5.27 V before D6)**, RV1 220k trimmer (TC33X-class footprint for the EVM-3E)
   in parallel position, normally **DNP**.
 - Input protection ahead of it: D2 reverse-polarity Schottky (SMA, e.g. SS34), D3 TVS (SMA,
   e.g. SMAJ18A — MP2307 input max ~23 V). No fuse (1 A fuse at the car tap).
@@ -199,7 +200,8 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   - JP2 (2-pad): pin 5 → +3V3 — closed for TJA1051T/3 (VIO), **open** for SN65 (Vref).
   - R6 0603 RXD series (0 Ω default) + R7 0603 RXD→GND (DNP): divider for 5 V RXD parts.
   - R1 0603 pin 8 (S / Rs) → GND. C1 / C2 0603 100 nF on VCC / VIO.
-  - D1 CAN TVS SOT-23 (PESD2CAN-class) at (−48.8, 20.3), left of ENC1's pins.
+  - D1 CAN TVS SOT-23 (PESD2CAN-class) on the **back** next to J1 at (−71.0, 23.3) (moved 2026-11-16;
+    its pins 1/2 swapped in the schematic, the part is symmetric).
   - No termination (car bus already terminated).
 - 0603 column at x −33.7: C1, C2, R1, JP2, R6 (top → bottom).
 
@@ -213,10 +215,10 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 |---|---|---|
 | ENC1 A / B / SW | 2 / 3 / 4 | prototype |
 | ENC2 A / B / SW | 5 / 6 / 7 | prototype |
-| ENC3 A / B / SW | 0 / 1 / 10 | new |
-| Buttons L / R | 0 / 1 | shared with ENC3 A / B (never fitted together) |
+| ENC3 A / B / SW | 10 / 20 / 21 | swapped with CAN 2026-11-15 (GPIO21 = U0TXD: boot log on ENC3_SW, harmless) |
+| Buttons L / R | 10 / 20 | shared with ENC3 A / B (SW1/SW2 on ENC3_A, SW3/SW4 on ENC3_B) |
 | I2C SDA / SCL | 8 / 9 | fixed (prototype) |
-| CAN TX / RX | 20 / 21 | fixed (prototype sdkconfig; Kconfig defaults differ) |
+| CAN TX / RX | 0 / 1 | moved from 20/21 2026-11-15 (TWAI is routed via the GPIO matrix; firmware pins change) |
 | USB D− / D+ | 18 / 19 | WROOM only (J2) |
 GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no external pull-ups
 (internal ones are enabled in firmware), but the prototype boots fine with ENC1-A on GPIO2.
