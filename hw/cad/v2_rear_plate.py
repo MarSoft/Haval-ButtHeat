@@ -51,8 +51,10 @@ ENC_PADS = [(-43.0, 11.0), (43.0, 11.0), (65.0, 15.0)]   # shaft axes
 ENC_PAD_D = 6.0                   # clears A/B/C, switch pins and lugs (>= 5.6 mm from axis)
 BTN_PADS = [(-27.0, 19.0), (27.0, 19.0)]
 BTN_PAD_D = 4.0                   # inside the 4 legs (r 3.9)
-D1 = (-71.0, 23.3, 3.6, 3.6)      # SOT-23 on the back: x, y, w, h
-D1_POCKET = 1.0
+# parts on the PCB back (other than the display passives): x, y, w, h (pad extent + margin), pocket depth
+BACK_POCKETS = [(-71.0, 23.3, 3.6, 3.6, 1.0),     # D1 SOT-23
+                (-40.7, 24.8, 1.6, 2.9, 1.0),     # C1 0603 (rot 90) under U3 pin 3
+                (-62.9, 3.8, 2.1, 3.5, 1.0)]      # C20 0805 10uF (rot 90, <= 1.25 tall) at the WROOM 3V3
 DRV_BOARD = (-19.29 - 0.5, 18.71 + 0.5, 16.0 - 0.5, 28.0 + 0.3)   # option 1 cut-out (x0, x1, y0, y1)
 PASSIVES = (-5.5, 13.0, 13.5, 25.0)                                 # option 3 pocket
 PASSIVES_POCKET = 0.8
@@ -141,8 +143,8 @@ def plate_body():
         solid = solid.cut(Part.makeCylinder(SCREW_CLR / 2, POST_TOP + 1, P(x, y, 0)))
     for (x, y) in SCREW_HEAD_POCKETS:
         solid = solid.cut(Part.makeCylinder(SCREW_HEAD_D / 2, PLATE_T + 1, P(x, y, -0.5)))
-    x, y, w, h = D1
-    solid = solid.cut(Part.makeBox(w, h, D1_POCKET, P(x - w / 2, y - h / 2, PLATE_T - D1_POCKET)))
+    for x, y, w, h, d in BACK_POCKETS:
+        solid = solid.cut(Part.makeBox(w, h, d + 0.01, P(x - w / 2, y - h / 2, PLATE_T - d)))
     return solid.removeSplitter()
 
 

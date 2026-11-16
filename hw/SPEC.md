@@ -336,7 +336,7 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - **Posts** (4): a Ø10 boss up to just under the PCB (clipped to the plate outline), then a Ø7 spacer tube to z 10.9 (the side parts' inside ceiling), with a Ø3.4 screw clearance hole. The **M3×3×4.5 heat-set insert is pressed in from the plate's underside**, flush, 3.5 mm deep, so the screw's pull pushes it into the boss. Screws: **M3×12 countersunk** from the front case top.
 - Support pads 0.5 mm: Ø6 under the encoder shafts, Ø4 under the buttons.
 - **H1/H2 fallback M2 screw heads** (±27, 13): Ø5.5 through-holes.
-- D1 pocket 1 mm. A: driver-board through cut-out (x −19.8…19.2, y 15.5…28.3). B: 0.8 mm passives pocket (x −5.5…13, y 13.5…25).
+- 1 mm pockets for the back-side parts: D1 (−71, 23.3), C1 (−40.7, 24.8; CAN VCC decoupling under U3 pin 3), C20 (−62.9, 3.8; WROOM 3V3 10 µF 0805). A: driver-board through cut-out (x −19.8…19.2, y 15.5…28.3). B: 0.8 mm passives pocket (x −5.5…13, y 13.5…25).
 - Checked headless: no overlap with the car model; the posts clear the board notches by 0.25 mm; only through-hole leads overlap (trimmed or bent anyway).
 
 ## LDO cluster moved; front middle part (2026-11-16)
@@ -348,3 +348,15 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - display window = visible area + 0.2, flared 45°.
 - To let the bevel work, **U5/U6/C8/C9 moved** from the left-front corner (x −21…−14, y 11–16) to above the left button (y ≈ 25, x −28.6…−21.6), under the left side part. The user re-routed; the USB pair lost 2 via pairs.
 - Knob clearance (car knob R≈14.5 at the base, centred on the origin): about 1 mm at the top centre (limited by the glass), 2.5 mm at x ±10, 7 mm at the seams.
+
+## Case design status (2026-11-16) — see ai-memory notes/v2-case-design-status.md for the full list
+- Generators: hw/cad/v2_rear_plate.py, v2_middle.py, v2_left.py (→ hw/cad/out/*.brep), loaded by v2_load.py. Run them headless only (OCCT segfaults on coincident geometry; heavy booleans crashed the GUI).
+- Left part rework requested by the user:
+  1. seam as a sloped shoulder (v1 style), buttons on the shoulder;
+  2. the USB knock-out and post 3's countersink must not break through the front rounding;
+  3. a lower post joint: a short rear-plate post plus a matching post on the front part;
+  4. the left end shaped like v1 (follows the car's R20 air-duct arc);
+  5. remove the thin spike at the cable inlet;
+  6. M2 bosses for the H1/H2 fallback screws in the front parts.
+- Encoder nut/washer may sit partly in the skin (accepted). Clamp insert retained by one M2 screw (split, keyed halves).
+- Board follow-ups: WROOM 3V3 decoupling 10 µF + 100 nF at U1 pin 1 (to add to the schematic); CAN VCC cap C1 closer to U3 pin 3; a buck input HF cap at U4 pin 2; NECK rule scope; more GND bridges between the MCU-side and main pours.
