@@ -5594,4 +5594,398 @@
 			)
 		)
 	)
+  (symbol (lib_id "Device:C") (at 223.52 92.71 0) (unit 1)
+    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
+    (uuid "36bc7ab2-9024-487c-ba73-41374262d8a5")
+    (property "Reference" "C20"
+      (at 225.425 91.44 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (justify left))
+    )
+    (property "Value" "10uF"
+      (at 225.425 93.98 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (justify left))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+      (at 224.485 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Datasheet" ""
+      (at 223.52 92.71 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Description" "Unpolarized capacitor"
+      (at 223.52 92.71 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (pin "1" (uuid "00d8c4ce-a13c-46ba-8baf-40c424fa304b"))
+    (pin "2" (uuid "8142a939-1133-48b6-8272-3f2366ef6a4f"))
+    (instances
+      (project "ButtHeatCarrier"
+        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
+          (reference "C20")
+          (unit 1)
+        )
+      )
+    )
+  )
+  (symbol (lib_id "Device:C") (at 236.22 92.71 0) (unit 1)
+    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
+    (uuid "c7651871-25ce-42e4-aca6-c953640016ee")
+    (property "Reference" "C21"
+      (at 238.125 91.44 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (justify left))
+    )
+    (property "Value" "100nF"
+      (at 238.125 93.98 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (justify left))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+      (at 237.185 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Datasheet" ""
+      (at 236.22 92.71 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Description" "Unpolarized capacitor"
+      (at 236.22 92.71 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (pin "1" (uuid "1b4806f6-d4f3-4650-9d3f-8aabb69e5373"))
+    (pin "2" (uuid "b5c7ebe4-7e0c-438b-9628-107d0864e084"))
+    (instances
+      (project "ButtHeatCarrier"
+        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
+          (reference "C21")
+          (unit 1)
+        )
+      )
+    )
+  )
+  (symbol (lib_id "power:+3V3") (at 223.52 88.9 0) (unit 1)
+    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
+    (uuid "ebca4517-0643-4adb-a448-f5f0b77e71e8")
+    (property "Reference" "#PWR0901"
+      (at 223.52 86.36 0)
+     
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (hide yes))
+    )
+    (property "Value" "+3V3"
+      (at 223.52 85.09 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Footprint" ""
+      (at 223.52 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Datasheet" ""
+      (at 223.52 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Description" "Power symbol creates a global label with name \"+3V3\""
+      (at 223.52 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (pin "1" (uuid "92096523-0924-4f30-8c29-7a9c4e289133"))
+    (instances
+      (project "ButtHeatCarrier"
+        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
+          (reference "#PWR0901")
+          (unit 1)
+        )
+      )
+    )
+  )
+  (symbol (lib_id "power:+3V3") (at 236.22 88.9 0) (unit 1)
+    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
+    (uuid "c4cf2870-179f-47f1-8301-f3c582eec1a9")
+    (property "Reference" "#PWR0902"
+      (at 236.22 86.36 0)
+     
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (hide yes))
+    )
+    (property "Value" "+3V3"
+      (at 236.22 85.09 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Footprint" ""
+      (at 236.22 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Datasheet" ""
+      (at 236.22 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Description" "Power symbol creates a global label with name \"+3V3\""
+      (at 236.22 88.9 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (pin "1" (uuid "790cf3f1-7144-4e22-861a-7bfa812acf18"))
+    (instances
+      (project "ButtHeatCarrier"
+        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
+          (reference "#PWR0902")
+          (unit 1)
+        )
+      )
+    )
+  )
+  (symbol (lib_id "power:GND") (at 223.52 96.52 0) (unit 1)
+    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
+    (uuid "7f52b0f8-7cd5-435e-b6ae-ee5cd103a9e8")
+    (property "Reference" "#PWR0903"
+      (at 223.52 93.98 0)
+     
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (hide yes))
+    )
+    (property "Value" "GND"
+      (at 223.52 99.06 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Footprint" ""
+      (at 223.52 96.52 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Datasheet" ""
+      (at 223.52 96.52 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+      (at 223.52 96.52 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (pin "1" (uuid "17cfce2b-5ec7-4a5c-8ee4-7a01989abdb8"))
+    (instances
+      (project "ButtHeatCarrier"
+        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
+          (reference "#PWR0903")
+          (unit 1)
+        )
+      )
+    )
+  )
+  (symbol (lib_id "power:GND") (at 236.22 96.52 0) (unit 1)
+    (body_style 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (in_pos_files yes) (dnp no)
+    (uuid "8e7fe1c4-8118-41eb-a489-b993a97a0d2a")
+    (property "Reference" "#PWR0904"
+      (at 236.22 93.98 0)
+     
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					) (hide yes))
+    )
+    (property "Value" "GND"
+      (at 236.22 99.06 0)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Footprint" ""
+      (at 236.22 96.52 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Datasheet" ""
+      (at 236.22 96.52 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+      (at 236.22 96.52 0)
+      (hide yes)
+      (show_name no)
+      (do_not_autoplace no)
+      (effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+    )
+    (pin "1" (uuid "5da47a7f-d82f-4bff-aa41-e89e1643adc9"))
+    (instances
+      (project "ButtHeatCarrier"
+        (path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
+          (reference "#PWR0904")
+          (unit 1)
+        )
+      )
+    )
+  )
 )

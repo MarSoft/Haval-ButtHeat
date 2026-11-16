@@ -82,22 +82,6 @@
           ""
         ],
         [
-          "courtyards_overlap|83525000|96275000|1c52ec24-abce-45ae-a1d3-aa662a0083a9|c969558c-9e62-4ce8-abfd-73bfa8721046",
-          ""
-        ],
-        [
-          "courtyards_overlap|83525000|96275000|711e6b91-ad16-4464-a621-314231c59caf|c969558c-9e62-4ce8-abfd-73bfa8721046",
-          ""
-        ],
-        [
-          "courtyards_overlap|86525000|96275000|1c52ec24-abce-45ae-a1d3-aa662a0083a9|84d0bed8-0717-410e-a4da-f80f59a96ae5",
-          ""
-        ],
-        [
-          "courtyards_overlap|86525000|96275000|711e6b91-ad16-4464-a621-314231c59caf|84d0bed8-0717-410e-a4da-f80f59a96ae5",
-          ""
-        ],
-        [
           "items_not_allowed|165309792|83335000|034fe8da-c754-4d79-ac07-2f3d20e9f827|00000000-0000-0000-0000-000000000000",
           "J1 is unsoldered if WROOM-with-antenna is used"
         ]
