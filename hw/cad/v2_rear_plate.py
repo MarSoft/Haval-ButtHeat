@@ -30,6 +30,7 @@ TAPE_GAP = 0.2                    # clearance to the display frame (thin tape)
 FRAME_Y0, FRAME_TAN = 29.75, math.tan(math.radians(15))
 LIP_Y0, LIP_H = 28.3, 6.0         # lip: wedge from just behind the PCB top edge (y 28 + 0.3) to the frame
 LIP_J1 = (-74.3, -65.2, 3.3)      # J1 (ZH) body overhangs the board edge from z 3.5: lip lowered there
+MID_SEAM, MID_LIP = 23.0, 5.0     # middle front part x -20..20 + 3 mm spigots: its skin (z 5.0..6.5) rests on the lip
 EAR_X, EAR_R = 96.0, 20.0         # ear: R20 quarter disc, v1 thin strip to x 106 removed
 MAIN_X = 76.0
 POST_D = 7.0                      # spacer tube; board notches are D7.5 (V2Vars.notch_d)
@@ -116,6 +117,11 @@ def plate_body():
     run = LIP_H                                     # 45 deg over the full lip height at the outer ends
     lip = lip.cut(wedge_cut(-MAIN_X - 0.01, -MAIN_X + run, 0.0, True))
     lip = lip.cut(wedge_cut(MAIN_X - run, MAIN_X + 0.01, 0.0, False))
+    # middle zone: the middle part's skin (z MID_LIP..6.5) rests on the lip -> lower it there, 45 deg flanks
+    mx, mz = MID_SEAM, MID_LIP
+    lip = lip.cut(Part.makeBox(2 * mx, 6, LIP_H, P(-mx, LIP_Y0 - 1, mz)))
+    lip = lip.cut(wedge_cut(-mx - (LIP_H - mz), -mx, mz, False))
+    lip = lip.cut(wedge_cut(mx, mx + (LIP_H - mz), mz, True))
     jrun = LIP_H - zj                               # J1 step: down from LIP_H to zj on both sides
     lip = lip.cut(Part.makeBox(x1 - x0, 6, LIP_H, P(x0, LIP_Y0 - 1, zj)))
     lip = lip.cut(wedge_cut(x0 - jrun, x0, zj, False))

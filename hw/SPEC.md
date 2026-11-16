@@ -336,3 +336,13 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - **H1/H2 fallback M2 screw heads** (±27, 13): Ø5.5 through-holes.
 - D1 pocket 1 mm. A: driver-board through cut-out (x −19.8…19.2, y 15.5…28.3). B: 0.8 mm passives pocket (x −5.5…13, y 13.5…25).
 - Checked headless: no overlap with the car model; the posts clear the board notches by 0.25 mm; only through-hole leads overlap (trimmed or bent anyway).
+
+## LDO cluster moved; front middle part (2026-11-16)
+- The front case's **middle part** (hw/cad/v2_middle.py → hw/cad/out/Middle.brep) spans x −20…20, plus 3 mm spigots to ±23:
+  - top z 6.5 over the glass (0.2 mm air, 1.5 mm wall);
+  - bevel plane from the glass's bottom edge (y 16.05, z 6.5) down to z 5.0 at the seams;
+  - front edge flush with the board's knob-arch edge (the arch is our own clearance shape, not a car feature, so it can still change);
+  - back face on the 15° frame, its skin resting on the rear plate's lip, which is lowered to z 5.0 for |x| ≤ 23;
+  - display window = visible area + 0.2, flared 45°.
+- To let the bevel work, **U5/U6/C8/C9 moved** from the left-front corner (x −21…−14, y 11–16) to above the left button (y ≈ 25, x −28.6…−21.6), under the left side part. The user re-routed; the USB pair lost 2 via pairs.
+- Knob clearance (car knob R≈14.5 at the base, centred on the origin): about 1 mm at the top centre (limited by the glass), 2.5 mm at x ±10, 7 mm at the seams.
