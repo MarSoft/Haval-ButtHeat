@@ -39,6 +39,8 @@ PLATE_NOTCH_R = 3.0                                   # rear plate ear notched a
 INSERT_OD = 8.6                                       # 0.1 radial clearance in the seat
 INSERT_GAP = 0.05                                     # axial clearance at each end of the seat
 SPLIT_GAP = 0.2                                       # between the halves (each trimmed 0.1 off the axis plane)
+SPLIT_STEP = 1.2                                      # on the -y (tab) side the split is raised by this: the
+                                                      # bottom half's -y wall carries the tab solidly
 BORE_SQUEEZE = 0.5                                    # bore = CABLE_D - this: assembled, the halves stand 8.9
                                                       # tall in the 8.8 seat -> clamped
 GRIP_H, GRIP_W, GRIP_N = 0.3, 0.6, 3                  # grip rings inside the bore

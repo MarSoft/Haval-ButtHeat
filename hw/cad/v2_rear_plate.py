@@ -52,11 +52,11 @@ ENC_PADS = [(-43.0, 11.0), (43.0, 11.0), (65.0, 15.0)]   # shaft axes
 ENC_PAD_D = 6.0                   # clears A/B/C, switch pins and lugs (>= 5.6 mm from axis)
 BTN_PADS = [(-27.0, 19.0), (27.0, 19.0)]
 # rib under the board's knob-arch edge (the middle part's front edge presses there): the plate's own front
-# edge continued up to the PCB (same extrusion, flush), RIB_W deep (in y), over |x| <= RIB_X; interrupted
-# around the display passives C10/C11 on the board's back (option 3)
+# edge continued up to the PCB (same extrusion, flush), RIB_W deep (in y), over |x| <= RIB_X. In plate B the
+# C10/C11 bay of the passives pocket trims its back edge there
 RIB_W, RIB_X = 2.0, 18.9                        # |x| <= 18.9: plate arch = board arch there; further out the
                                                    # left/right parts' front walls stand on the plate
-RIB_KEEPOUT = [(8.6, 12.6, 13.0, 18.0)]
+RIB_KEEPOUT = []
 BTN_PAD_D = 4.0                   # inside the 4 legs (r 3.9)
 # parts on the PCB back (other than the display passives): x, y, w, h (pad extent + margin), pocket depth
 BACK_POCKETS = [(-71.0, 23.3, 3.6, 3.6, 1.0),     # D1 SOT-23
@@ -64,9 +64,9 @@ BACK_POCKETS = [(-71.0, 23.3, 3.6, 3.6, 1.0),     # D1 SOT-23
                 (-62.9, 3.8, 2.1, 3.5, 1.0)]      # C20 0805 10uF (rot 90, <= 1.25 tall) at the WROOM 3V3
 DRV_BOARD = (-19.29 - 0.5, 18.71 + 0.5, 16.0 - 0.2, 28.0 + 0.3)   # option 1 cut-out (x0, x1, y0, y1); y0: leaves
                                                                     # 0.3 mm of plate at x 0 (front edge y 15.5)
-# option 3 pocket for the passives on the board's back: behind the rib (C12..C14 pads start at y 17.9), plus a
-# bay for C10/C11 (pads x 9.2..12.0, y 15.1..16.7) where the rib is interrupted
-PASSIVES = [(-5.5, 13.0, 17.6, 25.0), (8.8, 12.4, 14.8, 17.7)]
+# option 3 pocket for the passives on the board's back (rerouted 2026-11-16): behind the rib (C12..C14 pads
+# start at y 18.9), plus a bay for C10/C11 (rot 90 at (9.6|11.6, 17.0): pads x 9.15..12.05, y 15.75..18.25)
+PASSIVES = [(-5.5, 13.0, 18.6, 25.0), (8.85, 12.35, 15.45, 18.7)]
 PASSIVES_POCKET = 0.8
 
 

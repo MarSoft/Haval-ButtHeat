@@ -6,7 +6,7 @@ coordinates, inside the left part's seat). Geometry and the cable diameter come 
 
 Assembly: lay the cable into the left part's slot from below, put both halves around it (the bottom half's
 pegs into the top half), slide them into the seat from the J1 side until the outer end hits the seat's end,
-then fix the bottom half's tab with an M2 self-tapping screw from below. Assembled on the cable, the halves
+then fix the bottom half's tab with an M2x4 self-tapping screw from below (2.5 mm into the boss). Assembled on the cable, the halves
 stand 0.1 taller than the seat, so the seat squeezes them onto the cable; grip rings bite into the jacket.
 """
 import math
@@ -41,21 +41,29 @@ body.translate(P(0, sy, sz))
 assert body.isValid(), 'insert body invalid'
 
 g = SPLIT_GAP / 2
-top = body.common(Part.makeBox(L + 2, 20, 10, P(xa - 1, sy - 10, sz + g)))
-bot = body.common(Part.makeBox(L + 2, 20, 10, P(xa - 1, sy - 10, sz - g - 10)))
+# split: at the axis on the +y side; raised by SPLIT_STEP on the -y (tab) side, stepping where the bore edge is
+# at that height (so neither half gets a sliver next to the bore)
+ys = sy - math.sqrt(rb ** 2 - SPLIT_STEP ** 2)
+zl, zh = sz + SPLIT_STEP, sz
+def region(pts_yz):
+    f = Part.Face(Part.makePolygon([P(xa - 1, y, z) for y, z in pts_yz] + [P(xa - 1, *pts_yz[0])]))
+    return f.extrude(P(L + 2, 0, 0))
+low = region([(sy - 10, sz - 10), (sy + 10, sz - 10), (sy + 10, zh - g), (ys, zh - g), (ys, zl - g), (sy - 10, zl - g)])
+upp = region([(sy - 10, zl + g), (ys, zl + g), (ys, zh + g), (sy + 10, zh + g), (sy + 10, sz + 10), (sy - 10, sz + 10)])
+top = body.common(upp)
+bot = body.common(low)
 
 # pegs on the bottom half's two lands (between bore and outside), holes in the top half
-xm, rp = (xa + xb) / 2, (rb + R) / 2
-for s in (-1, 1):
-    bot = bot.fuse(Part.makeCylinder(PEG_D / 2, PEG_H + g + 0.3, P(xm, sy + s * rp, sz - g - 0.3)))
-    top = top.cut(Part.makeCylinder(PEG_HOLE_D / 2, PEG_H + 0.2 + 0.1, P(xm, sy + s * rp, sz + g - 0.1)))
+xm = (xa + xb) / 2
+for yp, zf in ((sy - (rb + R) / 2 - 0.1, zl - g), (sy + (rb + R) / 2, zh - g)):
+    bot = bot.fuse(Part.makeCylinder(PEG_D / 2, PEG_H + 0.3, P(xm, yp, zf - 0.3)))
+    top = top.cut(Part.makeCylinder(PEG_HOLE_D / 2, PEG_H + 2 * g + 0.2 + 0.1, P(xm, yp, zf + 2 * g - 0.1)))
 
-# tab at the J1 end (towards -y) under the left part's M2 boss, joined to the bottom half by a web that
-# stays below the split face
+# tab at the J1 end (towards -y) under the left part's M2 boss, joined to the bottom half's raised -y wall
+# by a web as thick as the tab
 T = TAB
 bot = bot.fuse(Part.makeBox(T['x1'] - T['x0'], T['y1'] - T['y0'], T['z1'] - T['z0'], P(T['x0'], T['y0'], T['z0'])))
-web_y1 = sy - rb - 0.5
-web = Part.makeBox(xb - T['x0'], web_y1 - (T['y1'] - 0.2), (sz - g - 0.3) - T['z0'], P(T['x0'], T['y1'] - 0.2, T['z0']))
+web = Part.makeBox(xb - T['x0'], (ys - 0.6) - (T['y1'] - 0.3), T['z1'] - T['z0'], P(T['x0'], T['y1'] - 0.3, T['z0']))
 bot = bot.fuse(web.cut(Part.makeCylinder(rb + 0.01, L + 2, P(xa - 1, sy, sz), P(1, 0, 0))))
 bot = bot.cut(Part.makeCylinder(M2['clr_d'] / 2, 5, P(M2['x'], M2['y'], T['z0'] - 1)))
 
