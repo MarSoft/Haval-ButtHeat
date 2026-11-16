@@ -76,7 +76,14 @@ def envelope(t, x0, x1, z_bottom, y_back):
     return s.cut(fr)
 
 
-outer = envelope(0.0, -SEAM, SEAM, BOARD_TOP, 45)
+FRONT_ROUND = 1.0
+# Rounded outer envelope: shrink by r, grow back by r with arc joins (rounds every convex edge, works on
+# the faceted arch where fillets fail), then cut the bottom flat at the board top and the ends flat at
+# the seams so only the outside edges (top-front along the knob, top-back along the frame) stay round.
+_core = envelope(FRONT_ROUND, -SEAM - 5, SEAM + 5, BOARD_TOP - 3, 45)
+_round = _core.makeOffsetShape(FRONT_ROUND, 0.01, join=0)
+outer = _round.common(Part.makeBox(2 * SEAM, 60, 20, P(-SEAM, -10, BOARD_TOP)))
+print('rounded outer envelope valid', outer.isValid())
 cavity = envelope(WALL, -SEAM - SPIGOT - 1, SEAM + SPIGOT + 1, BOARD_TOP - 1, LIP_FRONT)
 part = outer.cut(cavity)
 for sgn in (-1, 1):
@@ -97,6 +104,7 @@ w_lo = Part.makePolygon([P(x0, y0, zb), P(x1, y0, zb), P(x1, y1, zb), P(x0, y1, 
 w_hi = Part.makePolygon([P(x0 - d, y0 - d, zt), P(x1 + d, y0 - d, zt), P(x1 + d, y1 + d, zt), P(x0 - d, y1 + d, zt), P(x0 - d, y0 - d, zt)])
 part = part.cut(Part.makeLoft([w_lo, w_hi], True, True))
 part = part.removeSplitter()
+
 import os
 os.makedirs(OUT, exist_ok=True)
 part.exportBrep(OUT + 'Middle.brep')
