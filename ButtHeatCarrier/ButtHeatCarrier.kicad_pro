@@ -611,6 +611,10 @@
       {
         "netclass": "Buck_SW",
         "pattern": "/Power/BUCK_SW"
+      },
+      {
+        "netclass": "Power",
+        "pattern": "/Power/+5V_BUCK"
       }
     ]
   },
