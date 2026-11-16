@@ -33,17 +33,17 @@ LIP_J1 = (-74.3, -65.2, 3.3)      # J1 (ZH) body overhangs the board edge from z
 MID_SEAM, MID_LIP = 23.0, 5.0     # middle front part x -20..20 + 3 mm spigots: its skin (z 5.0..6.5) rests on the lip
 EAR_X, EAR_R = 96.0, 20.0         # ear: R20 quarter disc, v1 thin strip to x 106 removed
 MAIN_X = 76.0
-POST_D = 7.0                      # spacer tube; board notches are D7.5 (V2Vars.notch_d)
+POST_D = 6.6                      # spacer tube (1.0 wall around the insert); board notches are D7.5 (V2Vars.notch_d)
 BOSS_D, BOSS_TOP = 10.0, None     # boss under the board (top set below to the PCB bottom)
 INSERT_D = v('insert_pilot_d')    # 4.6 (M3 x 3 x 4.5 heat-set), pressed in from the plate underside
-INSERT_DEPTH = 3.5                # from z 0 up; the screw pull pushes it into the boss, not out
+INSERT_DEPTH = 5.0                # pilot from z 0 up to a shoulder at z 5: the 3 mm insert is pressed in
+                                  # from below up to it (sits z 2..5); the screw pull pushes it into the boss
 SCREW_CLR = 3.4                   # M3 clearance through the spacer tube
 SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
 SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
-SIDE_TOP = 12.4                   # side parts' outer top (v1)
-WALL = 1.5                        # SLA wall
-POST_TOP = SIDE_TOP - 2.0         # posts end under the side parts' 2 mm countersink bosses (z 10.4)
+POST_TOP = 6.0                    # short posts (easy to lift the front + board off); the front parts' posts
+                                  # continue from z 6.1. Screws M3x8 CSK, head top at z 9.0 (tip at z 1.0)
 POSTS = [(-v('post1_left'), v('post1_y')), (v('post2_x'), v('post2_y')),
          (-v('post3_left'), v('post3_y')), (v('post4_x'), v('post4_y'))]
 PAD_H = GAP                       # support pads touch the PCB bottom
