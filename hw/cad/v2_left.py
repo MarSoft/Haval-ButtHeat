@@ -51,15 +51,7 @@ H1 = dict(x=-27.0, y=13.0, boss_d=5.0, pilot_d=1.7, top=7.6)   # fallback M2x5 t
 USB_OPEN = (-66.0, -54.5, 2.0, 9.0)                  # SuperMini USB-C (x -64.7..-55.8, z 3.6..7.7) + plug
 J1_BUMP = (-75.0, -62.0, 21.0, 14.5)                 # x0, x1, y0, outer top: room for the wires' U-turn
 J1_CLR = (-74.5, -65.0, 24.9, 29.1, 3.3)             # x0, x1, y0, y1, z0 (ZH header y 25.09..28.9, plug top 9.4)
-# cable: seat for the replaceable split clamp insert (OD 8.6) down on the plate; a SLOT_W slot from every
-# cable path down to z min lets the (already crimped) cable be laid in from below; the insert (OD 8.6 >
-# slot) can't drop out and its outer end bears on the seat's end face (takes the pull)
-CABLE = dict(y=25.2, z=6.35, seat_x=(-79.0, -74.6), seat_d=8.8, boss_d=11.0, exit_d=6.0, slot_w=5.0)
-_S = (CABLE['seat_x'][0], CABLE['y'], CABLE['z'])
-CABLE_PATHS = [
-    [_S, (-96.5, 27.8, 2.5), (-106.0, 27.8, 2.5)],   # A: down into the V between display frame and vent
-                                                      #    housing: at x -96 it touches the frame and z ~0
-    [_S, (-84.75, 25.43, 2.5), (-92.0, 25.43, 2.5)]]  # B: straight into the housing (if it gets a cut-out)
+exec(open('/home/mars/my/buttheat/hw/cad/v2_cable.py').read())   # cable seat, exit paths, insert, M2 tab
 
 
 def frame_y(z, inset=0.0):
@@ -244,14 +236,24 @@ def path_cut(shape, pts, r, slot_w):
     return shape
 
 
-c = CABLE
-sx0, sx1 = c['seat_x']
-boss = Part.makeCylinder(c['boss_d'] / 2, sx1 - sx0 + 12, P(sx0 - 12, c['y'], c['z']), P(1, 0, 0))
+sx0, sx1, sy, sz = SEAT['x0'], SEAT['x1'], SEAT['y'], SEAT['z']
+boss = Part.makeCylinder(SEAT_BOSS_D / 2, sx1 - sx0 + 12, P(sx0 - 12, sy, sz), P(1, 0, 0))
 part = part.fuse(boss.common(outer))
-part = path_cut(part, [(sx1 + 0.5, c['y'], c['z']), (sx0, c['y'], c['z'])], c['seat_d'] / 2, c['slot_w'])
-part = part.cut(Part.makeSphere(c['exit_d'] / 2, P(sx0, c['y'], c['z'])))   # junction of the exit paths
+part = path_cut(part, [(sx1 + 0.5, sy, sz), (sx0, sy, sz)], SEAT['d'] / 2, SLOT_W)
+part = part.cut(Part.makeSphere(EXIT_D / 2, P(sx0, sy, sz)))   # junction of the exit paths
 for pts in CABLE_PATHS:
-    part = path_cut(part, [(sx0 + 0.5, c['y'], c['z'])] + pts[1:], c['exit_d'] / 2, c['slot_w'])
+    part = path_cut(part, [(sx0 + 0.5, sy, sz)] + pts[1:], EXIT_D / 2, SLOT_W)
+# M2 boss hanging from the ceiling (kept out of the seat), then the pocket for the insert's tab (and the web
+# joining it to the bottom half), open towards J1 so the insert slides in; the pocket's top is the boss bottom
+part = part.fuse(Part.makeCylinder(M2['boss_d'] / 2, 20, P(M2['x'], M2['y'], TAB['z0']))
+                 .common(outer).common(Part.makeBox(20, 20, 30, P(M2['x'] - 10, SEAT['y'] - SEAT['d'] / 2 - 0.05 - 20, 0))))
+t = TAB_CLR
+part = part.cut(Part.makeBox(-70.0 - (TAB['x0'] - t), SEAT['y'] - 2.3 - (TAB['y0'] - t), TAB['z1'] - (TAB['z0'] - t),
+                             P(TAB['x0'] - t, TAB['y0'] - t, TAB['z0'] - t)))
+part = part.cut(Part.makeCylinder(M2['pilot_d'] / 2, M2['depth'] + 0.1, P(M2['x'], M2['y'], TAB['z1'] - 0.1)))
+part = part.cut(Part.makeCylinder(M2_HEAD_D / 2, TAB['z0'] - t + 1 + 0.05, P(M2['x'], M2['y'], -1)))   # head + driver from below
+# fin left between the seat's slot and the lip notch (y 27.7..28.3, x -79..-74.5, below the lip top)
+part = part.cut(Part.makeBox(4.7, 0.9, 5.4, P(-79.1, 27.5, 0.9)))
 step('cable')
 
 part = part.removeSplitter()

@@ -35,9 +35,10 @@ EAR_X, EAR_R = 96.0, 20.0         # ear: R20 quarter disc, v1 thin strip to x 10
 MAIN_X = 76.0
 POST_D = 6.0                      # spacer tube (1.2 wall around the insert); board notches are D7.5 (V2Vars.notch_d)
 BOSS_D, BOSS_TOP = 10.0, None     # boss under the board (top set below to the PCB bottom)
-INSERT_D = v('insert_pilot_d')    # 3.6 (M2.5 x 3 x 3.5 heat-set), pressed in from the plate underside
-INSERT_DEPTH = 5.0                # pilot from z 0 up to a shoulder at z 5: the 3 mm insert is pressed in
-                                  # from below up to it (sits z 2..5); the screw pull pushes it into the boss
+INSERT_D = v('insert_pilot_d')    # 3.6 (M2.5 x 4 x 3.5 heat-set), pressed in from the plate underside
+INSERT_LEN = 4.0                  # pressed in from the plate's underside, flush: sits z 0..4, so the screw's
+INSERT_DEPTH = INSERT_LEN + 0.3   # pull pushes it into the post (the post can't be torn off); +0.3 for melt
+                                  # M2.5x8, head top at z 9.5 -> tip at z 1.5: 2.5 mm thread engagement
 SCREW_CLR = 2.9                   # M2.5 clearance through the spacer tube
 SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
 SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
@@ -50,13 +51,22 @@ PAD_H = GAP                       # support pads touch the PCB bottom
 ENC_PADS = [(-43.0, 11.0), (43.0, 11.0), (65.0, 15.0)]   # shaft axes
 ENC_PAD_D = 6.0                   # clears A/B/C, switch pins and lugs (>= 5.6 mm from axis)
 BTN_PADS = [(-27.0, 19.0), (27.0, 19.0)]
+# rib under the board's knob-arch edge (the middle part's front edge presses there): the plate's own front
+# edge continued up to the PCB (same extrusion, flush), RIB_W deep (in y), over |x| <= RIB_X; interrupted
+# around the display passives C10/C11 on the board's back (option 3)
+RIB_W, RIB_X = 2.0, 18.9                        # |x| <= 18.9: plate arch = board arch there; further out the
+                                                   # left/right parts' front walls stand on the plate
+RIB_KEEPOUT = [(8.6, 12.6, 13.0, 18.0)]
 BTN_PAD_D = 4.0                   # inside the 4 legs (r 3.9)
 # parts on the PCB back (other than the display passives): x, y, w, h (pad extent + margin), pocket depth
 BACK_POCKETS = [(-71.0, 23.3, 3.6, 3.6, 1.0),     # D1 SOT-23
                 (-40.7, 24.8, 1.6, 2.9, 1.0),     # C1 0603 (rot 90) under U3 pin 3
                 (-62.9, 3.8, 2.1, 3.5, 1.0)]      # C20 0805 10uF (rot 90, <= 1.25 tall) at the WROOM 3V3
-DRV_BOARD = (-19.29 - 0.5, 18.71 + 0.5, 16.0 - 0.5, 28.0 + 0.3)   # option 1 cut-out (x0, x1, y0, y1)
-PASSIVES = (-5.5, 13.0, 13.5, 25.0)                                 # option 3 pocket
+DRV_BOARD = (-19.29 - 0.5, 18.71 + 0.5, 16.0 - 0.2, 28.0 + 0.3)   # option 1 cut-out (x0, x1, y0, y1); y0: leaves
+                                                                    # 0.3 mm of plate at x 0 (front edge y 15.5)
+# option 3 pocket for the passives on the board's back: behind the rib (C12..C14 pads start at y 17.9), plus a
+# bay for C10/C11 (pads x 9.2..12.0, y 15.1..16.7) where the rib is interrupted
+PASSIVES = [(-5.5, 13.0, 17.6, 25.0), (8.8, 12.4, 14.8, 17.7)]
 PASSIVES_POCKET = 0.8
 
 
@@ -92,9 +102,33 @@ def arch_wire(z):
     return Part.Wire(Part.__sortEdges__(e))
 
 
+def front_edge_y(x):
+    """Plate front edge (knob arch, see arch_wire) at |x| <= 40."""
+    ax = abs(x)
+    if ax <= 18.92529:
+        return -14.25 + math.sqrt(29.75 ** 2 - ax ** 2)
+    if ax <= 21.24:
+        return 8.70422 + (ax - 18.92529) * (6.79578 - 8.70422) / (21.24 - 18.92529)
+    return 29.75 - math.sqrt(29.75 ** 2 - (ax - 40.16528) ** 2)
+
+
+def rib_cutter():
+    """Everything above the plate top except the rib band (the base is extruded to the PCB bottom first, so
+    the rib's front face IS the plate's front face: no coincident faces in any boolean)."""
+    P = App.Vector
+    n = int(2 * RIB_X / 0.25)
+    xs = [-RIB_X + 2 * RIB_X * i / n for i in range(n + 1)]
+    band = [P(x, front_edge_y(x) + RIB_W, 0) for x in reversed(xs)]
+    keep = Part.Face(Part.makePolygon([P(-RIB_X, -10, 0), P(RIB_X, -10, 0)] + band + [P(-RIB_X, -10, 0)]))
+    keep = keep.extrude(P(0, 0, 10)); keep.translate(P(0, 0, -2))
+    for x0, x1, y0, y1 in RIB_KEEPOUT:
+        keep = keep.cut(box((x0, x1, y0, y1), -3, 12))
+    return Part.makeBox(400, 80, PAD_H + 1, P(-200, -20, PLATE_T)).cut(keep)
+
+
 def plate_body():
     w0 = arch_wire(0.0)
-    base = Part.Face(w0).extrude(App.Vector(0, 0, PLATE_T))   # top edge vertical; the lip follows the frame
+    base = Part.Face(w0).extrude(App.Vector(0, 0, PLATE_T + PAD_H)).cut(rib_cutter())
     assert base.isValid(), 'plate base invalid'
     # lip along the top edge, leaning on the display frame
     P = App.Vector
@@ -148,11 +182,10 @@ def plate_body():
     return solid.removeSplitter()
 
 
-# cable paths at the left ear (keep in sync with v2_left.CABLE_PATHS): the plate ear gets notched where
-# the cable runs down into the V between the display frame and the vent housing (A) or into the housing (B)
-CABLE_PATHS = [[(-79.0, 25.2, 6.35), (-96.5, 27.8, 2.5), (-106.0, 27.8, 2.5)],
-               [(-79.0, 25.2, 6.35), (-84.75, 25.43, 2.5), (-92.0, 25.43, 2.5)]]
-CABLE_R = 3.0
+# cable paths at the left ear (v2_cable.py): the plate ear gets notched where the cable runs down into the V
+# between the display frame and the vent housing (A) or into the housing (B)
+exec(open('/home/mars/my/buttheat/hw/cad/v2_cable.py').read())
+CABLE_R = PLATE_NOTCH_R
 
 
 def cable_notches(solid):
@@ -172,7 +205,10 @@ def box(r, z0, dz):
 
 base = cable_notches(plate_body())
 A = base.cut(box(DRV_BOARD, -1, PLATE_T + 2)).removeSplitter()
-B = base.cut(box(PASSIVES, PLATE_T - PASSIVES_POCKET, PASSIVES_POCKET + 0.01)).removeSplitter()
+B = base
+for r in PASSIVES:
+    B = B.cut(box(r, PLATE_T - PASSIVES_POCKET, PASSIVES_POCKET + 1))
+B = B.removeSplitter()
 
 import os
 os.makedirs(OUT, exist_ok=True)
