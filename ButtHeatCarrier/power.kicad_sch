@@ -2625,12 +2625,6 @@
 		(uuid "12339952-b738-422b-a2b6-aed8f0a04bb5")
 	)
 	(junction
-		(at 76.2 71.12)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2e42a233-e08e-4bb3-af58-e0a0bfa1e24b")
-	)
-	(junction
 		(at 66.04 71.12)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2677,6 +2671,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "80ee406b-0399-45ef-8d1e-6b78e41e1f60")
+	)
+	(junction
+		(at 76.2 71.12)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "96610561-b4e2-4f21-ad18-81ee4eb37a52")
 	)
 	(junction
 		(at 160.02 88.9)
@@ -4616,7 +4616,7 @@
 			)
 		)
 		(property "Value" "12uF 1206"
-			(at 83.82 79.38 0)
+			(at 77.216 77.724 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
