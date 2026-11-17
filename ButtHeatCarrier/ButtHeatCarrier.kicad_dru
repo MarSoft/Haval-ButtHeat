@@ -1,13 +1,8 @@
 (version 1)
 
 # Intentional courtyard overlaps (parts themselves have physical clearance or are build variants).
-# Dual button footprints: THT + SMD switch overlaid on the same nets, only one is fitted.
-(rule "Dual button footprints"
-	(condition "(A.Reference == 'SW1' && B.Reference == 'SW2') || (A.Reference == 'SW3' && B.Reference == 'SW4')")
-	(constraint courtyard_clearance (min -10mm))
-	(severity ignore))
-
 # Courtyard-only touches with physical clearance between the parts.
+# SW1/H1, SW2/H2: universal THT+SMD switch footprints next to the fallback M2 holes.
 # U4/C3: buck input cap hugs U4 on purpose (small input loop); ~0.8 mm pad-to-pad.
 # JP1/U3: JP1 is a flat solder jumper, no body; ~0.65 mm from U3 pin 4.
 # J1/U2: ZH body (y >= 25.09) clears the SuperMini body (y <= 24.8); only courtyards touch.
@@ -16,7 +11,7 @@
 # J1/U1: J1 sits in the WROOM-02 antenna keep-out courtyard. Antenna-WROOM builds don't fit J1
 #        (cable soldered from the back); with the WROOM-02U the module body (y <= 22.4) is clear.
 (rule "Accepted courtyard touches"
-	(condition "(A.Reference == 'SW3' && B.Reference == 'H2') || (A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1') || (A.Reference == 'U4' && B.Reference == 'C3') || (A.Reference == 'JP1' && B.Reference == 'U3') || (A.Reference == 'J1' && B.Reference == 'U1') || (A.Reference == 'J1' && B.Reference == 'U2') || ((A.Reference == 'U1' || A.Reference == 'U2') && (B.Reference == 'R12' || B.Reference == 'C19' || B.Reference == 'C21'))")
+	(condition "(A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'SW2' && B.Reference == 'H2') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1') || (A.Reference == 'U4' && B.Reference == 'C3') || (A.Reference == 'JP1' && B.Reference == 'U3') || (A.Reference == 'J1' && B.Reference == 'U1') || (A.Reference == 'J1' && B.Reference == 'U2') || ((A.Reference == 'U1' || A.Reference == 'U2') && (B.Reference == 'R12' || B.Reference == 'C19' || B.Reference == 'C21'))")
 	(constraint courtyard_clearance (min -10mm))
 	(severity ignore))
 

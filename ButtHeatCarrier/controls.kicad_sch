@@ -694,28 +694,6 @@
 			(embedded_fonts no)
 		)
 	)
-	(global_label "ENC3_A"
-		(shape bidirectional)
-		(at 134.62 50.8 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "18d94be9-6ef5-4a2f-9a6d-14f57af9f265")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 134.62 50.8 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
 	(global_label "ENC1_SW"
 		(shape bidirectional)
 		(at 58.42 48.26 0)
@@ -870,28 +848,6 @@
 			)
 		)
 	)
-	(global_label "ENC3_B"
-		(shape bidirectional)
-		(at 134.62 96.52 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "7f484154-2bc9-49da-8571-ed225d6ea87e")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 134.62 96.52 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
 	(global_label "GND"
 		(shape bidirectional)
 		(at 144.78 111.76 0)
@@ -904,28 +860,6 @@
 		(uuid "80727b3d-6b9f-4bb0-9f70-db1df8f5c29f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 144.78 111.76 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape bidirectional)
-		(at 144.78 96.52 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "83355dc1-e2e8-4df6-b999-98a85b95eb25")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 144.78 96.52 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -970,28 +904,6 @@
 		(uuid "98f65328-34e9-40b6-80fa-af6e1d58a755")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 43.18 127 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape bidirectional)
-		(at 144.78 50.8 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "9a7ad9e6-4039-4b99-9dd8-570457b336f3")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 144.78 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1277,7 +1189,7 @@
 		(in_pos_files yes)
 		(dnp yes)
 		(uuid "1a1163c9-23c6-419c-b71e-f4ffc7ce193a")
-		(property "Reference" "SW4"
+		(property "Reference" "SW2"
 			(at 139.7 109.22 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1288,7 +1200,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "BTN_R SMD (DNP)"
+		(property "Value" "BTN_R (DNP)"
 			(at 139.7 114.3 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1298,7 +1210,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92"
+		(property "Footprint" "ButtHeat:SW_Tactile_6x6_THT_SMD"
 			(at 139.7 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -1340,87 +1252,7 @@
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 139.7 96.52 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(uuid "4b27837b-669b-4efa-ac4e-e41145476106")
-		(property "Reference" "SW3"
-			(at 139.7 93.98 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BTN_R THT (DNP)"
-			(at 139.7 99.06 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm"
-			(at 139.7 101.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 139.7 101.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Push button switch, generic, two pins"
-			(at 139.7 96.52 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "89070c49-1475-4528-906f-4353323e0fe2")
-		)
-		(pin "2"
-			(uuid "c45ee975-3458-40f1-ac52-5d24150b7e15")
-		)
-		(instances
-			(project "ButtHeatCarrier"
-				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW3")
+					(reference "SW2")
 					(unit 1)
 				)
 			)
@@ -1692,7 +1524,7 @@
 		(in_pos_files yes)
 		(dnp yes)
 		(uuid "a5ffcfad-dadd-48c8-b2c6-8e279ee686a8")
-		(property "Reference" "SW2"
+		(property "Reference" "SW1"
 			(at 139.7 63.5 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1703,7 +1535,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "BTN_L SMD (DNP)"
+		(property "Value" "BTN_L (DNP)"
 			(at 139.7 68.58 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1713,7 +1545,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92"
+		(property "Footprint" "ButtHeat:SW_Tactile_6x6_THT_SMD"
 			(at 139.7 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -1755,7 +1587,7 @@
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW2")
+					(reference "SW1")
 					(unit 1)
 				)
 			)
@@ -1847,86 +1679,6 @@
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
 					(reference "ENC2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 139.7 50.8 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(uuid "d3826d3b-4a46-43ad-8e9e-4d9d58d82b12")
-		(property "Reference" "SW1"
-			(at 139.7 48.26 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BTN_L THT (DNP)"
-			(at 139.7 53.34 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm"
-			(at 139.7 55.88 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 139.7 55.88 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Push button switch, generic, two pins"
-			(at 139.7 50.8 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "96242a4e-6f6d-4e97-9901-ed67495c7c57")
-		)
-		(pin "2"
-			(uuid "8f9ccef2-c7a3-4667-bb27-5d9b31bf43c1")
-		)
-		(instances
-			(project "ButtHeatCarrier"
-				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
-					(reference "SW1")
 					(unit 1)
 				)
 			)

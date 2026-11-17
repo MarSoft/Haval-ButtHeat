@@ -211,9 +211,10 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 - 0603 column at x −33.7: C1, C2, R1, JP2, R6 (top → bottom).
 
 ### Buttons (DNP by default)
-- Dual footprints at (−27, 19) SW1 THT `SW_PUSH_6mm` + SW2 SMD `SW_SPST_PTS645Sx43SMTR92`, and
-  (27, 19) SW3 + SW4. Same nets on overlapping pads (pin 1 BTN_L/BTN_R, pin 2 GND).
-- M2 fallback holes moved to **(±27, 13)** to clear the button pins.
+- **One symbol per button** (2026-11-17): **SW1 (left, (−27, 19), ENC3_A)** and **SW2 (right, (27, 19), ENC3_B)**, pin 2 GND.
+  - Universal footprint `ButtHeat:SW_Tactile_6x6_THT_SMD` (hw/tools/gen_sw_6x6_fp.py): THT SW_PUSH_6mm holes (6.5 × 4.5) plus PTS645Sx43SMTR92 gull-wing pads, same pin numbers, origin at the body centre, both 3D models. Fit either type.
+  - It replaces the former THT + SMD symbol pairs (SW1/SW2 and SW3/SW4).
+- M2 fallback holes at **(±27, 13)**, clear of the button pins.
 
 ### GPIO map (ESP32-C3, same for SuperMini and WROOM)
 | Function | GPIO | Note |
@@ -221,7 +222,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 | ENC1 A / B / SW | 2 / 3 / 4 | prototype |
 | ENC2 A / B / SW | 5 / 6 / 7 | prototype |
 | ENC3 A / B / SW | 10 / 20 / 21 | swapped with CAN 2026-11-15 (GPIO21 = U0TXD: boot log on ENC3_SW, harmless) |
-| Buttons L / R | 10 / 20 | shared with ENC3 A / B (SW1/SW2 on ENC3_A, SW3/SW4 on ENC3_B) |
+| Buttons L / R | 10 / 20 | shared with ENC3 A / B (SW1 on ENC3_A, SW2 on ENC3_B) |
 | I2C SDA / SCL | 8 / 9 | fixed (prototype) |
 | CAN TX / RX | 0 / 1 | moved from 20/21 2026-11-15 (TWAI is routed via the GPIO matrix; firmware pins change) |
 | USB D− / D+ | 18 / 19 | WROOM only (J2) |
@@ -365,7 +366,7 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - **Right part** (2026-11-17): x 20…96, ear along the R20 arc around (96, 8.95) (the car's right vent housing mirrors the left one).
   - Bushing holes for ENC2 (43, 11) and **ENC3 (65, 17)**. ENC3's shaft is at y 17, not 15: the rear plate's support pad is corrected.
   - **Posts 2 and 4** (58, 4). **Post 2 moved to (77, 25)** (V2Vars, 2026-11-17): at (78.5, 24) its counterbore was 0.1 mm from the ear's arc face. It's off the board and goes through no notch, so it moves freely; it now has 1.9 mm of wall, and the plate post starts at x 74.0, 1 mm clear of the board edge. The side script reads all post positions from V2Vars. ENC2/ENC3 body keep-outs.
-  - SW3/SW4 on the shoulder (same two-tier pocket, 0.2 mm more room towards the seam for the THT switch); H2 boss.
+  - SW2 (right button; formerly SW3/SW4) on the shoulder (same two-tier pocket, 0.2 mm more room towards the seam for the THT switch); H2 boss.
   - **D2** (SMA, top 5.71) pocket under the shoulder near the seam, about 0.75 mm skin.
   - **J2 USB-C knock-out**, x 61.6…74.0, z 2…8.4, around the mouth (x 63.35…72.25, z 3.39…6.6), with a 0.4 mm skin along the front rounding. J2 overhangs the board edge to y 0.62, inside the knock-out.
   - Checked headless: no overlap with the car, plates, middle part or board, except the ENC2/ENC3 nut/washer in the skin (accepted, as for ENC1).
