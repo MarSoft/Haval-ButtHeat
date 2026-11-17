@@ -1280,7 +1280,7 @@
 			)
 		)
 		(property "Value" "M2 (unthreaded-encoder fallback)"
-			(at 215.9 53.34 0)
+			(at 215.9 55.372 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
