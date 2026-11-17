@@ -391,4 +391,13 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - J1 bump x −75…−62 to z 14.5; J1 clearance limited to y ≤ 29.1, so no sliver of back wall is left.
   - Checked headless: no overlap with the car, plates, middle part or board, except the accepted EC11 nut/washer in the skin.
 - Encoder nut/washer may sit partly in the skin (accepted). Clamp insert retained by one M2 screw (split, keyed halves).
-- Board follow-ups: WROOM 3V3 decoupling 10 µF + 100 nF at U1 pin 1 (to add to the schematic); CAN VCC cap C1 closer to U3 pin 3; a buck input HF cap at U4 pin 2; NECK rule scope; more GND bridges between the MCU-side and main pours.
+- Board follow-ups (2026-11-16 review): done; see 'Board status' below.
+
+## Board status (2026-11-17): ready for fabrication
+- DRC: 0 errors, 0 unconnected, matches the schematic. 22 silkscreen warnings are accepted and left as they are:
+  - WROOM/SuperMini (U1/U2) and J1/U2 outlines crossing each other's pads;
+  - JP1/U3;
+  - the J1, J2, ENC1 and U2 outlines crossing the board edge (deliberate overhangs).
+- Both sides have a GND pour (F.Cu added 2026-11-17, with stitching vias). A DRC rule allows one thermal spoke on GND pads hemmed in by tracks.
+- Buck input loop: C3 sits next to U4. GND runs as a direct top track from pin 4; VIN goes over the back with 3 vias at each end. No extra 100 nF needed.
+- Fab: JLCPCB, **1.0 mm board thickness** (the case depends on it); 0.3 mm vias match JLCPCB's minimum.
