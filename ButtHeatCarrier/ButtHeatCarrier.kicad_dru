@@ -45,3 +45,9 @@
 	(condition "A.Parent == 'J1' && B.Reference == 'U1'")
 	(constraint physical_hole_clearance (min 0mm))
 	(severity ignore))
+
+# F.Cu GND pour (2026-11-17): GND pads hemmed in by tracks (encoder C/MP, buttons, J2 A1/A12/B1/B12, C6)
+# only get one thermal spoke on F.Cu; they're also tied to the B.Cu pour / tracks, so one is enough.
+(rule "GND pads: one thermal spoke is enough"
+	(condition "A.NetName == 'GND'")
+	(constraint min_resolved_spokes 1))
