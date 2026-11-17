@@ -38,17 +38,17 @@ BOSS_D, BOSS_TOP = 10.0, None     # boss under the board (top set below to the P
 INSERT_D = v('insert_pilot_d')    # 3.6 (M2.5 x 4 x 3.5 heat-set), pressed in from the plate underside
 INSERT_LEN = 4.0                  # pressed in from the plate's underside, flush: sits z 0..4, so the screw's
 INSERT_DEPTH = INSERT_LEN + 0.3   # pull pushes it into the post (the post can't be torn off); +0.3 for melt
-                                  # M2.5x8, head top at z 9.5 -> tip at z 1.5: 2.5 mm thread engagement
+                                  # M2.5x8, head top at z 9.0 -> tip at z 1.0: 3.0 mm thread engagement
 SCREW_CLR = 2.9                   # M2.5 clearance through the spacer tube
 SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
 SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
 POST_TOP = 6.0                    # short posts (easy to lift the front + board off); the front parts' posts
-                                  # continue from z 6.1. Screws M2.5x8 DIN 965, head top at z 9.5 (tip at z 1.5)
+                                  # continue from z 6.1. Screws M2.5x8 DIN 965, head top at z 9.0 (tip at z 1.0)
 POSTS = [(-v('post1_left'), v('post1_y')), (v('post2_x'), v('post2_y')),
          (-v('post3_left'), v('post3_y')), (v('post4_x'), v('post4_y'))]
 PAD_H = GAP                       # support pads touch the PCB bottom
-ENC_PADS = [(-43.0, 11.0), (43.0, 11.0), (65.0, 15.0)]   # shaft axes
+ENC_PADS = [(-43.0, 11.0), (43.0, 11.0), (65.0, 17.0)]   # shaft axes (ENC3 checked against the board STEP)
 ENC_PAD_D = 6.0                   # clears A/B/C, switch pins and lugs (>= 5.6 mm from axis)
 BTN_PADS = [(-27.0, 19.0), (27.0, 19.0)]
 # rib under the board's knob-arch edge (the middle part's front edge presses there): the plate's own front

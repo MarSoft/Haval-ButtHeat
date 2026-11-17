@@ -10,7 +10,7 @@ import Part
 
 LABELS = {'RearPlate_A': 'Rear plate A (display option 1: driver-board cut-out)',
           'RearPlate_B': 'Rear plate B (display option 3: passives pocket)',
-          'Middle': 'Front middle (SLA)', 'Left': 'Front left (SLA)',
+          'Middle': 'Front middle (SLA)', 'Left': 'Front left (SLA)', 'Right': 'Front right (SLA)',
           'ClampTop': 'Cable clamp insert, top half (SLA)', 'ClampBottom': 'Cable clamp insert, bottom half + tab (SLA)'}
 doc = App.getDocument('ButtHeatModel')
 grp = doc.getObject('V2_Case') or doc.addObject('App::DocumentObjectGroup', 'V2_Case')
