@@ -40,6 +40,7 @@ INSERT_LEN = 4.0                  # pressed in from the plate's underside, flush
 INSERT_DEPTH = INSERT_LEN + 0.3   # pull pushes it into the post (the post can't be torn off); +0.3 for melt
                                   # M2.5x8, head top at z 9.0 -> tip at z 1.0: 3.0 mm thread engagement
 SCREW_CLR = 2.9                   # M2.5 clearance through the spacer tube
+INSERT_CHAMFER = 0.4              # 45 deg entry chamfer on the pilots (bed side: counters elephant's foot, eases pressing)
 SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
 SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
@@ -174,6 +175,8 @@ def plate_body():
         solid = solid.fuse(Part.makeCylinder(BTN_PAD_D / 2, PAD_H, P(x, y, PLATE_T)))
     for (x, y) in POSTS:
         solid = solid.cut(Part.makeCylinder(INSERT_D / 2, INSERT_DEPTH, P(x, y, -0.01)))
+        c = INSERT_CHAMFER + 0.1
+        solid = solid.cut(Part.makeCone(INSERT_D / 2 + c, INSERT_D / 2, c, P(x, y, -0.1)))
         solid = solid.cut(Part.makeCylinder(SCREW_CLR / 2, POST_TOP + 1, P(x, y, 0)))
     for (x, y) in SCREW_HEAD_POCKETS:
         solid = solid.cut(Part.makeCylinder(SCREW_HEAD_D / 2, PLATE_T + 1, P(x, y, -0.5)))
