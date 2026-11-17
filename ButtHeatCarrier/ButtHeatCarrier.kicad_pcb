@@ -18042,6 +18042,14 @@
 		(uuid "30e7bee3-12e7-4df2-b47b-7e4351b7e99e")
 	)
 	(segment
+		(start 206.925 76.8)
+		(end 206.925 76)
+		(width 0.5)
+		(layer "F.Cu")
+		(net "GND")
+		(uuid "3524edcf-c124-441d-b08f-6d39a7b837be")
+	)
+	(segment
 		(start 96.3 94.3)
 		(end 96.4 94.2)
 		(width 0.5)
