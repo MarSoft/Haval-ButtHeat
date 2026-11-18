@@ -279,7 +279,17 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   stale copy open.
 - FreeCAD MCP: `execute_code` / headless runner broken on nix FreeCAD 1.1.3 — structured tools only.
 
-### J2 USB-C (variant B) — Connfly DS1144-07 (2026-11-18, replaces the XKB)
+### J2 USB-C (variant B) — 16PF-015 (2026-11-18)
+- **Rui Chi 16PF-015** (drawing 1012-16F****01; local supplier). 16P top-mount SMT, L 7.55 mm, stainless shell; −40…+85 °C; 3 A / 30 V; 10,000 cycles.
+- It uses **the XKB U262 land pattern J2 was routed for**: same signal pads, rear shell tabs and Ø0.65 locating pegs. Only the front tabs differ: slot 0.6 × 1.4 at local y 1.045.
+- **Footprint** `ButtHeat:USB_C_16PF-015` (hw/tools/gen_usbc_16pf015.py, derived from the XKB noSBU footprint):
+  - front tab pads cut flat 0.3 mm before the board edge (EDGE_Y 2.175), leaving a 0.13 mm ring; DRC rule "J2 shell tabs: ring cut at the board edge";
+  - 3D model: the project's XKB STEP shifted to the 16PF's front face.
+- Same origin, KiCad (217.8, 95.825). The front face is at case y ≈ 0.53, as with the XKB: the body overhangs the board edge by 1.47 mm, inside the case knock-out (0.12 mm behind its skin). The plug barely has to enter the opening.
+- Rear tab pad (1.0 × 2.1) is about 0.285 mm from the ENC3_SW track (rule 0.2).
+- Fallback: `ButtHeat:USB_C_DS1144-07` (Connfly, gen_usbc_ds1144.py). Same routing; its mouth sits 0.64 mm deeper (case y 1.17); −30…+80 °C.
+
+### J2 alternative — Connfly DS1144-07 (2026-11-18, superseded by the 16PF-015 the same day)
 - **Connfly DS1144-07** (local supplier; the XKB U262 isn't available there). 16P top-mount SMT, L 6.5 mm, 4 THT shell tabs, no pegs. Rated −30…+80 °C, accepted (bottom side, out of the sun).
 - **Footprint** `ButtHeat:USB_C_DS1144-07` (hw/tools/gen_usbc_ds1144.py):
   - signal pads identical to the XKB footprint, so it's a drop-in for routing at the same origin, KiCad (217.8, 95.825); A8/B8 (SBU) omitted;

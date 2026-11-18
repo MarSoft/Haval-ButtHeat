@@ -4801,7 +4801,7 @@
 				)
 			)
 		)
-		(property "Value" "VBUS -> +5V (e.g. B5819W)"
+		(property "Value" "B5819W or SS14 (SOD-123FL)"
 			(at 100.33 124.46 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5587,7 +5587,7 @@
 				)
 			)
 		)
-		(property "Value" "USB-C XKB U262-161N-4BVC11 (variant B)"
+		(property "Value" "USB-C 16PF-015 (variant B)"
 			(at 50.8 159.385 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5597,7 +5597,7 @@
 				)
 			)
 		)
-		(property "Footprint" "ButtHeat:USB_C_DS1144-07"
+		(property "Footprint" "ButtHeat:USB_C_16PF-015"
 			(at 54.61 139.7 0)
 			(hide yes)
 			(show_name no)
