@@ -1,0 +1,4 @@
+*.bak
+*.lck
+.history
+.mcp-backups
