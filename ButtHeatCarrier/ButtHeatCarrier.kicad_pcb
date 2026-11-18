@@ -128,6 +128,18 @@
 			(outputdirectory "")
 		)
 	)
+	(variants
+		(variant
+			(name "SuperMini+TJA1051/3")
+		)
+		(variant
+			(name "WROOM+SN65HVD230")
+			(description "3.3V CAN chip")
+		)
+		(variant
+			(name "WROOM+TJA1051/3")
+		)
+	)
 	(footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "0340fa8f-f252-45ee-8f56-a156373e4de7")
@@ -183,6 +195,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "156df455-df1d-41a2-b8f7-6c23b2404056")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "have"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8bbe9a85-ccce-4098-a0d5-594260798d70")
 			(effects
 				(font
 					(size 1 1)
@@ -451,6 +476,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Source" "have: OLED module (glass)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "7f68772b-3c25-4393-b1ed-b5c8dc06f071")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
 				)
 			)
 		)
@@ -723,6 +761,19 @@
 				)
 			)
 		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a8bf17ca-b657-485f-a9dd-39ebe7b8d081")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/3db90849-b02f-4883-badd-2a206a561a10")
 		(sheetname "/Power/")
@@ -869,6 +920,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "have"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "756bd31c-ef40-4d01-88a0-6a92eaeefef1")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -1331,6 +1395,19 @@
 				)
 			)
 		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "2722c207-e9aa-4a3e-866f-d2c60a81624e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/2c459e80-0f94-4d39-80ff-ce33358af1e5")
 		(sheetname "/Power/")
 		(sheetfile "power.kicad_sch")
@@ -1700,6 +1777,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f639b4b4-2977-4efc-b72e-886b29a6a429")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -2519,6 +2609,10 @@
 				)
 			)
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/RF_Module.3dshapes/ESP32-C3-WROOM-02.stpZ"
 			(offset
@@ -2587,6 +2681,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "6ffd5c0c-5288-4f03-960e-f07de9cc71e9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a1c0c505-555f-4455-ba26-36728d281c3f")
 			(effects
 				(font
 					(size 1 1)
@@ -2740,6 +2847,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4b074a38-7b30-4b13-bb44-8b1c3426cff2")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -3032,6 +3152,19 @@
 				)
 			)
 		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6995e18a-6d98-49d7-a443-375c91e5b628")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/30aac6ae-1e88-45c7-a1fd-b8a12227fb36")
 		(sheetname "/Power/")
@@ -3183,6 +3316,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "15b1c227-7038-4062-a125-0c1036b1c2ba")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0bb30f4f-724f-4517-ab4a-f6bf2a538ca2")
 			(effects
 				(font
 					(size 1 1)
@@ -3492,6 +3638,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "6d4dc9b7-ead3-4f01-9ae1-13b3d3f22b48")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6eac837f-2c14-4588-9310-4ad432682cf5")
 			(effects
 				(font
 					(size 1 1)
@@ -3948,6 +4107,19 @@
 				)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "2349787a-0bbf-4ea3-a9e5-82675741c32b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/25059c70-eafb-41c0-b14a-2320e44295e8/d66e734f-1df3-4956-ba1e-69c2f5762b6c")
 		(sheetname "/CAN/")
@@ -4094,6 +4266,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "n/a (solder jumper)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "dc8017cf-f510-471d-971d-9033a9d05240")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -4318,6 +4503,27 @@
 			)
 			(uuid "37bcfcab-e649-4b60-823e-fae5254ddfe9")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(field
+				(name "Value")
+				(value "VIO: close for TJA")
+			)
+		)
+		(variant
+			(name "WROOM+SN65HVD230")
+			(field
+				(name "Value")
+				(value "VIO: open for SN65")
+			)
+		)
+		(variant
+			(name "WROOM+TJA1051/3")
+			(field
+				(name "Value")
+				(value "VIO: close for TJA")
+			)
+		)
 		(embedded_fonts no)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
@@ -4375,6 +4581,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "ff40dfda-584f-45cf-8cc2-d3867bbfa824")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b15fb99c-ced0-41ae-b678-3a67179bd8d1")
 			(effects
 				(font
 					(size 1 1)
@@ -4564,6 +4783,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7fcacd87-ccf2-4bdc-99a0-ead8a4e5eabd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ce1122f4-f356-4b0f-968b-ed0f5e2ebf36")
 			(effects
 				(font
 					(size 1 1)
@@ -4881,6 +5113,19 @@
 				)
 			)
 		)
+		(property "Source" "n/a (solder jumper)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b340a104-f7cf-43cc-a382-ac03cec64a92")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "SolderJumper*Open*")
 		(path "/25059c70-eafb-41c0-b14a-2320e44295e8/b4bab6f4-d752-4b8c-974b-4cff13c10fe9")
 		(sheetname "/CAN/")
@@ -5140,6 +5385,27 @@
 			)
 			(uuid "13664a32-b60c-49ae-979c-ea68904f0301")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(field
+				(name "Value")
+				(value "VCC: 1-2 5V (TJA)")
+			)
+		)
+		(variant
+			(name "WROOM+SN65HVD230")
+			(field
+				(name "Value")
+				(value "VCC: 2-3 3V3 (SN65)")
+			)
+		)
+		(variant
+			(name "WROOM+TJA1051/3")
+			(field
+				(name "Value")
+				(value "VCC: 1-2 5V (TJA)")
+			)
+		)
 		(embedded_fonts no)
 	)
 	(footprint "Resistor_SMD:R_0603_1608Metric"
@@ -5197,6 +5463,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "e933b5c7-1a25-4155-990c-cd2fb3d1d362")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "672e06c1-25c4-4db9-967c-6052a90f991f")
 			(effects
 				(font
 					(size 1 1)
@@ -5287,6 +5566,10 @@
 			(pintype "passive")
 			(uuid "92799056-feff-4dbd-9290-5502f64c37fe")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.stpZ"
 			(offset
@@ -5355,6 +5638,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "5cf0e298-f3d0-4b87-b6cb-0b8bb4b57f9c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b77db0b7-d932-47e3-bb5d-8b08eb72f7e5")
 			(effects
 				(font
 					(size 1 1)
@@ -5520,6 +5816,19 @@
 				)
 			)
 		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "03fe18d0-5ea1-433d-bca9-534b93bdc681")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/86af88e7-7381-4125-ad30-8dab8e0db394")
 		(sheetname "/Power/")
@@ -5671,6 +5980,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "991336b5-e815-4f0e-b307-9cb37a7565cd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1bb22f34-d91d-4be6-887f-5ec701f8175f")
 			(effects
 				(font
 					(size 1 1)
@@ -5836,6 +6158,19 @@
 				)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "efc48087-6aa0-468c-be99-24b44540f0ef")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/efe4e90d-39e3-49ca-baaf-86f2ddc00062/c7651871-25ce-42e4-aca6-c953640016ee")
 		(sheetname "/MCU/")
@@ -5919,6 +6254,10 @@
 			(pintype "passive")
 			(uuid "cf0c7398-a052-43fe-afc8-721063074d0e")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0603_1608Metric.stpZ"
 			(offset
@@ -5982,6 +6321,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e09e3e33-7e0d-43ba-b881-eb8344357535")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -6269,6 +6621,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Source" "have"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e85ad673-12bd-4a50-853b-bfe06c689a64")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
 				)
 			)
 		)
@@ -6582,6 +6947,10 @@
 				)
 			)
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp no)
+		)
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/3d/esp32 c3 supermini.step"
 			(offset
@@ -6645,6 +7014,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8c2c06b6-416b-4c02-ab0b-4dce0e73b041")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -6983,6 +7365,19 @@
 				)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e61df0cd-cca2-4ff9-9df1-58d2d6c5a97e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/efe4e90d-39e3-49ca-baaf-86f2ddc00062/24c6ead2-c36f-42f7-a2ba-17bb58146073")
 		(sheetname "/MCU/")
@@ -7066,6 +7461,10 @@
 			(pintype "passive")
 			(uuid "5b4de2c9-9fe5-4324-b06e-b264ea267c35")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0603_1608Metric.stpZ"
 			(offset
@@ -7134,6 +7533,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "4c18c6e5-6c0b-4af9-92cb-aea0252ab47e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e6be7e08-adcf-4606-be8c-5384b9a9df59")
 			(effects
 				(font
 					(size 1 1)
@@ -7287,6 +7699,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1e9ba18e-c0a9-435c-be20-a5eab537946e")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -7572,6 +7997,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "12927592-2909-41c4-abad-3b1c438d8d2d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4d60a470-6aaf-4d9e-baf3-1ed4f3fd76d2")
 			(effects
 				(font
 					(size 1 1)
@@ -7886,6 +8324,27 @@
 			(pintype "input")
 			(uuid "4b6ba03c-9279-408c-ad1a-ed6cb35237fe")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(field
+				(name "Value")
+				(value "TJA1051T/3")
+			)
+		)
+		(variant
+			(name "WROOM+SN65HVD230")
+			(field
+				(name "Value")
+				(value "SN65HVD230")
+			)
+		)
+		(variant
+			(name "WROOM+TJA1051/3")
+			(field
+				(name "Value")
+				(value "TJA1051T/3")
+			)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Package_SO.3dshapes/SOIC-8_3.9x4.9mm_P1.27mm.stpZ"
 			(offset
@@ -7954,6 +8413,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "47018d32-9a6e-4a98-bd98-a4604a47caa5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e5978a2f-0ec5-48c7-8861-1c841e82fc47")
 			(effects
 				(font
 					(size 1 1)
@@ -8044,6 +8516,10 @@
 			(pintype "passive")
 			(uuid "cfc0fba5-286c-4537-bb52-014391a9941b")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0603_1608Metric.stpZ"
 			(offset
@@ -8107,6 +8583,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8bc03810-07f9-4a5b-b013-307bcbb65523")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -8433,6 +8922,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "have"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "7ac81725-7204-476e-acf9-d02c88e0b6cc")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -8895,6 +9397,19 @@
 				)
 			)
 		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9f2fa14e-979a-4f31-8f95-e188fe9f1323")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/744293fa-f989-4d3d-a152-7ff5dae94d73")
 		(sheetname "/Power/")
@@ -9046,6 +9561,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "5f0cc4fc-4ea3-4ee7-8d38-1136cbf32f01")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "59e88188-7736-4255-96b5-1a18133c9eda")
 			(effects
 				(font
 					(size 1 1)
@@ -9426,6 +9954,19 @@
 				)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d8ed7322-7a48-401e-8270-71e83ac65ef2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "USB*C*Receptacle*")
 		(path "/efe4e90d-39e3-49ca-baaf-86f2ddc00062/b8c0c450-ff98-4dcd-a96b-954466e40fb5")
 		(sheetname "/MCU/")
@@ -9783,6 +10324,10 @@
 			(pintype "passive")
 			(uuid "76ceb6d9-e2ec-41ec-9f0b-75fece91247b")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_XKB_U262-16XN-4BVC11.stpZ"
 			(hide yes)
@@ -9858,6 +10403,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e39582fa-904c-45ae-b840-b8fa032a6cbf")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -10085,6 +10643,10 @@
 			(pintype "passive")
 			(uuid "3106e619-bb78-44e7-8843-7ddf586426ff")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SOD-123.stpZ"
 			(offset
@@ -10153,6 +10715,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "cf4b2bcf-aaeb-49ac-bdd6-f5d8047fc06f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "2bad85f8-7ee9-49cc-b835-8c2b7f2b380b")
 			(effects
 				(font
 					(size 1 1)
@@ -10263,7 +10838,7 @@
 		(descr "Mounting Hole 2.2mm, M2, no annular, generated by kicad-footprint-generator mountinghole.py")
 		(tags "mountinghole M2")
 		(property "Reference" "H1"
-			(at 0 2.3 -0)
+			(at 0 2.3 0)
 			(layer "B.SilkS")
 			(uuid "72c2bddf-9036-4d65-a1bb-fce1070b2aa6")
 			(effects
@@ -10312,6 +10887,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "bc79461a-e78b-485b-b2fd-47898bc23beb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "n/a (hole)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a4414123-212c-4fb0-8ba7-09c9b84b5783")
 			(effects
 				(font
 					(size 1 1)
@@ -10434,6 +11022,19 @@
 				)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e1b5ba48-c742-4825-913f-3810e2c5406a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/efe4e90d-39e3-49ca-baaf-86f2ddc00062/d51ee166-c7bd-4748-975d-9b0a5ec20e5f")
 		(sheetname "/MCU/")
@@ -10517,6 +11118,10 @@
 			(pintype "passive")
 			(uuid "b54a778c-defb-44c2-a1b1-b2894bd6eef3")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.stpZ"
 			(offset
@@ -10585,6 +11190,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "11ceb65a-1320-4d1b-8131-7aadf30baee7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c86f1952-1149-4521-9c03-ea3bbbe29f78")
 			(effects
 				(font
 					(size 1 1)
@@ -10675,6 +11293,13 @@
 			(pintype "passive")
 			(uuid "279f894f-822a-4fb9-8129-545edeaca1ea")
 		)
+		(variant
+			(name "WROOM+SN65HVD230")
+			(field
+				(name "Value")
+				(value "0R (S/Rs to GND) or 10-100k (slope ctl)")
+			)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.stpZ"
 			(offset
@@ -10744,6 +11369,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "656e81ae-f8e4-4fa7-934e-bd4520935a63")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "n/a (hole)"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "540bffd5-322e-4f18-97bb-c56fa578cd90")
 			(effects
 				(font
 					(size 1 1)
@@ -10859,6 +11497,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "0591397e-96cd-49a8-a290-1f241e9992ee")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6ea8992c-87ef-4f1c-a0ef-58777ed9114f")
 			(effects
 				(font
 					(size 1 1)
@@ -11193,6 +11844,10 @@
 			(pintype "power_out")
 			(uuid "6524a9ec-1659-4882-a6cd-c99d37ba54bb")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.stpZ"
 			(offset
@@ -11261,6 +11916,19 @@
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "0aa4fd4f-11eb-4000-8a55-4767c20bd2a2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "84cb62a9-7190-4f60-b144-ec0777a48236")
 			(effects
 				(font
 					(size 1 1)
@@ -11351,6 +12019,10 @@
 			(pintype "passive")
 			(uuid "7778a12d-2395-4080-ba15-fb7701e9462a")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.stpZ"
 			(offset
@@ -11414,6 +12086,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Source" "have"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fb7eaf06-a163-43e9-a3e4-6f972d149be0")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -11876,6 +12561,19 @@
 				)
 			)
 		)
+		(property "Source" "salvage: Mini360"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "16639fc3-f7a0-4acc-9932-301076646ce9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/69ef27de-2577-4258-af59-cfe2cf06b89e")
 		(sheetname "/Power/")
@@ -12034,6 +12732,19 @@
 				)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6eb2cead-c7eb-46a6-a89e-7341be307010")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/eea3677a-519f-44ed-ac76-65ffc711a581/f5cde1d2-054a-4233-b520-20130c788dfd")
 		(sheetname "/Power/")
@@ -12116,6 +12827,10 @@
 			(net "GND")
 			(pintype "passive")
 			(uuid "39c55a27-9a3b-4ab2-b948-076df513404c")
+		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
 		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0603_1608Metric.stpZ"
@@ -12208,6 +12923,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "cb79c55b-82df-4d91-bcb7-20d9145d9f36")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "195e0756-3035-4130-a1a2-289ee8be8637")
 			(effects
 				(font
 					(size 1 1)
@@ -12510,6 +13239,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "14299981-2cda-40d8-8af8-f8bc6455cb49")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/efe4e90d-39e3-49ca-baaf-86f2ddc00062/36bc7ab2-9024-487c-ba73-41374262d8a5")
 		(sheetname "/MCU/")
@@ -12594,6 +13337,10 @@
 			(pintype "passive")
 			(uuid "b0809490-e632-4f8d-8ee9-41e7a9273514")
 		)
+		(variant
+			(name "SuperMini+TJA1051/3")
+			(dnp yes)
+		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.stpZ"
 			(offset
@@ -12666,6 +13413,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "706f0e07-dd54-45b9-b3b5-3c5d2c1b6460")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9d151312-4514-4aac-9efe-5d7239d86b24")
 			(effects
 				(font
 					(size 1 1)
@@ -12838,6 +13599,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3e708e8f-e772-479a-98c6-66d93c11ab00")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338/803a52fa-84c4-41c7-83c8-798e7089df03")
 		(sheetname "/Display/")
@@ -12994,6 +13769,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "d0467dae-48dd-473f-b1bb-934fb4b914c7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "579527fe-3a2e-4568-8493-e8ab5890e98b")
 			(effects
 				(font
 					(size 1 1)
@@ -13166,6 +13955,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d8b6f74d-7abf-40a3-8f05-8d56c8adc83b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338/1483eb7c-acbb-4ba9-ad07-743e56873aa3")
 		(sheetname "/Display/")
@@ -13322,6 +14125,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "553530be-5ff1-4b25-bf53-23ac28e3d2e8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "49b35c68-12cd-42c1-9699-1424b83fab99")
 			(effects
 				(font
 					(size 1 1)
@@ -13494,6 +14311,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e5fdb05f-fd81-4a32-bbee-0b7c6026f880")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/25059c70-eafb-41c0-b14a-2320e44295e8/b74e0c92-e508-48e9-bee2-4248871b88ed")
 		(sheetname "/CAN/")
@@ -13650,6 +14481,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "81af81d0-bb6a-43dd-a8db-0c666ebb08be")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b038580e-e6d9-434b-afe0-82680a3d0567")
 			(effects
 				(font
 					(size 1 1)
@@ -13822,6 +14667,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "db05dd22-9f8b-470f-adc9-c1e6b33ec5a6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338/f109f435-b5a0-4186-b5b8-d1bdac332ae2")
 		(sheetname "/Display/")
@@ -13978,6 +14837,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "ddea2920-ab78-4ca3-8ed8-45db43d58dc9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4779bd35-d29b-4899-ac3a-8e474fbb5093")
 			(effects
 				(font
 					(size 1 1)
@@ -14150,6 +15023,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9ec43a15-60bc-4e31-9535-c5ffc0395e9a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338/df4eaf0e-aea0-4d51-993d-8001228e7418")
 		(sheetname "/Display/")
@@ -14306,6 +15193,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "fcb9ddfc-5fbf-4adb-b38d-8ad2475136c0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5ed34459-0b11-4313-9089-eed2783c9a35")
 			(effects
 				(font
 					(size 1 1)
@@ -14478,6 +15379,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3770e07c-309c-4d6c-a9fd-4c1e3824eac4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338/ca888df0-56ee-4ef6-9818-0c9736a5e293")
 		(sheetname "/Display/")
@@ -14642,6 +15557,20 @@
 				(justify mirror)
 			)
 		)
+		(property "Source" "order"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8a647bb6-a0d3-43c3-bb56-b7d1db2cbc91")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/84fe1fe9-82d5-4b98-8c3a-d29c239e8338/d0266c60-a4c7-4213-8fbb-d402659d4f31")
 		(sheetname "/Display/")
@@ -14798,6 +15727,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "99898cfe-96e5-46fc-98ed-1bde9dbe3979")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "order"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f202abc6-1bea-49e8-bb1f-85dc1a92530a")
 			(effects
 				(font
 					(size 1 1)
@@ -15185,6 +16128,20 @@
 			(layer "B.SilkS")
 			(hide yes)
 			(uuid "63f1e960-4842-4248-b7be-920e9f428b74")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Source" "salvage: OLED module"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c486a8d8-cf9c-4f92-ba6b-e361456d307a")
 			(effects
 				(font
 					(size 1 1)
