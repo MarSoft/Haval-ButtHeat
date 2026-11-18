@@ -400,4 +400,9 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - the J1, J2, ENC1 and U2 outlines crossing the board edge (deliberate overhangs).
 - Both sides have a GND pour (F.Cu added 2026-11-17, with stitching vias). A DRC rule allows one thermal spoke on GND pads hemmed in by tracks.
 - Buck input loop: C3 sits next to U4. GND runs as a direct top track from pin 4; VIN goes over the back with 3 vias at each end. No extra 100 nF needed.
-- Fab: JLCPCB, **1.0 mm board thickness** (the case depends on it); 0.3 mm vias match JLCPCB's minimum.
+- **Fab** (2026-11-18): a local fab, not JLC. The 0.15 / 0.15 / 0.15 / 0.3 class (track / space / annular ring / hole); the board passes DRC at those limits, while the 0.2 / 0.2 / 0.2 / 0.4 class fails (vias, the WROOM pads, the neck).
+  - **18 µm copper** (at 35 µm this fab needs 0.175 mm track/space).
+  - **1.0 mm thickness** (the case depends on it).
+  - **Milled outline:** outer perimeter 378.8 mm; one internal cut-out, the display-flex slot (2 × 12.6 mm, R1 ends), 27.5 mm, which needs a mill bit ≤ 2.0 mm.
+  - **Plated oval slots:** 2.8 × 2.0 for the encoder lugs (6×).
+  - H1/H2 are Ø2.2 NPTH drills.

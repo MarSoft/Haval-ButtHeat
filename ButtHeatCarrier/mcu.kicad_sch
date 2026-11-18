@@ -4353,6 +4353,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 190.5 121.92 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "a8e73c1a-bb2a-421c-a25e-0ec40fddc327")
 		)
@@ -4415,6 +4418,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "U1")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -4485,6 +4492,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 157.48 107.95 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "61c3c255-6b2d-4d23-a3be-e3b5756718f2")
 		)
@@ -4496,6 +4506,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "C19")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -4643,6 +4657,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 223.52 92.71 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "00d8c4ce-a13c-46ba-8baf-40c424fa304b")
 		)
@@ -4654,6 +4671,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "C20")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -4799,6 +4820,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 78.74 124.46 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "78ed8105-6cf0-475c-8f8a-743fa0b4eab9")
 		)
@@ -4810,6 +4834,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "D5")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -5186,6 +5214,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 99.06 129.54 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "05a9dfbd-32f5-4640-b7cb-9e42d903c659")
 		)
@@ -5197,6 +5228,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "R13")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -5419,6 +5454,9 @@
 				)
 			)
 		)
+    (property "Source" "have" (at 63.5 63.5 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "3V3"
 			(uuid "822b65f9-c788-4e3b-85e2-ced7b84d88ae")
 		)
@@ -5472,6 +5510,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "U2")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp no)
+					)
 				)
 			)
 		)
@@ -5540,6 +5582,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 50.8 139.7 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "A1"
 			(uuid "1cd3d7cf-7b33-452f-85a7-0e87eaa37bc9")
 		)
@@ -5590,6 +5635,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "J2")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -5737,6 +5786,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 236.22 92.71 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "1b4806f6-d4f3-4650-9d3f-8aabb69e5373")
 		)
@@ -5748,6 +5800,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "C21")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -5816,6 +5872,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 165.1 96.52 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "7c48b84c-dc03-482c-a68f-7aed29d8432a")
 		)
@@ -5827,6 +5886,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "R12")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -5972,6 +6035,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 86.36 132.08 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "8beadd62-f168-4dbb-97b7-74ce383236c4")
 		)
@@ -5983,6 +6049,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/efe4e90d-39e3-49ca-baaf-86f2ddc00062"
 					(reference "R14")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)

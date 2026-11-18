@@ -767,7 +767,18 @@
       }
     ],
     "used_designators": "D6",
-    "variants": []
+    "variants": [
+      {
+        "name": "SuperMini+TJA1051/3"
+      },
+      {
+        "description": "3.3V CAN chip",
+        "name": "WROOM+SN65HVD230"
+      },
+      {
+        "name": "WROOM+TJA1051/3"
+      }
+    ]
   },
   "sheets": [
     [

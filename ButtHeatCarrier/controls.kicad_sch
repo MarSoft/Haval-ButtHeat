@@ -1243,6 +1243,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 139.7 111.76 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "09f688e5-4fed-43d0-a4b6-0cbb90aee1bd")
 		)
@@ -1322,6 +1325,9 @@
 				)
 			)
 		)
+    (property "Source" "n/a (hole)" (at 215.9 50.8 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"
@@ -1395,6 +1401,9 @@
 				)
 			)
 		)
+    (property "Source" "have" (at 50.8 127.0 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "A"
 			(uuid "e4220be3-969f-47aa-92b4-5c643c4c053b")
 		)
@@ -1486,6 +1495,9 @@
 				)
 			)
 		)
+    (property "Source" "have" (at 50.8 50.8 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "A"
 			(uuid "dafd39d2-39ed-4201-980a-86034e703857")
 		)
@@ -1578,6 +1590,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 139.7 66.04 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "040b6e72-f246-4fae-97de-a8c0ca5ea1d9")
 		)
@@ -1657,6 +1672,9 @@
 				)
 			)
 		)
+    (property "Source" "have" (at 50.8 88.9 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "A"
 			(uuid "10a676ba-0b04-48c1-ae54-23bc0655b6a3")
 		)
@@ -1748,6 +1766,9 @@
 				)
 			)
 		)
+    (property "Source" "n/a (hole)" (at 203.2 50.8 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(instances
 			(project "ButtHeatCarrier"
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/e0460a9c-c6b3-4d6d-ad40-7be9e0036c9e"

@@ -3464,6 +3464,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 91.44 74.93 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "cb0ab19b-f731-40c7-a1c5-cfc21a90dfe6")
 		)
@@ -3620,6 +3623,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 127.0 88.9 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "a562c51a-4fa4-4dd0-a258-42db6a92f2bc")
 		)
@@ -3719,6 +3725,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 104.14 99.06 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "597e463f-38eb-4d4d-9a4d-e899b93af75f")
 		)
@@ -3798,6 +3807,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 114.3 113.03 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "4cf1ee00-c480-40c9-b585-66dffa3b110e")
 		)
@@ -3956,6 +3968,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 71.12 133.35 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "c8660c6b-fac0-4da5-8f3c-1a468fba2995")
 		)
@@ -3967,6 +3982,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/eea3677a-519f-44ed-ac76-65ffc711a581"
 					(reference "C8")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -4346,6 +4365,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 114.3 101.6 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "2f1fb16a-93fb-46ed-8353-98e034a43e72")
 		)
@@ -4659,6 +4681,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 76.2 74.93 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "ddf67f8e-9847-4e74-a1a9-e1095b9856d3")
 		)
@@ -4740,6 +4765,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 167.64 92.71 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "c3402ec9-7e7d-4ea8-9f9f-763f03d9e173")
 		)
@@ -4898,6 +4926,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 139.7 92.71 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "f8e5c918-12d0-4adb-9476-d4b2ee5cbd91")
 		)
@@ -4977,6 +5008,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 66.04 74.93 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "4ddcbb30-38cb-4a6c-8ede-f4c1b9a93862")
 		)
@@ -5287,6 +5321,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 194.31 77.47 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "8ba61810-f365-4a61-9fa1-40ac1400ccd3")
 		)
@@ -5521,6 +5558,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 177.8 88.9 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "2"
 			(uuid "81a0d1a1-9cd1-48e2-8a01-765b31b618ea")
 		)
@@ -5600,6 +5640,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: OLED module" (at 88.9 152.4 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "02caf189-0db5-4958-856a-6faf70fde574")
 		)
@@ -5682,6 +5725,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 55.88 71.12 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "b3ce1e86-fe4b-41d9-a5eb-8ae30de8fa47")
 		)
@@ -5994,6 +6040,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 30.48 68.58 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "21641c82-bdb2-4bfe-9fd0-db0553cf20e3")
 		)
@@ -6081,6 +6130,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 88.9 132.08 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "7584dd66-7519-49b8-8aa2-6a9d8a29bee5")
 		)
@@ -6101,6 +6153,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/eea3677a-519f-44ed-ac76-65ffc711a581"
 					(reference "U5")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -6169,6 +6225,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 173.99 77.47 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "312b29cd-4265-4bfe-8e33-80282ac5f419")
 		)
@@ -6559,6 +6618,9 @@
 				)
 			)
 		)
+    (property "Source" "order" (at 104.14 133.35 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "c420a37b-d325-4613-b4ff-b45b3ea376d8")
 		)
@@ -6570,6 +6632,10 @@
 				(path "/48c8f88e-55fc-4d7f-bb36-4aeb3e595ada/eea3677a-519f-44ed-ac76-65ffc711a581"
 					(reference "C9")
 					(unit 1)
+					(variant
+						(name "SuperMini+TJA1051/3")
+						(dnp yes)
+					)
 				)
 			)
 		)
@@ -6638,6 +6704,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 151.13 88.9 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "aa533554-0f05-4dd4-9346-bd5a2a63afa3")
 		)
@@ -6750,6 +6819,9 @@
 				)
 			)
 		)
+    (property "Source" "salvage: Mini360" (at 160.02 77.47 0)
+      (effects (font (size 1.27 1.27)) (hide yes))
+    )
 		(pin "1"
 			(uuid "4da93827-9597-4d77-aa70-10a031139df7")
 		)
