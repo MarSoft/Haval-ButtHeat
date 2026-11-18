@@ -279,6 +279,18 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   stale copy open.
 - FreeCAD MCP: `execute_code` / headless runner broken on nix FreeCAD 1.1.3 — structured tools only.
 
+### J2 USB-C (variant B) — Connfly DS1144-07 (2026-11-18, replaces the XKB)
+- **Connfly DS1144-07** (local supplier; the XKB U262 isn't available there). 16P top-mount SMT, L 6.5 mm, 4 THT shell tabs, no pegs. Rated −30…+80 °C, accepted (bottom side, out of the sun).
+- **Footprint** `ButtHeat:USB_C_DS1144-07` (hw/tools/gen_usbc_ds1144.py):
+  - signal pads identical to the XKB footprint, so it's a drop-in for routing at the same origin, KiCad (217.8, 95.825); A8/B8 (SBU) omitted;
+  - rear tabs about the same as the XKB's.
+- **Front shell tabs:** they sit 0.17 mm further forward, and the datasheet wants the front face flush with the board edge. That's impossible here: the pads would hit ENC3's switch pins, and a 0.13 mm nudge rearward collides the A6/B6 D+ bridge with ENC3_SW.
+  - So the front tab pads are custom shapes, **cut flat 0.3 mm before the board edge** (EDGE_Y = 2.175 in the generator; re-generate if J2 moves). That leaves a ~0.07 mm ring at the slot's front end.
+  - A DRC rule ("J2 shell tabs: ring cut at the board edge") allows that ring.
+- **Mouth:** about 0.55 mm deeper than with the XKB (the front face is at case y ≈ 1.17), with its centre about 1.66 mm above the board. The case knock-out (x 61.6…74.0, z 2…8.4) still covers it. Check that your plug's overmould reaches far enough in.
+- No 3D model yet (`${KIPRJMOD}/3d/DS1144-07.step` is referenced but missing).
+- Old part, for reference: XKB U262-161N-4BVC11, footprint `ButtHeat:USB_C_XKB_U262-16XN-4BVC11_noSBU` (hw/tools/gen_usbc_nosbu.py).
+
 ### J2 USB-C (variant B) — final part (2026-11-15)
 - **XKB U262-161N-4BVC11** (LCSC/JLC stock, 'Extended' = only matters for JLC assembly), 16-pin SMD +
   4 THT shell tabs + 2 pegs. Footprint `ButtHeat:USB_C_XKB_U262-16XN-4BVC11_noSBU`

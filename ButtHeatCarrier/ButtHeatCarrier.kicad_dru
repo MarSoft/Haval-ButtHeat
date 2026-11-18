@@ -46,3 +46,9 @@
 (rule "GND pads: one thermal spoke is enough"
 	(condition "A.NetName == 'GND'")
 	(constraint min_resolved_spokes 1))
+
+# J2 (USB-C DS1144-07): the front shell-tab rings are cut flat 0.3 mm before the board edge in the
+# footprint (hw/tools/gen_usbc_ds1144.py), leaving ~0.07 mm of ring at the slot's front end.
+(rule "J2 shell tabs: ring cut at the board edge"
+	(condition "A.Parent == 'J2' && A.Pad_Number == 'SH'")
+	(constraint annular_width (min 0.05mm)))
