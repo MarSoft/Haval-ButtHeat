@@ -428,3 +428,15 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - **Milled outline:** outer perimeter 378.8 mm; one internal cut-out, the display-flex slot (2 × 12.6 mm, R1 ends), 27.5 mm, which needs a mill bit ≤ 2.0 mm.
   - **Plated oval slots:** 2.8 × 2.0 for the encoder lugs (6×).
   - H1/H2 are Ø2.2 NPTH drills.
+
+## J1 → JST ZH side-entry S4B-ZR (2026-11-19)
+- The kit came with S4B-ZR (side entry) instead of B4B; the user prefers it. It solders into the same 4 holes (1.5 mm row at y 26.7); pin numbering is mirrored by the flipped orientation, which doesn't matter because the cable side is wired to suit.
+- **Placement:** body x −73.55…−66.05, y 22.2…28.2, z 4.6…8.3, soldered **1.09 mm above the board** so it clears the SuperMini (top z 4.5). The plug enters from −y.
+- **SuperMini builds:** the header rests on the SuperMini.
+- **WROOM builds:** a printed **J1 spacer** goes under it (hw/cad/v2_j1_spacer.py → out/J1Spacer.brep; 7.5 × 5.3 × 1.09 mm with pin slots; y 22.6…27.9, clear of the WROOM's edge).
+- **Wires:** they curl over U1 (seen from above: down, right, up, left) to the cable seat. The curl is the service reserve; the cable is fixed only at the clamp.
+- **Left case part:** the **J1 bump is removed**, so the top is flat at z 12.4. The back-wall clearance over J1 is now z 3.3…9.0. No retaining rib, so the wires stay free.
+
+## Middle part: sharp back edge (2026-11-19)
+- The top-back edge against the display frame is no longer rounded (the part sits flush with the frame). Only the front edge along the knob keeps its 1 mm rounding. In the generator, the rounding offset is grown without the frame face and the frame plane is cut afterwards.
+

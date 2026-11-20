@@ -58,7 +58,16 @@ def footprint(inset, x0, x1, y_back):
     return face.common(clip)
 
 
-def envelope(t, x0, x1, z_bottom, y_back):
+def frame_cutter(t):
+    """Everything behind the 15 deg display-frame plane (tape gap, then t inwards)."""
+    big = 200
+    yf = lambda z: FRAME_Y0 - TAPE_GAP - t / math.cos(math.radians(15)) + z * FRAME_TAN
+    fr = Part.Face(Part.makePolygon([P(0, yf(-5), -5), P(0, yf(30), 30), P(0, 60, 30), P(0, 60, -5), P(0, yf(-5), -5)])).extrude(P(big, 0, 0))
+    fr.translate(P(-big / 2, 0, 0))
+    return fr
+
+
+def envelope(t, x0, x1, z_bottom, y_back, frame=True):
     """Outer envelope shrunk by t: top TOP-t, bevel plane and frame plane moved inwards by t."""
     f = footprint(t, x0, x1, y_back)
     s = f.extrude(P(0, 0, (TOP - t) - z_bottom))
@@ -71,19 +80,18 @@ def envelope(t, x0, x1, z_bottom, y_back):
     cutter.translate(P(-big / 2, 0, 0))
     s = s.cut(cutter)
     # frame: remove y > frame plane (tape gap, then t inwards)
-    yf = lambda z: FRAME_Y0 - TAPE_GAP - t / math.cos(math.radians(15)) + z * FRAME_TAN
-    fr = Part.Face(Part.makePolygon([P(0, yf(-5), -5), P(0, yf(30), 30), P(0, 60, 30), P(0, 60, -5), P(0, yf(-5), -5)])).extrude(P(big, 0, 0))
-    fr.translate(P(-big / 2, 0, 0))
-    return s.cut(fr)
+    return s.cut(frame_cutter(t)) if frame else s
 
 
 FRONT_ROUND = 1.0
 # Rounded outer envelope: shrink by r, grow back by r with arc joins (rounds every convex edge, works on
 # the faceted arch where fillets fail), then cut the bottom flat at the board top and the ends flat at
-# the seams so only the outside edges (top-front along the knob, top-back along the frame) stay round.
-_core = envelope(FRONT_ROUND, -SEAM - 5, SEAM + 5, BOARD_TOP - 3, 45)
+# the seams so only the top-front edge along the knob stays round. The core is grown without its frame
+# side (extends to y 45), the frame plane is cut afterwards: the top-back edge against the car's display
+# frame stays sharp (the part sits flush there; 2026-11-19).
+_core = envelope(FRONT_ROUND, -SEAM - 5, SEAM + 5, BOARD_TOP - 3, 45, frame=False)
 _round = _core.makeOffsetShape(FRONT_ROUND, 0.01, join=0)
-outer = _round.common(Part.makeBox(2 * SEAM, 60, 20, P(-SEAM, -10, BOARD_TOP)))
+outer = _round.common(Part.makeBox(2 * SEAM, 60, 20, P(-SEAM, -10, BOARD_TOP))).cut(frame_cutter(0))
 print('rounded outer envelope valid', outer.isValid())
 cavity = envelope(WALL, -SEAM - SPIGOT - 1, SEAM + SPIGOT + 1, BOARD_TOP - 1, LIP_FRONT)
 part = outer.cut(cavity)

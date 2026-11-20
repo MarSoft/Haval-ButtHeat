@@ -11,5 +11,4 @@ managed_components
 # https://github.com/espressif/esp-idf
 
 build/
-sdkconfig
 sdkconfig.old

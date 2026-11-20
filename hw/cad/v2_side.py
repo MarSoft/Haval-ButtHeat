@@ -1,5 +1,5 @@
 """ButtHeat v2 front case, SIDE parts (SLA): from the seam (x -+20) to the ends, which follow the car's
-air-vent housings (R20 arcs around (-+96, 8.95), as v1's cover). Left: J1 bump and the cable exit in the arc
+air-vent housings (R20 arcs around (-+96, 8.95), as v1's cover). Left: the cable exit in the arc
 wall; right: J2 USB-C knock-out.
 
 Don't run directly: v2_left.py / v2_right.py set SIDE and exec this (headless), writing hw/cad/out/Left.brep
@@ -62,8 +62,10 @@ RIM_CHAMFER = 0.5                                    # chamfer on the counterbor
 FRONT_FILLET = 1.0                                   # shoulder slope / knob-arch front wall edge (as the middle part)
 KNOCKOUT_D, KNOCKOUT_WEB = 4.0, 0.4
 H_BOSS = dict(boss_d=5.0, pilot_d=1.7, top=7.6)     # H1/H2 fallback M2x4 self-tapping from the board's back
-J1_BUMP = (-75.0, -62.0, 21.0, 14.5)                 # x0, x1, y0, outer top: room for the wires' U-turn
-J1_CLR = (-74.5, -65.0, 24.9, 29.1, 3.3)             # x0, x1, y0, y1, z0 (ZH header y 25.09..28.9, plug top 9.4)
+# J1: JST ZH side-entry S4B-ZR (2026-11-19; was the vertical B4B with a raised "bump" roof for the wires'
+# U-turn): body x -73.55..-66.05, y 22.2..28.2, z 4.6..8.3 (1 mm spacer under it), plug entering from -y;
+# the wires curl over U1 inside the normal ceiling (z 10.9)
+J1_CLR = (-74.5, -65.0, 24.9, 29.1, 3.3, 9.0)        # x0, x1, y0, y1, z0, z1 (clearance at the back wall)
 exec(open('/home/mars/my/buttheat/hw/cad/v2_cable.py').read())   # cable seat, exit paths, insert, M2 tab
 
 _doc = (App.getDocument('ButtHeatModel') if 'ButtHeatModel' in App.listDocuments()
@@ -157,7 +159,7 @@ def column(face_xy, z0, z1):
 
 def roof(dz):
     """Solid below the shoulder surface, lowered by dz. Ruled loft over x: flat seam section continued to
-    x -14, the ramp to SHOULDER_X2, then straight up out of the way (the J1 bump is higher than TOP)."""
+    x -14, the ramp to SHOULDER_X2, then straight up out of the way."""
     def sec(x, zs):
         ys = [-6, 8.6, mid['GLASS_Y0'], 61]
         pts = [P(x, y, z - dz) for y, z in zip(ys, zs)] + [P(x, 61, -5), P(x, -6, -5)]
@@ -222,17 +224,6 @@ outer = outer.makeFillet(FRONT_FILLET, es)
 assert outer.isValid(), 'front fillet failed'
 print('front fillet on', len(es), 'edges')
 step('notch')
-bx0, bx1, by0, btop = J1_BUMP
-if SIDE == 'left':
-    # J1 bump: raised roof over the connector for the wires' U-turn
-    bump_face = Part.Face(Part.makePolygon([P(0, by0, TOP - 1), P(0, frame_y(TOP - 1), TOP - 1), P(0, frame_y(btop), btop),
-                                            P(0, by0 + (btop - TOP + 1), btop), P(0, by0, TOP - 1)]))
-    outer = outer.fuse(prism(bump_face, bx0, bx1))
-    cav = cav.fuse(prism(Part.Face(Part.makePolygon([P(0, by0 + WALL, CEIL - 1), P(0, frame_y(btop - WALL, WALL), CEIL - 1),
-                                                     P(0, frame_y(btop - WALL, WALL), btop - WALL),
-                                                     P(0, by0 + WALL + (btop - TOP + 1), btop - WALL), P(0, by0 + WALL, CEIL - 1)])),
-                         bx0 + WALL, bx1 - WALL))
-    step('bump')
 part = outer.cut(cav)
 step('shell')
 
@@ -254,8 +245,8 @@ for (x, y) in POSTS:
     part = part.cut(Part.makeCylinder(PLATE_POST_D / 2 + 0.1, PLATE_POST_TOP + 0.05 + 1, P(x, y, -1)))
     part = part.cut(Part.makeCylinder(10.4 / 2, 2.45 + 0.2 + 1, P(x, y, -1)))   # the plate's D10 boss under the PCB
 if SIDE == 'left':
-    jx0, jx1, jy0, jy1, jz0 = J1_CLR
-    part = part.cut(Part.makeBox(jx1 - jx0, jy1 - jy0, btop - WALL - jz0, P(jx0, jy0, jz0)))
+    jx0, jx1, jy0, jy1, jz0, jz1 = J1_CLR
+    part = part.cut(Part.makeBox(jx1 - jx0, jy1 - jy0, jz1 - jz0, P(jx0, jy0, jz0)))
 h = SW['body'] / 2 + SW['clr']
 part = part.cut(Part.makeBox(2 * h, 2 * h, SW['body_top'] + SW['clr'] - 3.0, P(SW['x'] - h, SW['y'] - h, 3.0)))
 x0, x1, y0, y1, zt = SW['top']
