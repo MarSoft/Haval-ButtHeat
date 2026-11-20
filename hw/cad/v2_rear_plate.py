@@ -1,6 +1,7 @@
-"""ButtHeat v2 rear plate (PETG, FDM), generated into the open ButtHeatModel document.
+"""ButtHeat v2 rear plate, FDM (PETG, heat-set inserts) and SLA (resin, M2.5 nuts, split in two halves).
 
-Run headless (MCP execute_code_headless or freecadcmd); it writes hw/cad/out/RearPlate_{A,B}.brep.
+Run headless (MCP execute_code_headless or freecadcmd); it writes hw/cad/out/RearPlate_{A,B}.brep (FDM)
+and RearPlate_SLA_{A,B}_{L,R}.brep (SLA halves).
 Load them into the GUI with hw/cad/v2_load.py (no booleans in the GUI process: they crashed it).
 Driving numbers come from V2Vars (read from the saved .FCStd when headless); the rest are the
 constants below (move them to V2Vars once they settle).
@@ -9,8 +10,11 @@ Coordinates: case = KiCad grid origin = car knob centre; z = 0 car console surfa
 z 0..plate_t, carrier PCB bottom at plate_t + gap. Display frame plane: y = 29.75 + z*tan(15 deg).
 
 Objects (in group "V2 Case"):
-  RearPlate_A  display option 1: full cut-out for the OLED driver board hanging under the carrier
+  RearPlate_A  display option 1: pit for the OLED driver board hanging under the carrier, through-pockets
+               for its three rows of parts and J3's pin tails
   RearPlate_B  display option 3: shallow pocket for the rear passives under the glass
+  RearPlate_SLA_{A,B}_{L,R}  the same as SLA halves: split at x = 0 with a dovetail (slides together
+               vertically), M2.5 hex nuts in pockets from below instead of the heat-set inserts
 """
 import math
 import FreeCAD as App
@@ -18,6 +22,7 @@ import Part
 
 MODEL = '/home/mars/tmp/3dp/buttheat/ButtHeatModel.FCStd'
 OUT = '/home/mars/my/buttheat/hw/cad/out/'
+P = App.Vector
 doc = (App.getDocument('ButtHeatModel') if 'ButtHeatModel' in App.listDocuments()
        else App.openDocument(MODEL))
 V = doc.getObject('V2Vars')
@@ -38,14 +43,18 @@ BOSS_D, BOSS_TOP = 10.0, None     # boss under the board (top set below to the P
 INSERT_D = v('insert_pilot_d')    # 3.6 (M2.5 x 4 x 3.5 heat-set), pressed in from the plate underside
 INSERT_LEN = 4.0                  # pressed in from the plate's underside, flush: sits z 0..4, so the screw's
 INSERT_DEPTH = INSERT_LEN + 0.3   # pull pushes it into the post (the post can't be torn off); +0.3 for melt
-                                  # M2.5x8, head top at z 9.0 -> tip at z 1.0: 3.0 mm thread engagement
+                                  # M2.5x8, head top at z 8.5 -> tip at z 0.5 (>= 0.5 above the car panel):
+                                  # 3.5 mm thread engagement
 SCREW_CLR = 2.9                   # M2.5 clearance through the spacer tube
 INSERT_CHAMFER = 0.4              # 45 deg entry chamfer on the pilots (bed side: counters elephant's foot, eases pressing)
 SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
 SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
 POST_TOP = 6.0                    # short posts (easy to lift the front + board off); the front parts' posts
-                                  # continue from z 6.1. Screws M2.5x8 DIN 965, head top at z 9.0 (tip at z 1.0)
+                                  # continue from z 6.1. Screws M2.5x8 DIN 965, head top at z 8.5 (tip at z 0.5)
+# SLA: M2.5 hex nut (5.0 AF, 2.0 thick) in a pocket from below, z 0..NUT_TOP inside the D10 boss (the posts
+# are too thin for it); the screw pulls it up against the pocket ceiling (nut z 0.4..2.4, 1.9 mm of thread)
+NUT_AF, NUT_TOP, NUT_CHAMFER = 5.0 + 0.15, 2.4, 0.3
 POSTS = [(-v('post1_left'), v('post1_y')), (v('post2_x'), v('post2_y')),
          (-v('post3_left'), v('post3_y')), (v('post4_x'), v('post4_y'))]
 PAD_H = GAP                       # support pads touch the PCB bottom
@@ -63,8 +72,19 @@ BTN_PAD_D = 4.0                   # inside the 4 legs (r 3.9)
 BACK_POCKETS = [(-71.0, 23.3, 3.6, 3.6, 1.0),     # D1 SOT-23
                 (-40.7, 24.8, 1.6, 2.9, 1.0),     # C1 0603 (rot 90) under U3 pin 3
                 (-62.9, 3.8, 2.1, 3.5, 1.0)]      # C20 0805 10uF (rot 90, <= 1.25 tall) at the WROOM 3V3
-DRV_BOARD = (-19.29 - 0.5, 18.71 + 0.5, 16.0 - 0.2, 28.0 + 0.3)   # option 1 cut-out (x0, x1, y0, y1); y0: leaves
-                                                                    # 0.3 mm of plate at x 0 (front edge y 15.5)
+# option 1: the driver board hangs under the carrier (board z 1.5..2.5, parts down to z 0.3): a pit for the
+# board (floor 0.2 below it) and through-pockets for its three part rows and J3's pin tails. Part positions
+# from the driver-board model (J3 pin 1 = SDA at (-17.29, 25.81), model y up), each pocket also covering its
+# mirror image about the board's centre line (the model's underside is suspected to be mirrored top-bottom)
+DRV_BOARD = (-19.74 - 0.3, 18.71 + 0.3, 16.0 - 0.3, 28.0 + 0.3)   # pit (x0, x1, y0, y1)
+DRV_PIT_FLOOR = 1.3
+J3_PIN1, DRV_MID_Y = (-17.29, 25.81), -3.81                        # model y of the board's centre line
+DRV_PARTS = [(-1.2, 1.2, -8.82, 1.2),            # J3 pin tails + solder (model x0, x1, y0, y1)
+             (6.0, 8.0, -2.21, -1.31),           # 0603 next to Q1
+             (7.0, 8.0, -6.81, -3.81),           # Q1 (662K LDO)
+             (14.5, 16.5, -8.31, -2.21),         # middle column (C8, D1, R2..R4)
+             (21.0, 23.0, -9.41, 0.59)]          # right column (C1..C7, R1)
+DRV_PART_CLR = 0.4
 # option 3 pocket for the passives on the board's back (rerouted 2026-11-16): behind the rib (C12..C14 pads
 # start at y 18.9), plus a bay for C10/C11 (rot 90 at (9.6|11.6, 17.0): pads x 9.15..12.05, y 15.75..18.25)
 PASSIVES = [(-5.5, 13.0, 18.6, 25.0), (8.85, 12.35, 15.45, 18.7)]
@@ -127,7 +147,7 @@ def rib_cutter():
     return Part.makeBox(400, 80, PAD_H + 1, P(-200, -20, PLATE_T)).cut(keep)
 
 
-def plate_body():
+def plate_body(nuts=False):
     w0 = arch_wire(0.0)
     base = Part.Face(w0).extrude(App.Vector(0, 0, PLATE_T + PAD_H)).cut(rib_cutter())
     assert base.isValid(), 'plate base invalid'
@@ -174,9 +194,17 @@ def plate_body():
     for (x, y) in BTN_PADS:
         solid = solid.fuse(Part.makeCylinder(BTN_PAD_D / 2, PAD_H, P(x, y, PLATE_T)))
     for (x, y) in POSTS:
-        solid = solid.cut(Part.makeCylinder(INSERT_D / 2, INSERT_DEPTH, P(x, y, -0.01)))
-        c = INSERT_CHAMFER + 0.1
-        solid = solid.cut(Part.makeCone(INSERT_D / 2 + c, INSERT_D / 2, c, P(x, y, -0.1)))
+        if nuts:
+            r = NUT_AF / math.sqrt(3)               # hex corner radius
+            hexw = Part.makePolygon([P(x + r * math.cos(math.radians(30 + 60 * k)), y + r * math.sin(math.radians(30 + 60 * k)), -0.01)
+                                     for k in range(7)])
+            solid = solid.cut(Part.Face(hexw).extrude(P(0, 0, NUT_TOP + 0.01)))
+            c = NUT_CHAMFER + 0.1
+            solid = solid.cut(Part.makeCone(r + c, r, c, P(x, y, -0.1)))
+        else:
+            solid = solid.cut(Part.makeCylinder(INSERT_D / 2, INSERT_DEPTH, P(x, y, -0.01)))
+            c = INSERT_CHAMFER + 0.1
+            solid = solid.cut(Part.makeCone(INSERT_D / 2 + c, INSERT_D / 2, c, P(x, y, -0.1)))
         solid = solid.cut(Part.makeCylinder(SCREW_CLR / 2, POST_TOP + 1, P(x, y, 0)))
     for (x, y) in SCREW_HEAD_POCKETS:
         solid = solid.cut(Part.makeCylinder(SCREW_HEAD_D / 2, PLATE_T + 1, P(x, y, -0.5)))
@@ -206,15 +234,53 @@ def box(r, z0, dz):
     return Part.makeBox(x1 - x0, y1 - y0, dz, App.Vector(x0, y0, z0))
 
 
+def option1(solid):
+    """Plate A: pit for the driver board + through-pockets for its parts (and their mirror images)."""
+    solid = solid.cut(box(DRV_BOARD, DRV_PIT_FLOOR, PLATE_T + 2))
+    px, py = J3_PIN1
+    c = DRV_PART_CLR
+    for x0, x1, y0, y1 in DRV_PARTS:
+        for ya, yb in ((y0, y1), (2 * DRV_MID_Y - y1, 2 * DRV_MID_Y - y0)):
+            solid = solid.cut(box((px + x0 - c, px + x1 + c, py + ya - c, py + yb + c), -1, PLATE_T + 2))
+    return solid
+
+
+def option3(solid):
+    for r in PASSIVES:
+        solid = solid.cut(box(r, PLATE_T - PASSIVES_POCKET, PASSIVES_POCKET + 1))
+    return solid
+
+
+# SLA split at x = 0: one dovetail (plan view, full height) on the left half reaching into the right half
+# (+x: towards -x it would run into plate A's pocket for the driver board's middle part column)
+SPLIT_GAP, DOVE_FIT = 0.05, 0.1                  # half the straight joint gap; dovetail clearance per side
+DOVE = dict(y=23.5, neck=3.0, head=5.0, depth=2.6)
+
+
+def dovetail(grow):
+    d = DOVE
+    pts = [(-0.5, d['y'] - d['neck'] / 2 - grow), (d['depth'] + grow, d['y'] - d['head'] / 2 - grow),
+           (d['depth'] + grow, d['y'] + d['head'] / 2 + grow), (-0.5, d['y'] + d['neck'] / 2 + grow)]
+    w = Part.makePolygon([P(x, y, -2) for x, y in pts] + [P(pts[0][0], pts[0][1], -2)])
+    return Part.Face(w).extrude(P(0, 0, 20))
+
+
+def split(solid):
+    left = Part.makeBox(200, 80, 20, P(-200 - SPLIT_GAP, -20, -2)).fuse(dovetail(0.0))
+    right = Part.makeBox(200, 80, 20, P(SPLIT_GAP, -20, -2)).cut(dovetail(DOVE_FIT))
+    return solid.common(left).removeSplitter(), solid.common(right).removeSplitter()
+
+
 base = cable_notches(plate_body())
-A = base.cut(box(DRV_BOARD, -1, PLATE_T + 2)).removeSplitter()
-B = base
-for r in PASSIVES:
-    B = B.cut(box(r, PLATE_T - PASSIVES_POCKET, PASSIVES_POCKET + 1))
-B = B.removeSplitter()
+A = option1(base).removeSplitter()
+B = option3(base).removeSplitter()
+sla = cable_notches(plate_body(nuts=True))
+SA_L, SA_R = split(option1(sla))
+SB_L, SB_R = split(option3(sla))
 
 import os
 os.makedirs(OUT, exist_ok=True)
-for name, shape in (('RearPlate_A', A), ('RearPlate_B', B)):
+for name, shape in (('RearPlate_A', A), ('RearPlate_B', B), ('RearPlate_SLA_A_L', SA_L), ('RearPlate_SLA_A_R', SA_R),
+                    ('RearPlate_SLA_B_L', SB_L), ('RearPlate_SLA_B_R', SB_R)):
     shape.exportBrep(OUT + name + '.brep')
     print(name, shape.isValid(), round(shape.Volume, 1), shape.BoundBox)

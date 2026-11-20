@@ -55,8 +55,9 @@ ROOF_DZ_IN = 1.6                # cavity roof: WALL measured normal to the ~19 d
 BUSHING_HOLE = 7.4
 PLATE_POST_TOP, PLATE_POST_D = 6.0, 6.0              # rear plate spacer tubes (v2_rear_plate POST_TOP, POST_D)
 FRONT_POST_D, FRONT_POST_Z0 = 7.6, 6.1               # front posts continue down to the plate posts
-SCREW_CLR, CSK_D, HEAD_Z = 2.9, 5.0, 9.0             # M2.5x8 DIN 965 (head 4.7, 90 deg), head top at z 9.0
-                                                     # (tip at z 1.0: 3 mm into the flush z 0..4 insert)
+SCREW_CLR, CSK_D, HEAD_Z = 2.9, 5.0, 8.5             # M2.5x8 DIN 965 (head 4.7, 90 deg), head top at z 8.5
+                                                     # (tip at z 0.5: >= 0.5 above the car panel; FDM insert
+                                                     # 3.5 mm, SLA nut 1.9 mm of thread)
 CBORE_D = 6.0                                        # access counterbore: 0.65 mm headroom around the head
 RIM_CHAMFER = 0.5                                    # chamfer on the counterbore rims
 FRONT_FILLET = 1.0                                   # shoulder slope / knob-arch front wall edge (as the middle part)

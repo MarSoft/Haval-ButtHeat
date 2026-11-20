@@ -12,7 +12,9 @@ LABELS = {'RearPlate_A': 'Rear plate A (display option 1: driver-board cut-out)'
           'RearPlate_B': 'Rear plate B (display option 3: passives pocket)',
           'Middle': 'Front middle (SLA)', 'Left': 'Front left (SLA)', 'Right': 'Front right (SLA)',
           'ClampTop': 'Cable clamp insert, top half (SLA)', 'ClampBottom': 'Cable clamp insert, bottom half + tab (SLA)',
-          'J1Spacer': 'J1 (S4B-ZR) spacer, WROOM builds'}
+          'J1Spacer': 'J1 (S4B-ZR) spacer, WROOM builds',
+          'RearPlate_SLA_A_L': 'Rear plate SLA A, left half (nuts)', 'RearPlate_SLA_A_R': 'Rear plate SLA A, right half (nuts)',
+          'RearPlate_SLA_B_L': 'Rear plate SLA B, left half (nuts)', 'RearPlate_SLA_B_R': 'Rear plate SLA B, right half (nuts)'}
 doc = App.getDocument('ButtHeatModel')
 grp = doc.getObject('V2_Case') or doc.addObject('App::DocumentObjectGroup', 'V2_Case')
 grp.Label = 'V2 Case'
