@@ -12,6 +12,11 @@ Connect to 5V supply and BD-CAN-1 (see the schematics).
 Controls: two rotary encoders (left and right A/C control, click -> seat heat control, long press -> seat memory recall)
 and SSD1306 0.91" 128x32 tiny display which fits above the "MODE" knob in the car.
 
+H08/P08 pin29 wire A239 R-Y, IG1, fuse F122 10A
+H08/P08 pin32 wire A221 <s> ACC?
+
+Thingiverse project with a better description: https://www.thingiverse.com/thing:7438047
+
 Logic
 -----
 
