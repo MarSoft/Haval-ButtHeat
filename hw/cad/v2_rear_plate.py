@@ -1,7 +1,7 @@
 """ButtHeat v2 rear plate, FDM (PETG, heat-set inserts) and SLA (resin, M2.5 nuts, split in two halves).
 
-Run headless (MCP execute_code_headless or freecadcmd); it writes hw/cad/out/RearPlate_{A,B}.brep (FDM)
-and RearPlate_SLA_{A,B}_{L,R}.brep (SLA halves).
+Run headless (MCP execute_code_headless or freecadcmd); it writes hw/cad/out/RearPlate.brep (FDM) and
+RearPlate_SLA_{L,R}.brep (SLA halves).
 Load them into the GUI with hw/cad/v2_load.py (no booleans in the GUI process: they crashed it).
 Driving numbers come from V2Vars (read from the saved .FCStd when headless); the rest are the
 constants below (move them to V2Vars once they settle).
@@ -9,12 +9,15 @@ constants below (move them to V2Vars once they settle).
 Coordinates: case = KiCad grid origin = car knob centre; z = 0 car console surface, rear plate
 z 0..plate_t, carrier PCB bottom at plate_t + gap. Display frame plane: y = 29.75 + z*tan(15 deg).
 
+One plate for both display options (2026-11-20; were separate A/B plates): a pit for the OLED driver board
+hanging under the carrier (option 1) with through-pockets for its three rows of parts and J3's pin tails,
+plus the shallow pocket for the rear passives under the glass (option 3). The arch rib's centre part is
+lost to the pit (its outer parts stay).
+
 Objects (in group "V2 Case"):
-  RearPlate_A  display option 1: pit for the OLED driver board hanging under the carrier, through-pockets
-               for its three rows of parts and J3's pin tails
-  RearPlate_B  display option 3: shallow pocket for the rear passives under the glass
-  RearPlate_SLA_{A,B}_{L,R}  the same as SLA halves: split at x = 0 with a dovetail (slides together
-               vertically), M2.5 hex nuts in pockets from below instead of the heat-set inserts
+  RearPlate          FDM (PETG), M2.5 heat-set inserts pressed in from below
+  RearPlate_SLA_L/R  SLA halves: split at x = 0 with a dovetail (slides together vertically), M2.5 hex
+                     nuts in pockets from below
 """
 import math
 import FreeCAD as App
@@ -71,7 +74,8 @@ BTN_PAD_D = 4.0                   # inside the 4 legs (r 3.9)
 # parts on the PCB back (other than the display passives): x, y, w, h (pad extent + margin), pocket depth
 BACK_POCKETS = [(-71.0, 23.3, 3.6, 3.6, 1.0),     # D1 SOT-23
                 (-40.7, 24.8, 1.6, 2.9, 1.0),     # C1 0603 (rot 90) under U3 pin 3
-                (-62.9, 3.8, 2.1, 3.5, 1.0)]      # C20 0805 10uF (rot 90, <= 1.25 tall) at the WROOM 3V3
+                (-62.9, 3.8, 2.1, 3.5, 1.0),      # C20 0805 10uF (rot 90, <= 1.25 tall) at the WROOM 3V3
+                (-69.8, 26.7, 6.0, 1.4, 0.5)]     # J1 (S4B-ZR) pin tails, 0.6 below the board (no trimming needed)
 # option 1: the driver board hangs under the carrier (board z 1.5..2.5, parts down to z 0.3): a pit for the
 # board (floor 0.2 below it) and through-pockets for its three part rows and J3's pin tails. Part positions
 # from the driver-board model (J3 pin 1 = SDA at (-17.29, 25.81), model y up), each pocket also covering its
@@ -271,16 +275,12 @@ def split(solid):
     return solid.common(left).removeSplitter(), solid.common(right).removeSplitter()
 
 
-base = cable_notches(plate_body())
-A = option1(base).removeSplitter()
-B = option3(base).removeSplitter()
-sla = cable_notches(plate_body(nuts=True))
-SA_L, SA_R = split(option1(sla))
-SB_L, SB_R = split(option3(sla))
+unified = lambda solid: option1(option3(solid)).removeSplitter()
+FDM = unified(cable_notches(plate_body()))
+SLA_L, SLA_R = split(unified(cable_notches(plate_body(nuts=True))))
 
 import os
 os.makedirs(OUT, exist_ok=True)
-for name, shape in (('RearPlate_A', A), ('RearPlate_B', B), ('RearPlate_SLA_A_L', SA_L), ('RearPlate_SLA_A_R', SA_R),
-                    ('RearPlate_SLA_B_L', SB_L), ('RearPlate_SLA_B_R', SB_R)):
+for name, shape in (('RearPlate', FDM), ('RearPlate_SLA_L', SLA_L), ('RearPlate_SLA_R', SLA_R)):
     shape.exportBrep(OUT + name + '.brep')
     print(name, shape.isValid(), round(shape.Volume, 1), shape.BoundBox)

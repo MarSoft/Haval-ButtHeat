@@ -454,3 +454,11 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - each pocket also covers its mirror image about the board's centre line, because the driver-board 3D model's underside appears mirrored;
   - checked clear of the driver board model.
 
+## Rear plate unified for both display options; J1 wire curl (2026-11-20)
+- **One plate design**, replacing A/B: the driver-board pit and through-pockets (option 1) plus the 0.8 mm passives pocket (option 3). The arch rib's centre is lost to the pit; its outer parts remain.
+- **Outputs:** `RearPlate` (FDM, heat-set inserts) and `RearPlate_SLA_L/R` (SLA halves, nuts, dovetail). The old RearPlate_A/B and SLA_A/B files were removed from hw/cad/out (git rm).
+- New 0.5 mm pocket under J1's S4B pin tails (0.6 mm below the board), so they don't need trimming.
+- Checked against the board model with both options' parts and against the front parts: no contact.
+- **Wire curl** (reference object `out/J1WireCurl.brep`, a 2.5 mm bundle along the user's route): about 54 mm from the plug (rear face y 20.8, z ≈ 6.6) down, right over the WROOM can (top 6.7), up, left over the header, down into the clamp seat. It's clear of the left case part.
+  - Tight spot: header top 8.35 to ceiling 10.9 = 2.55 mm. **Lay the 4 leads flat over the header.**
+
