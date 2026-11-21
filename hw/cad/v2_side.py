@@ -67,7 +67,7 @@ H_BOSS = dict(boss_d=5.0, pilot_d=1.7, top=7.6)     # H1/H2 fallback M2x4 self-t
 # U-turn): body x -73.55..-66.05, y 22.2..28.2, z 4.6..8.3 (1 mm spacer under it), plug entering from -y;
 # the wires curl over U1 inside the normal ceiling (z 10.9)
 J1_CLR = (-74.5, -65.0, 24.9, 29.1, 3.3, 9.0)        # x0, x1, y0, y1, z0, z1 (clearance at the back wall)
-exec(open('/home/mars/my/buttheat/hw/cad/v2_cable.py').read())   # cable seat, exit paths, insert, M2 tab
+exec(open('/home/mars/my/buttheat/hw/cad/v2_cable.py').read())   # cable arc, clamp boss/saddle, exit path
 
 _doc = (App.getDocument('ButtHeatModel') if 'ButtHeatModel' in App.listDocuments()
         else App.openDocument('/home/mars/tmp/3dp/buttheat/ButtHeatModel.FCStd'))
@@ -302,24 +302,38 @@ def path_cut(shape, pts, r, slot_w):
 
 
 if SIDE == 'left':
-    sx0, sx1, sy, sz = SEAT['x0'], SEAT['x1'], SEAT['y'], SEAT['z']
-    boss = Part.makeCylinder(SEAT_BOSS_D / 2, sx1 - sx0 + 12, P(sx0 - 12, sy, sz), P(1, 0, 0))
+    # (v2_cable.py) cable along the ear's inner arc, clamped there between a boss under the ceiling and a saddle
+    # from below; outside exit through the ear tip into the frame/vent V
+    cz = Part.makeCylinder
+    def sector(r0, r1, phi0, phi1, z0, z1):
+        """Annular sector around the ear arc centre ARC_C."""
+        a0, a1 = min(phi0, phi1), max(phi0, phi1)
+        ring = cz(r1, z1 - z0, P(ARC_C[0], ARC_C[1], z0), P(0, 0, 1), a1 - a0).cut(
+            cz(r0, z1 - z0 + 2, P(ARC_C[0], ARC_C[1], z0 - 1), P(0, 0, 1), 360))
+        ring.rotate(P(ARC_C[0], ARC_C[1], 0), P(0, 0, 1), a0)
+        return ring
+    # thinner ear wall along the cable (the tight place between J1 and the wall); stops 0.2 under the ceiling
+    p0, p1 = WALL_THIN_PHI
+    part = part.cut(sector(20.0 + WALL_THIN, 21.5 + 0.4, p0, p1, PLATE_T - 1, CEIL - 0.2))
+    # clamp boss: the groove's upper half, everything above BOSS_Z0 (J1 header/plug top 8.35), merged into the skin
+    c0, c1 = CLAMP_PHI
+    boss = sector(20.0 + WALL_THIN - 0.3, SADDLE_R[1] + 0.4, c1, c0, BOSS_Z0, CEIL + 0.3)
+    for f in (SCREW, PIN):
+        x, y = polar(f['phi'], f['r'])
+        boss = boss.fuse(cz(BOSS_COL_D / 2, CEIL + 0.3 - BOSS_Z0, P(x, y, BOSS_Z0)))
     part = part.fuse(boss.common(outer))
-    part = path_cut(part, [(sx1 + 0.5, sy, sz), (sx0, sy, sz)], SEAT['d'] / 2, SLOT_W)
-    part = part.cut(Part.makeSphere(EXIT_D / 2, P(sx0, sy, sz)))   # junction of the exit paths
+    part = part.cut(cable_tube(CABLE_D - SQUEEZE, c0, c1))                  # groove (squeezed, S-wave)
+    part = part.cut(cable_tube(CABLE_D + 0.4, PHI_ENTRY, c0 + 0.3))           # jacket clearance on the unclamped
+    part = part.cut(cable_tube(CABLE_D + 0.4, c1 - 0.3, PHI_JACKET_END - 0.5))  # ends of the arc
+    x, y = polar(SCREW['phi'], SCREW['r'])
+    part = part.cut(cz(SCREW['pilot_d'] / 2, 3.6, P(x, y, BOSS_Z0 - 0.1)))  # M2x4 from below: 2 mm of thread
+    x, y = polar(PIN['phi'], PIN['r'])
+    part = part.cut(cz(PIN['hole_d'] / 2, PIN['len'] + 0.6, P(x, y, BOSS_Z0 - 0.1)))
+    # outside: through the ear tip into the frame/vent V, with the lay-in slot below
+    E = CABLE_PATHS[0][0]
+    part = part.cut(Part.makeSphere(CABLE_D / 2 + 0.15, P(*E)))             # bend from the channel onto the arc
     for pts in CABLE_PATHS:
-        part = path_cut(part, [(sx0 + 0.5, sy, sz)] + pts[1:], EXIT_D / 2, SLOT_W)
-    # M2 boss hanging from the ceiling (kept out of the seat), then the pocket for the insert's tab (and the web
-    # joining it to the bottom half), open towards J1 so the insert slides in; the pocket's top is the boss bottom
-    part = part.fuse(Part.makeCylinder(M2['boss_d'] / 2, 20, P(M2['x'], M2['y'], TAB['z0']))
-                     .common(outer).common(Part.makeBox(20, 20, 30, P(M2['x'] - 10, SEAT['y'] - SEAT['d'] / 2 - 0.05 - 20, 0))))
-    t = TAB_CLR
-    part = part.cut(Part.makeBox(-70.0 - (TAB['x0'] - t), SEAT['y'] - 2.3 - (TAB['y0'] - t), TAB['z1'] - (TAB['z0'] - t),
-                                 P(TAB['x0'] - t, TAB['y0'] - t, TAB['z0'] - t)))
-    part = part.cut(Part.makeCylinder(M2['pilot_d'] / 2, M2['depth'] + 0.1, P(M2['x'], M2['y'], TAB['z1'] - 0.1)))
-    part = part.cut(Part.makeCylinder(M2_HEAD_D / 2, TAB['z0'] - t + 1 + 0.05, P(M2['x'], M2['y'], -1)))   # head + driver from below
-    # fin left between the seat's slot and the lip notch (y 27.7..28.3, x -79..-74.5, below the lip top)
-    part = part.cut(Part.makeBox(4.7, 0.9, 5.4, P(-79.1, 27.5, 0.9)))
+        part = path_cut(part, pts, EXIT_D / 2, SLOT_W)
     step('cable')
 
 part = part.removeSplitter()

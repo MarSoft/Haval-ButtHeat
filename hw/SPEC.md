@@ -462,3 +462,17 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - **Wire curl** (reference object `out/J1WireCurl.brep`, a 2.5 mm bundle along the user's route): about 54 mm from the plug (rear face y 20.8, z ≈ 6.6) down, right over the WROOM can (top 6.7), up, left over the header, down into the clamp seat. It's clear of the left case part.
   - Tight spot: header top 8.35 to ceiling 10.9 = 2.55 mm. **Lay the 4 leads flat over the header.**
 
+## Cable strain relief redesigned: arc groove + saddle (2026-11-20; replaces the round seat + split insert)
+- **Route:** the jacket comes in from the frame/vent V through the ear tip, then follows the ear's inner arc wall (centreline R 23.65 around the vent centre (−96, 8.95), z 8.2, φ 52° → 31°, a gentle bend for the jacket) down towards J1.
+  - The jacket ends at φ 31° (about (−75.7, 21.1)), 0.25 mm clear of J1's header.
+  - The conductors and ZH leads (about 45 mm) run down beside the wall, right over the WROOM shield (the splices rest there), back left, and up into the plug, which faces −y.
+- **Ear wall:** thinned from the inside to 1.0 mm along the cable (φ 12…58°), to widen the tight place between J1 and the wall.
+- **Clamp, φ 50…32° (about 7.5 mm):**
+  - the left part has a boss under the ceiling carrying the groove's upper half, entirely above z 8.5 (J1's header and plug reach z 8.35);
+  - the **Saddle** (hw/cad/v2_clamp.py → out/Saddle.brep, SLA, 80 mm³) presses from below and carries the lower half. Groove Ø = cable_d − 0.5 (4.0 for the 4.5 mm cable), a radial **S-wave ±0.5 mm** for grip; screwed home it stops 0.5 mm below the boss;
+  - **one M2×4 self-tapper from below** at φ 45° (about (−77.4, 27.6); 2 mm of thread in the boss) plus **one pin** (Ø1.4) at φ 39.5° (about (−75.7, 25.7)) into a hole in the boss. Both sit on the curve's outer side: the inner side is the thin wall, and J1 is further out.
+- **Outside exit:** path A only (through the ear tip into the V, slot below for laying in; the rear plate is notched along it). **Path B (straight into the vent housing) is dropped:** it would need a sharp bend of the jacket.
+- **Assembly:** front part upside down, board not fitted; lay the cable into the groove and the exit channel from below, put the saddle on, pin into its hole, screw. For another cable, set V2Vars.cable_d and re-run v2_left.py and v2_clamp.py; reprint the saddle **and** the left part (the groove's upper half follows the diameter).
+- Reference objects (not printed): out/CableJacket.brep, out/J1WireCurl.brep (the conductor loop).
+- The old ClampTop/ClampBottom outputs were removed (git rm).
+

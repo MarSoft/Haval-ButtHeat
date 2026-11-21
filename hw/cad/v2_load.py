@@ -11,8 +11,8 @@ import Part
 LABELS = {'RearPlate': 'Rear plate, FDM (heat-set inserts)',
           'RearPlate_SLA_L': 'Rear plate SLA, left half (nuts)', 'RearPlate_SLA_R': 'Rear plate SLA, right half (nuts)',
           'Middle': 'Front middle (SLA)', 'Left': 'Front left (SLA)', 'Right': 'Front right (SLA)',
-          'ClampTop': 'Cable clamp insert, top half (SLA)', 'ClampBottom': 'Cable clamp insert, bottom half + tab (SLA)',
-          'J1Spacer': 'J1 (S4B-ZR) spacer, WROOM builds', 'J1WireCurl': 'J1 wire curl (reference, not printed)'}
+          'Saddle': 'Cable clamp saddle (SLA), M2x4 + pin', 'CableJacket': 'Cable jacket in the clamp (reference, not printed)',
+          'J1Spacer': 'J1 (S4B-ZR) spacer, WROOM builds', 'J1WireCurl': 'Conductors / ZH leads loop with splices (reference, not printed)'}
 doc = App.getDocument('ButtHeatModel')
 grp = doc.getObject('V2_Case') or doc.addObject('App::DocumentObjectGroup', 'V2_Case')
 grp.Label = 'V2 Case'
