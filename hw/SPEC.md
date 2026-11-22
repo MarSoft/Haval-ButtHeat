@@ -66,15 +66,17 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 ## 4. Components
 
 ### J1 — power/CAN connector
-- **JST-ZH 4-pin vertical THT, B4B-ZR, 1.5 mm pitch** (`Connector_JST:JST_ZH_B4B-ZR_1x04_P1.50mm_Vertical`),
-  rotated 180°: pin 1 (+12 V) at case (−67.55, 26.70), pins 2/3/4 (GND, CAN+, CAN−) towards the
-  left edge (x −69.05 / −70.55 / −72.05). Body x −73.55 … −65.74, y 25.09 … 28.9: overhangs the
-  top edge by 0.9 mm and the left edge by ~0.5 mm, clears the SuperMini body by 0.29 mm, sits
-  inside U1's antenna keep-out courtyard (DRC-excluded; antenna-WROOM builds don't fit J1).
-- Plug inserts **from the front**; the case is adapted (top-left cable exit, split clamp, rib over
-  the plug) — see §“J1 = JST ZH vertical (2026-11-16)” for measurements and cable routing.
-- Replaces the side-entry JST-PH S4B-PH-K (its mouth faced the car's air-vent wall — no room for
-  the plug).
+- **JST-ZH 4-pin THT, 1.5 mm pitch** — footprint `JST_ZH_B4B-ZR_1x04_P1.50mm_Vertical`, but the
+  fitted part is the **side-entry S4B-ZR** (same hole row; pin numbering mirrored by the flipped
+  orientation, cable wired to suit) — §“J1 → JST ZH side-entry S4B-ZR”. Pin row at case
+  y 26.70, x −67.55 … −72.05; body x −73.55…−66.05, y 22.2…28.2, z 4.6…8.3, soldered 1.09 mm
+  above the board so it clears the SuperMini (WROOM builds add the printed J1 spacer,
+  hw/cad/v2_j1_spacer.py) and lies over U1/U2 — inside U1's pour-only antenna keep-out; reduced
+  antenna range in build B1 accepted (§“WROOM-02 antenna keep-out relaxed”).
+- Plug enters from −y; the wires curl over U1 to the top-left cable clamp (the curl is the service
+  reserve); no retaining rib — §“J1 → JST ZH side-entry” + §“Cable and strain relief”.
+- Replaces the side-entry JST-PH S4B-PH-K (mouth faced the car's air-vent wall) and the interim
+  vertical-B4B plan (the kit shipped S4B instead, 2026-11-19).
 - Pinout: 1 = +12 V, 2 = GND, 3 = CANH, 4 = CANL.
 
 ### MCU — exactly one of two variants is fitted (same PCB)
@@ -332,7 +334,10 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - Body x −73.55 … −65.74, y 25.09 … 28.9: it overhangs the top edge by 0.9 mm and the left edge by about 0.5 mm, and clears the SuperMini body by 0.29 mm.
   - The plug goes in from the front.
 - D1 (back) moved next to it: (−71.0, 23.3), rotated −90°.
-- **Antenna WROOM-02 builds**: J1 is not fitted (the cable is soldered from the back), as before. DRC rule "J1 pins in WROOM antenna courtyard" plus the accepted J1/U1 and J1/U2 courtyard touches.
+- **Antenna WROOM-02 builds (PCB antenna, B1)**: J1 stays fitted; its pins/cable sit partly inside
+  the pour-only keep-out — reduced antenna range deliberately accepted (2026-11-22; radio unused;
+  §“WROOM-02 antenna keep-out relaxed”). DRC rule "J1 pins in WROOM antenna courtyard" plus the
+  accepted J1/U1 and J1/U2 courtyard touches keep this out of DRC reports.
 - **Case**:
   - The car's display frame is 1.8 mm above J1's body top at board level (frame bottom y 30.69 at z 3.5, rising about 0.27 mm per mm of height). The top wall must thin or notch there; that's also the natural cable exit.
   - A rib in the front case should press the ZH plug down, since ZH has no latch.

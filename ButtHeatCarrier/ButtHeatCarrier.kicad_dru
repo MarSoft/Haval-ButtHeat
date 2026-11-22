@@ -8,8 +8,9 @@
 # J1/U2: ZH body (y >= 25.09) clears the SuperMini body (y <= 24.8); only courtyards touch.
 # U1/U2 vs R12, C19, C21: the row of 0603s along the module's bottom edge sits inside the module
 #        courtyards only (as R12/C19 always did); they clear the module bodies.
-# J1/U1: J1 sits in the WROOM-02 antenna keep-out courtyard. Antenna-WROOM builds don't fit J1
-#        (cable soldered from the back); with the WROOM-02U the module body (y <= 22.4) is clear.
+# J1/U1: J1 sits in the WROOM-02 antenna keep-out courtyard. Deliberately accepted (2026-11-22):
+#        the keep-out is pour-only, and J1's pins/cable near the antenna mean reduced range in the
+#        PCB-antenna build (B1) — radio isn't used. See SPEC "keep-out relaxed to pour-only".
 (rule "Accepted courtyard touches"
 	(condition "(A.Reference == 'SW1' && B.Reference == 'H1') || (A.Reference == 'SW2' && B.Reference == 'H2') || (A.Reference == 'J2' && B.Reference == 'ENC3') || (A.Reference == 'ENC1' && B.Reference == 'D1') || (A.Reference == 'U4' && B.Reference == 'C3') || (A.Reference == 'JP1' && B.Reference == 'U3') || (A.Reference == 'J1' && B.Reference == 'U1') || (A.Reference == 'J1' && B.Reference == 'U2') || ((A.Reference == 'U1' || A.Reference == 'U2') && (B.Reference == 'R12' || B.Reference == 'C19' || B.Reference == 'C21'))")
 	(constraint courtyard_clearance (min -10mm))
