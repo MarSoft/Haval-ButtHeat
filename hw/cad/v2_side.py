@@ -315,20 +315,31 @@ if SIDE == 'left':
     # thinner ear wall along the cable (the tight place between J1 and the wall); stops 0.2 under the ceiling
     p0, p1 = WALL_THIN_PHI
     part = part.cut(sector(20.0 + WALL_THIN, 21.5 + 0.4, p0, p1, PLATE_T - 1, CEIL - 0.2))
-    # clamp boss: the groove's upper half, everything above BOSS_Z0 (J1 header/plug top 8.35), merged into the skin
-    c0, c1 = CLAMP_PHI
-    boss = sector(20.0 + WALL_THIN - 0.3, SADDLE_R[1] + 0.4, c1, c0, BOSS_Z0, CEIL + 0.3)
-    for f in (SCREW, PIN):
-        x, y = polar(f['phi'], f['r'])
-        boss = boss.fuse(cz(BOSS_COL_D / 2, CEIL + 0.3 - BOSS_Z0, P(x, y, BOSS_Z0)))
-    part = part.fuse(boss.common(outer))
-    part = part.cut(cable_tube(CABLE_D - SQUEEZE, c0, c1))                  # groove (squeezed, S-wave)
-    part = part.cut(cable_tube(CABLE_D + 0.4, PHI_ENTRY, c0 + 0.3))           # jacket clearance on the unclamped
-    part = part.cut(cable_tube(CABLE_D + 0.4, c1 - 0.3, PHI_JACKET_END - 0.5))  # ends of the arc
+    step('wall thinned')
+    # clamp (v2_cable.py): channel clearance along the nominal arc, two bars hanging from the ceiling, the
+    # screw column (hard stop for the saddle's lobe) and the pin column
+    part = part.cut(straight_tube(CABLE_D + 0.4, PHI_ENTRY, PHI_JACKET_END - 0.5))
+    step('channel')
+
+    def bar(phi, tip_z, top_z, up):
+        """Bar across the channel at phi: slab BAR_T thick along the cable, fully rounded tip at tip_z."""
+        r0, r1 = CABLE_R - CHANNEL_W / 2, CABLE_R + CHANNEL_W / 2
+        dphi = math.degrees(BAR_T / CABLE_R)
+        zc = tip_z + BAR_TIP_R if up is False else tip_z - BAR_TIP_R      # centre of the tip rounding
+        z0, z1 = (zc + 0.05, top_z) if up is False else (top_z, zc - 0.05)   # not tangent to the round tip (OCCT)
+        slab = sector(r0, r1, phi - dphi / 2, phi + dphi / 2, z0, z1)
+        a = math.radians(phi)
+        ra, rb = r0 + 0.05, r1 - 0.05      # tip ends inside the slab's curved faces (tangency crashes OCCT)
+        tip = cz(BAR_TIP_R, rb - ra, P(ARC_C[0] + ra * math.cos(a), ARC_C[1] + ra * math.sin(a), zc), P(math.cos(a), math.sin(a), 0))
+        return slab.fuse(tip)
+    for phi in CASE_BAR_PHI:
+        part = part.fuse(bar(phi, CASE_BAR_TIP, CEIL + 0.3, up=False).common(outer))
+        step('bar %.1f' % phi)
     x, y = polar(SCREW['phi'], SCREW['r'])
-    part = part.cut(cz(SCREW['pilot_d'] / 2, 3.6, P(x, y, BOSS_Z0 - 0.1)))  # M2x4 from below: 2 mm of thread
-    x, y = polar(PIN['phi'], PIN['r'])
-    part = part.cut(cz(PIN['hole_d'] / 2, PIN['len'] + 0.6, P(x, y, BOSS_Z0 - 0.1)))
+    part = part.fuse(cz(SCREW['lobe_r'], CEIL + 0.3 - STOP_Z, P(x, y, STOP_Z)).common(outer))
+    part = part.cut(cz(SCREW['pilot_d'] / 2, SCREW['pilot_depth'], P(x, y, STOP_Z - 0.1)))   # M2x4 self-tapper
+    # the saddle's lobe passes the back edge's step over the plate lip on its way up (0.2 relief)
+    part = part.cut(cz(SCREW['lobe_r'] + 0.15, SADDLE_BASE[0] - 0.1 - (PLATE_T - 1), P(x, y, PLATE_T - 1)))
     # outside: through the ear tip into the frame/vent V, with the lay-in slot below
     E = CABLE_PATHS[0][0]
     part = part.cut(Part.makeSphere(CABLE_D / 2 + 0.15, P(*E)))             # bend from the channel onto the arc

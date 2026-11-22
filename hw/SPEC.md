@@ -476,3 +476,30 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
 - Reference objects (not printed): out/CableJacket.brep, out/J1WireCurl.brep (the conductor loop).
 - The old ClampTop/ClampBottom outputs were removed (git rm).
 
+## Cable clamp: three-bar zig-zag (2026-11-21; replaces the S-groove clamp of 2026-11-20)
+- The route along the ear arc stays (jacket centreline R 23.45, nominal z 7.7, φ 52° → 31°), as do the thinned wall (1.0 mm) and the exit path A.
+- **Three bars across the channel, alternating:**
+  - two hang from the case ceiling at φ 47.1° and 34.9° (tips z 9.15);
+  - one rises from the **saddle** in the middle at φ 41° (tip z 6.25 when screwed home);
+  - bars are 1.2 mm thick along the cable, 2.5 mm pitch, fully rounded tips, spanning the channel (cable + 0.3 mm).
+- **Grip:** tightening the saddle's **M2×4** (right at the middle bar, on the outer side of the curve) bends the cable into a zig-zag of up to 1.6 mm (centre 6.9 under the case bars, 8.5 over the saddle bar). It grips by bending, not by crushing, and works over a range of diameters. **The case no longer depends on cable_d** (only the nominal geometry does).
+- **Hard stop:** the saddle's screw lobe bottoms out on the case's screw column at z 5.3, at the maximum bend.
+- **Pin:** Ø1.0 at φ 36°, R 26.2 (past the J1-side case bar; at the entry side the back wall leans in at low z), 0.3 mm from J1's header.
+- **Saddle** (out/Saddle.brep, 43 mm³ SLA): base plate z 3.7…4.45 under the cable (the cable's bottom under the case bars is 4.65), plus the bar and two lobes.
+- **Checked:** the saddle is clear of the left part (apart from the hard-stop contact), the board and the plates; its nearest point is 0.21 mm from J1's header.
+- **Assembly:** front part upside down, board not fitted; lay the cable under the case bars into the channel and the exit, put the saddle on (pin into its hole), screw until it stops.
+
+
+## Cable clamp saddle: foot on the rear plate, rigid screw ring, no pin (2026-11-22)
+- **Why:** the screw pulls the saddle's outer side up (R 27.35 around (−96, 8.95)) and the cable pushes the middle down (R ≈ 23.45). Nothing held the inner, wall-side edge (R 21.05), so the old pin (on the outer side) would bend and break.
+- **Foot:** a rib under the inner edge, R 21.1…22.2, φ 33.4…48.6° (about x −82.1…−77.5, y 20.6…25.6), z 2.05…3.8. It rests 0.05 mm over the rear plate's flat top (z 2.0), and both plates support its full footprint. It is 0.1 mm off the thinned arc wall (R 21.0).
+  - **Load path:** the foot takes about 60 % of the cable's bending force. That force pushes the left part's ear up, and the post screws react it.
+  - The foot only bears once the rear plate is on.
+- **Pin removed** (saddle pin, its case column and hole). The screw plus the arc wall, 0.05 mm off the saddle's inner edge, keep the saddle from turning.
+- **Rigid screw ring:** a full-height web (z 3.7…5.3) joins the lobe to the body. It flares from the lobe out to ±3 mm along the arc at R 25.9, outside the cable (outer edge R 25.7), and the base plate continues under it. A block at R 25.45…26.0, z up to 5.2 ties the middle bar's outer end to it.
+  - The lobe top stays the hard stop at z 5.3.
+  - The saddle is now 54 mm³; its nearest point is 0.21 mm from J1's header.
+- **Back-edge relief:** in the left part, an R 1.75 relief around the screw axis (z 1…3.6). The saddle's lobe used to clip the back edge's step over the plate lip (y 28.3…28.5, z 2…2.9) on its way up.
+- **Checked:** the saddle is clear of the left part both at home and when pushed straight up from below; it is clear of both plates, the board and J1.
+- **Assembly:** front part upside down, board not fitted. Lay the cable under the case bars and into the exit channel, push the saddle straight up, and screw until it stops.
+- 2026-11-22 fix: the screw ring and web are now ONE plan outline (the convex hull of the ring and the body's outer edge over ±3 mm), extruded from the base bottom to the hard stop, with the cable's space cut out inside R 25.9. The earlier trapezoid web only grazed the ring and left slots on both sides. Re-checked: no overlap with the left part (at home and during insertion) or the plates; the foot rests fully on the plate.
