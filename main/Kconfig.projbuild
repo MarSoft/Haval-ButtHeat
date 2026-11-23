@@ -2,15 +2,13 @@ menu "ButtHeat config"
 
   config TX_GPIO_NUM
     int "TX GPIO number"
-    default 21 if IDF_TARGET_ESP32
 	default 0
 	help
 	  Select GPIO pin for CAN TX
 
   config RX_GPIO_NUM
     int "RX GPIO number"
-    default 22 if IDF_TARGET_ESP32
-	default 2
+	default 1
 	help
 	  Select GPIO pin for CAN RX
 
