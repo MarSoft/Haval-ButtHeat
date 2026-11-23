@@ -38,6 +38,18 @@ menu "ButtHeat config"
     int "Right Seat Button GPIO"
     default 7
 
+  config ENCODER_FAN_A
+    int "Fan Control Encoder Pin A GPIO"
+    default 10
+
+  config ENCODER_FAN_B
+    int "Fan Control Encoder Pin B GPIO"
+    default 20
+
+  config BTN_FAN
+    int "Fan Control Button GPIO"
+    default 21
+
   config TX_SETTLE_TIMEOUT_MS
     int "How many ms to wait for acceptance after sending change command"
     default 250
