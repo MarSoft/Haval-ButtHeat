@@ -50,8 +50,10 @@ INSERT_DEPTH = INSERT_LEN + 0.3   # pull pushes it into the post (the post can't
                                   # 3.5 mm thread engagement
 SCREW_CLR = 2.9                   # M2.5 clearance through the spacer tube
 INSERT_CHAMFER = 0.4              # 45 deg entry chamfer on the pilots (bed side: counters elephant's foot, eases pressing)
-SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB
-SCREW_HEAD_D = 5.5                # through-hole (plate is only 2 mm)
+SCREW_HEAD_POCKETS = [(-27.0, 13.0), (27.0, 13.0)]   # H1/H2 fallback M2 screw heads under the PCB; the clamp
+                                   # screw's hole is appended below, after v2_cable.py has run
+SCREW_HEAD_D = 4.5                # M2 cyl head D3.5, +0.5/side; through-holes (plate only 2 mm) so those
+                                   # screws can be tightened from behind before the device is taped in
 LIP_CHAMFER = 1.0                 # lip ends and J1 steps: 45 deg (run = rise)
 POST_TOP = 6.0                    # short posts (easy to lift the front + board off); the front parts' posts
                                   # continue from z 6.1. Screws M2.5x8 DIN 965, head top at z 8.5 (tip at z 0.5)
@@ -221,6 +223,8 @@ def plate_body(nuts=False):
 # between the display frame and the vent housing (A) or into the housing (B)
 exec(open('/home/mars/my/buttheat/hw/cad/v2_cable.py').read())
 CABLE_R = PLATE_NOTCH_R
+SCREW_HEAD_POCKETS.append(polar(SCREW['phi'], SCREW['r']))   # the clamp's M2x4: head z 1.7..3.7 when home,
+                                   # 0.3 below the plate top -> same through-hole treatment as H1/H2
 
 
 def cable_notches(solid):

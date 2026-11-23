@@ -54,7 +54,8 @@ SADDLE_BASE = (3.7, 4.45)                  # saddle base plate (under the cable 
 SADDLE_PHI = (CASE_BAR_PHI[1] - 1.8, CASE_BAR_PHI[0] + 1.8)
 SADDLE_R = (CABLE_R - CHANNEL_W / 2, CABLE_R + CHANNEL_W / 2)
 STOP_Z = 5.3                               # saddle lobe top = case column bottom (hard stop) when home
-SCREW = dict(phi=SADDLE_BAR_PHI, r=27.35, lobe_r=1.6, pilot_d=1.6, clr_d=2.3, pilot_depth=3.0)   # M2x4 from below
+SCREW = dict(phi=SADDLE_BAR_PHI, r=27.35, lobe_r=1.6, pilot_d=1.6, clr_d=2.3, pilot_depth=3.0,   # M2x4 from below
+             head_d=3.5)                     # cyl head D3.5 H2: head spans z 1.7..3.7 when home
 SADDLE_FOOT = (20.0 + WALL_THIN + 0.1, 22.2, PLATE_TOP_Z + 0.05)   # rib under the saddle's inner edge: R0, R1,
                                            # bottom z (0.05 over the rear plate top; the plate takes that edge)
 RING_WEB_R0, RING_WEB_W = CABLE_R + CABLE_D / 2 + 0.2, 3.0   # saddle: full-height web lobe -> body from this R

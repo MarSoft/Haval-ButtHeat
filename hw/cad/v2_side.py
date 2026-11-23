@@ -338,8 +338,9 @@ if SIDE == 'left':
     x, y = polar(SCREW['phi'], SCREW['r'])
     part = part.fuse(cz(SCREW['lobe_r'], CEIL + 0.3 - STOP_Z, P(x, y, STOP_Z)).common(outer))
     part = part.cut(cz(SCREW['pilot_d'] / 2, SCREW['pilot_depth'], P(x, y, STOP_Z - 0.1)))   # M2x4 self-tapper
-    # the saddle's lobe passes the back edge's step over the plate lip on its way up (0.2 relief)
-    part = part.cut(cz(SCREW['lobe_r'] + 0.15, SADDLE_BASE[0] - 0.1 - (PLATE_T - 1), P(x, y, PLATE_T - 1)))
+    # the saddle's lobe and then the screw's D3.5 head pass the back edge's step over the plate lip on the
+    # way up (sized off the head: 0.15/side; the D3.2 lobe then has 0.3)
+    part = part.cut(cz(SCREW['head_d'] / 2 + 0.15, SADDLE_BASE[0] - 0.1 - (PLATE_T - 1), P(x, y, PLATE_T - 1)))
     # outside: through the ear tip into the frame/vent V, with the lay-in slot below
     E = CABLE_PATHS[0][0]
     part = part.cut(Part.makeSphere(CABLE_D / 2 + 0.15, P(*E)))             # bend from the channel onto the arc
