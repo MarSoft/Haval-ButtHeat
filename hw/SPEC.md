@@ -1,12 +1,16 @@
-# ButtHeat v2 hardware spec
+# ButtHeat v1.0 hardware spec
 
-Single source of truth for the v2 (carrier-PCB) hardware. FreeCAD (`3d/ButtHeatModel.FCStd`,
+Single source of truth for the v1.0 (carrier-PCB) hardware. FreeCAD (`3d/ButtHeatModel.FCStd`,
 VarSet `V2Vars`) holds the driving numbers, KiCad (`ButtHeatCarrier/`) is the implementation;
 when either disagrees with this file, fix one of them and note it here.
 
 Project: car climate controller (seat heat / fan), ESP32-C3 + CAN + 0.91" OLED + 3 encoders.
-v2 = FDM PETG rear plate + 3-piece SLA (ABS-like) front + one carrier PCB.
-Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as fit references.
+v1.0 = FDM PETG rear plate + 3-piece SLA (ABS-like) front + one carrier PCB.
+Prototype (v0.1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as fit references.
+
+Naming: hardware generations are **v0.1** (prototype, older notes say "v1") and **v1.0**
+(first PCB variant, older notes say "v2" — matches the PCB silkscreen). `hw/cad/v2_*.py`
+file names and the FreeCAD `V2 Case` group / `V2Vars` VarSet are internal and unchanged.
 
 ## 1. Coordinates
 
@@ -31,7 +35,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 | 5.0 … 6.2| SLA front skin 1.2 → **6.2 mm** total over the display           |
 
 - Prototype is **6.8 mm tall over the display and that already gets in the way of gripping the
-  knob**. v2 must not be taller there, ideally lower, with a good facet at the edge just
+  knob**. v1.0 must not be taller there, ideally lower, with a good facet at the edge just
   below the display.
 - Facet (middle): rim at the scallop (y 15.5) ≈ 4.3 (board edge + ~0.8 skin) → glass bottom edge
   (y 16.5) ≥ 5.5 → full height at the window edge (y ≈ 19.2, 0.3 before the first pixel row).
@@ -86,7 +90,8 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   right, top view USB down). Module x −69.5 … −51.5, y 2.0 … 24.8, centre (−60.5, 13.4), USB-C
   face at y 0.6. Antenna keep-out (no copper, both layers) on the top 6 mm. Position is boxed in:
   post 1 (top-right corner 0.45 from the post), ENC1, board edge. Uses its own 3V3 LDO.
-  Its USB is **not usable in the car** (cable hits the car buttons) — flash on the bench / OTA.
+  Its USB is hard to use **in the car** (an angled cable connector is required; alternatively undo
+  the 4 front screws and take the device out) — the variant-B J2 USB-C is the fully usable one.
 - **B: ESP32-C3-WROOM-02U** (U1), **rotated 90°** and centred on the SuperMini: its pad rows
   (y = 13.4 ± 8.75, x −66.95 … −54.05) never touch the SuperMini pad columns (≥ 0.75 mm).
   **Three build variants** (the U1 footprint is the WROOM-02's; a WROOM-02U uses the same pads):
@@ -140,7 +145,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
   numbers above for the flex.
 - Active area (`TheScreen` Face17): 23.2 × 6.5, glass-local x 7.8 … 31.0 on glass 6 … 36;
   inactive border 3.0 at the bottom (knob side), 1.5 at the top.
-- v2 glass position: x −13.292 … 16.708, **y 16.25 … 27.75** → active area x −11.192 … 11.192,
+- v1.0 glass position: x −13.292 … 16.708, **y 16.25 … 27.75** → active area x −11.192 … 11.192,
   y 20.07 … 25.65. KiCad rule area (F.Cu, no footprints, tracks/vias allowed) x −13.5 … 16.8,
   y 16.05 … 27.95.
 - Mounting (decided): glass unglued and lying **on** the carrier, active area centred at x = 0.
@@ -177,6 +182,9 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 - Two alternative footprints on the same nets, fit one: **U5 SOT-23-5** (ME6211 / AP2112K, 500 mA —
   enough for Wi-Fi) or **U6 SOT-23** (the display module's 662K / XC6206, ~200 mA — fine without
   radio). Pinouts differ, so they can't be stacked. C8 (5 V in) / C9 (3.3 V out) 0603 shared.
+  **U6 is not planned for builds** (kept as a fallback footprint): SoftAP OTA mode's Wi-Fi TX
+  peaks reach ~350 mA — U5-class only. SuperMini (variant A) rides its onboard LDO; clones often
+  carry a 662K-class one — bench-test OTA mode before trusting it in the field.
   Front, above the left button: U5 (−28.6, 25.0), C8 (−25.7, 25.1), C9 (−24.2, 25.1), U6 (−21.6, 25.0)
   (moved 2026-11-16 from below J3 so the middle case part can bevel towards the knob).
   U5's EN is fed from +5V through a short **0.15 mm** stub (EN input current only — deliberate,
@@ -184,7 +192,7 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 
 ### Buck 12 V → 5 V (discrete, Mini360 donor parts)
 - Prototype uses a **Mini360** module (MP2307). It doesn't fit anywhere on the carrier without
-  displacing a button, so v2 has the **same circuit discretely**, populated with parts
+  displacing a button, so v1.0 has the **same circuit discretely**, populated with parts
   desoldered from a Mini360 (sizes from its STEP: SOIC-8, IHLP-2525 inductor, 1206 / 0603).
 - MP2307 SOIC-8: 1 BS, 2 IN, 3 SW, 4 GND, 5 FB, 6 COMP, 7 EN, 8 SS.
   Board refs (Mini360 ref → ours): U4 MP2307; L1 2 µH IHLP-2525 (SW→+5V); C3 12 µF 1206 input
@@ -231,11 +239,25 @@ Prototype (v1) parts `CaseBase` / `CaseCover` / `CarBase` stay in the model as f
 GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no external pull-ups
 (internal ones are enabled in firmware), but the prototype boots fine with ENC1-A on GPIO2.
 
+### OTA / field updates (firmware, 2026-11-25)
+- Entry: hold the **left encoder button (BTN_LEFT, GPIO 4)** while powering on → SoftAP
+  update mode (`ButtHeat-OTA`, WPA2 PSK `BH-xxxxxxxx` derived from the factory MAC, shown on
+  the OLED; upload page at `http://192.168.4.1`). Normal boot keeps the radio off.
+- Partitions: two 1.5 MB OTA slots (`ota_0`/`ota_1`, no factory app) + NVS + otadata; USB
+  flashing targets `ota_0` and includes initialized otadata, so a USB reflash always boots.
+  Bootloader rollback: a fresh image must survive 5 s of normal boot or the previous slot
+  is restored.
+- Power: see §"3.3 V LDO" — Wi-Fi TX peaks need U5 (variant B); SuperMini clones vary.
+- Antenna: reduced range accepted for B1 (pour-only keep-out, J1 over the antenna) — fine for
+  phone-at-the-dashboard distances; B2 (u.FL) is the fallback.
+- Rescue paths: variant B — J2 USB-C at the bottom-right corner (cable fits at the board's
+  extreme ends); variant A — angled USB cable, or undo the 4 front screws and bench-flash.
+
 ## 5. Case interfaces
 - J1 (vertical ZH): plug goes in from the front; cable exits at the top-left corner through the
   split clamp (§“Cable and strain relief (decided 2026-11-16)”).
 - Bottom wall: USB-C cutout (variant A: under the SuperMini; variant B: bottom-right, §“J2 USB-C”).
-- Rear plate: VHB to the car panel; M2.5 heat-set inserts + M2.5×8 CSK posts (§“Rear plate v2”),
+- Rear plate: VHB to the car panel; M2.5 heat-set inserts + M2.5×8 CSK posts (§“Rear plate v1.0”),
   ears ending at the R20 arc, x ±96.
 - Front: 3-piece SLA; seams at ±20 (middle-part spigots to ±23 slide under the side skins,
   §“Case design status”); display window, scallop + facet for knob grip.
@@ -361,10 +383,10 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - at x −74…−78 everything below y ≈ 30.5 is free down to z ≈ 1;
   - a 6 mm window needs its centre at z ≈ 4.5 (x −86), ≈ 6–6.5 (x −92), ≈ 6.5–7 (x −100), y ≈ 25–32.
   - So: exit in the left wall at x ≈ −76…−78, cable centre **z ≈ 6, y ≈ 28**. Inside, the wires leave J1's plug upwards (top z 9.4) and U-turn down to the clamp.
-- The v1 `CaseBase` left ear's **leftmost leg** must go in the v2 design (it was broken off the prototype to make room for this cable).
+- The v0.1 `CaseBase` left ear's **leftmost leg** must go in the v1.0 design (it was broken off the prototype to make room for this cable).
 
-## Rear plate v2 (2026-11-16, generated by hw/cad/v2_rear_plate.py → hw/cad/out/RearPlate_{A,B}.brep)
-- Outline: v1 CaseBase base shape (knob arch) with the ears ending at the R20 arc (x ±96). The v1 thin strip to x ±106 is removed. The top edge is 0.2 mm short of the 15° display frame (y = 29.75 + z·tan15°).
+## Rear plate v1.0 (2026-11-16, generated by hw/cad/v2_rear_plate.py → hw/cad/out/RearPlate_{A,B}.brep)
+- Outline: v0.1 CaseBase base shape (knob arch) with the ears ending at the R20 arc (x ±96). The v0.1 thin strip to x ±106 is removed. The top edge is 0.2 mm short of the 15° display frame (y = 29.75 + z·tan15°).
 - **Lip** along the top edge: a wedge from y 28.3 (PCB edge + 0.3) back to the frame, 6 mm tall, giving a glue face on the frame. Lowered to z 3.3 under J1's overhang. 45° chamfers at both ends and at the J1 steps (FDM strength). The front case's back wall stands on it.
 - **Posts** (4): a Ø10 boss up to just under the PCB (clipped to the plate outline), then a **short Ø6.0 tube to z 6.0** (2.5 mm above the board top, so it still locates the board in its Ø7.5 notch), with Ø2.9 screw clearance. The **M2.5×4×3.5 heat-set insert** (the user has these; Ø3.6 pilot, 4.3 deep) **is pressed in flush from the plate's underside**, so it sits at z 0…4 and the screw's pull pushes it into the post, which then can't be torn off. The M2.5×8 tip at z 1.0 gives 3 mm of thread, so the screw's pull pushes it into the boss. The front parts continue with **Ø7.6 posts from z 6.1**. Screws: **M2.5×8 DIN 965** (cross-recess countersunk), head top sunk to **z 8.5** (tip at z 0.5, never closer than 0.5 mm to the car panel; 3.5 mm into the insert) in a Ø6.0 counterbore (0.65 mm headroom around the Ø4.7 head). The rim gets a real 0.5 mm chamfer (OCC makeChamfer on the rim edges, the same width all round). The earlier cone-based chamfer cut through the skin around posts 3/4. (History: Ø7 tube to z 10.4 with M3×12 flush at 12.4 → M3×8 at z 9 → M2.5, all on 2026-11-16.)
 - **Cable notches** in the left ear along the cable paths (see the left part).
@@ -398,8 +420,8 @@ GPIO2/8/9 are strapping pins. I2C pull-ups keep 8/9 high; the encoders have no e
   - **J2 USB-C knock-out**, x 61.6…74.0, z 2…8.4, around the mouth (x 63.35…72.25, z 3.39…6.6), with a 0.4 mm skin along the front rounding. J2 overhangs the board edge to y 0.62, inside the knock-out.
   - Checked headless: no overlap with the car, plates, middle part or board, except the ENC2/ENC3 nut/washer in the skin (accepted, as for ENC1).
 - **Left part** (hw/cad/v2_left.py, reworked 2026-11-16):
-  - left end follows the car's vent housing: the ear above the plate's ear, bounded by the R20 arc around (−96, 8.95) (v1 leaned it to R19.1 at the top; v2 keeps it vertical), tip at x −96; no lip there, so its back wall goes down to the plate;
-  - **shoulder** from the middle part's seam section (5.0 at the front edge, 6.5 from y 16.05) up to the full height of 12.4 at x ≈ −34.5 (about 22°; v1 was 18° to x −36.7). It's steeper because the v2 seam is 0.5 lower and the THT switch's top (features up to z 7.6) must stay under the skin. Over SW1/SW2 there's a two-tier pocket inside (body to 7.3, top to 7.8), leaving about 0.5 mm of skin at the seam-side corner. The button knock-out leaves a 0.4 mm web parallel to the slope;
+  - left end follows the car's vent housing: the ear above the plate's ear, bounded by the R20 arc around (−96, 8.95) (v0.1 leaned it to R19.1 at the top; v1.0 keeps it vertical), tip at x −96; no lip there, so its back wall goes down to the plate;
+  - **shoulder** from the middle part's seam section (5.0 at the front edge, 6.5 from y 16.05) up to the full height of 12.4 at x ≈ −34.5 (about 22°; v0.1 was 18° to x −36.7). It's steeper because the v1.0 seam is 0.5 lower and the THT switch's top (features up to z 7.6) must stay under the skin. Over SW1/SW2 there's a two-tier pocket inside (body to 7.3, top to 7.8), leaving about 0.5 mm of skin at the seam-side corner. The button knock-out leaves a 0.4 mm web parallel to the slope;
   - **seam:** the middle part's spigots (its inner wall half, 3 mm past the seam) slide **under** the side part's sloped skin. The side part has a solid wedge between its skin and the socket (FIT 0.15), so the screwed-down side parts hold the middle part down. (A brief "tongue + rebate" variant was reverted: it left the middle part on top and loose.)
   - **posts 1/3:** Ø7.6 front posts with the M2.5 head at z 9.5 in a chamfered counterbore; an ENC1 body keep-out is cut from post 3's front post. The front wall next to post 3 is 1.1 mm thick;
   - **H1:** a Ø5 boss from the board top with a Ø1.7 pilot to z 7.6 for an **M2×4 self-tapping screw** from the back (3 mm into the boss);

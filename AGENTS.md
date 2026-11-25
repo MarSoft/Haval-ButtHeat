@@ -2,14 +2,14 @@
 
 ButtHeat: a custom seat-heater/climate controller retrofitted onto a Haval Dargo's BD-CAN-1 CAN bus. Two-part repo:
 
-- **Firmware** (primary: repo root + `main/`) — single-file ESP-IDF 5.5 app for ESP32-C3: listens to heater/AC status frames, drives three rotary encoders + SSD1306 128×32 display, sends control frames.
+- **Firmware** (primary: repo root + `main/`) — ESP-IDF 5.5 app for ESP32-C3: listens to heater/AC status frames, drives three rotary encoders + SSD1306 128×32 display, sends control frames. SoftAP OTA update mode on button-held boot.
 - **Hardware** (`hw/` + root-level artifacts) — KiCad board + FreeCAD case. Note the split: `hw/` holds only *docs and generator scripts*; the KiCad project is `ButtHeatCarrier/` and the FreeCAD model is `3d/` (symlink to outside of this repo, not committed), both at repo **root**.
 
-`README.md` documents vehicle wiring, CAN protocol semantics, and failure modes. `hw/SPEC.md` is the declared single source of truth for hardware.
+`README.md` documents vehicle wiring, CAN protocol semantics, failure modes, and firmware updating. `hw/SPEC.md` is the declared single source of truth for hardware.
 
 ## Architecture & Data Flow
 
-Firmware is entirely `main/buttheat.c` (~1450 lines) — one flat file, no modules.
+Firmware modules mirror the KiCad sheets: `buttheat.c` (app core/wiring + startup), `can.c`, `controls.c`, `display.c`, `ota.c` (SoftAP update mode), shared types in `buttheat.h`.
 
 FreeRTOS tasks (all `xTaskCreatePinnedToCore`, stack 4096, `tskNO_AFFINITY`):
 
@@ -26,7 +26,8 @@ Flow: TWAI RX ISR → `twai_rx_queue` → `twai_receive_task` → `xQueueOverwri
 - CAN RX: `0x2D1` heater, `0x385` AC/fan, `0x29D` airflow. TX: `0x36D`, `0x1EE`, `0x367`, `0x1ED`. Uses the **new `esp_twai.h` node API** (not legacy `driver/twai.h`), dual hardware mask filter, bus-off auto-recovery in the state-change ISR callback. Startup ordering matters: `twai_node_enable` runs only after all handler tasks have built their queue-sets.
 - Display: vendored nopnop2002 `ssd1306` driver on new `i2c_master` API; custom 16×28 font from generated `main/font16x28.h`.
 - Encoders: managed component `esp-idf-lib/encoder` v3.0.2; library long-press deliberately disabled (own staged long-press instead).
-- Shared file-scope statics (`twozone_active`, `current_fan_speed`, …) are cross-task and unsynchronized — single-core + comment-documented ownership; don't "fix" without reading the comments (~buttheat.c:196-211).
+- Shared file-scope statics are cross-task and unsynchronized — single-core + comment-documented ownership; don't "fix" without reading the ownership comments.
+- OTA update mode: holding BTN_LEFT (GPIO 4) at power-on branches into `ota_mode()` in `ota.c` **before** any task/TWAI init — SoftAP `ButtHeat-OTA` (WPA2 PSK from factory MAC), HTTP upload page at 192.168.4.1, streaming `esp_ota_*` write. Two 1.5 MB OTA slots (`partitions.csv`, no factory app); bootloader rollback + `ota_boot_watchdog()` (5 s) decide image validity — OTA mode itself never marks valid.
 
 Known quirks (leave alone unless asked): `done_sem` never given → `app_main` teardown is dead code; BUTT control queues hold `uint8_t` but the handler receives `rotary_value_t` (harmless, value ignored); massage handler is placeholder wiring (CAN ID 0x000, hardcoded off); airflow handler has no encoder wired; README's "spinner" terminology is stale.
 
@@ -34,17 +35,17 @@ Known quirks (leave alone unless asked): `done_sem` never given → `app_main` t
 
 | Path | Purpose |
 |---|---|
-| `main/` | All first-party firmware: `buttheat.c`, `Kconfig.projbuild` (12 GPIO pins + `TX_SETTLE_TIMEOUT_MS`), `idf_component.yml`, generated `font16x28.h` |
+| `main/` | All first-party firmware: `buttheat.c`, `can.c`, `controls.c`, `display.c`, `ota.c` + `ota_page.html` (embedded upload page), `buttheat.h`, `codec.h`, `Kconfig.projbuild` (12 GPIO pins + `TX_SETTLE_TIMEOUT_MS`), generated `font16x28.h` |
 | `libs/ssd1306/` | git submodule (nopnop2002); only its `components/ssd1306` is built, via `EXTRA_COMPONENT_DIRS` |
 | `managed_components/` | idf.py-managed (`esp-idf-lib__encoder`), gitignored — never edit |
 | `ButtHeatCarrier/` | KiCad project (root): root schematic + 5 sheets (`power`, `mcu`, `can`, `display`, `controls`), `.kicad_pcb` (routed, fab-ready), `ButtHeat.kicad_sym` + `ButtHeat.pretty/` custom libs, `.kicad_dru` waivers, `ibom.config.ini`, `bom/ibom.html` |
 | `hw/` | Hardware docs + generators only: `SPEC.md`, `ROUTING.md`, `HANDOFF.md`, `MCP_ISSUES.md`, `cad/` (FreeCAD case), `tools/` (KiCad footprint generators) |
 | `3d/` → `~/tmp/3dp/buttheat/` | FreeCAD model `ButtHeatModel.FCStd` (V2 case group, `V2Vars` VarSet) + STL/CTB prints |
 | `tools/` (root) | `gen_font16x28.py` — firmware display-font generator |
-| `case/` | v1 prototype STLs (superseded by `3d/` v2) |
+| `case/` | v0.1 prototype STLs (superseded by `3d/` v1.0) |
 | root `*.bdf`, `leggie/` | BDF font sources for `gen_font16x28.py` |
 
-Stale entries: `.gitmodules` declares `libs/RotaryEncoder` but it isn't checked out (superseded by managed `encoder` component); `hw/HANDOFF.md` (2026-11-14) lags `hw/SPEC.md`.
+Stale entries: `hw/HANDOFF.md` (2026-11-14) lags `hw/SPEC.md`. Hardware naming: **v0.1** = prototype (older docs said "v1"), **v1.0** = first PCB variant (older docs said "v2"); `hw/cad/v2_*.py` and FreeCAD `V2*` names are internal and unchanged.
 
 ## Development Commands
 
@@ -56,6 +57,12 @@ idf.py build
 idf.py -p <port> flash monitor   # port isn't pinned in sdkconfig; monitor 115200
 idf.py menuconfig                 # "ButtHeat config" menu = pins
 ```
+
+Partitioning is the custom `partitions.csv` (two 1.5 MB OTA slots, no factory app; USB flash
+targets `ota_0` + initialized otadata). First flash after switching to OTA partitions must be a
+full USB flash. Releases: tag `vX.Y.Z` → `.github/workflows/release.yml` builds in the
+espressif/idf Docker image, publishes the ESP-Web-Tools installer to GitHub Pages (`gh-pages`,
+latest only) and a GitHub release. App version = `git describe` (no version files).
 
 Hardware:
 
@@ -85,7 +92,9 @@ Hardware:
 
 ## Important Files
 
-- `main/buttheat.c` — the entire application (tasks, queues, CAN protocol, UI).
+- `main/buttheat.c` — app core: handler registry, `generic_handler_task`, `app_main` startup + OTA-mode gate.
+- `main/ota.c` / `main/ota_page.html` — SoftAP OTA update mode.
+- `partitions.csv` — custom OTA partition table (source of truth for flash layout).
 - `sdkconfig` / `sdkconfig.old` — target `esp32c3`; `sdkconfig.old` is idf.py's regeneration backup.
 - `dependencies.lock` — pins IDF 5.5.2 + `esp-idf-lib/encoder` 3.0.2.
 - `ButtHeatCarrier/ButtHeatCarrier.kicad_dru` — custom rule waivers (accepted courtyard touches, NECK area, J2 peg rules, GND spoke relaxation).
@@ -102,7 +111,7 @@ Hardware:
 
 ## Testing & QA
 
-**No automated tests, CI, or hooks exist on either side** (verified: no test dirs/files, no `.github/`, no pytest/unity setup). Don't invent scaffolding; verification is manual:
+**No automated tests or hooks exist** (no test dirs, no pytest/unity; the only CI is the release-build workflow). Don't invent scaffolding; verification is manual:
 
 - Firmware: `idf.py build` is the only automated check. Runtime observation on-target (`CAN_DEBUG` logs, display states, 500 ms RX-timeout → CAN-error screen) and offline CAN-log analysis with `canscan.py` (prints per-ID data-byte changes from analyzer CSVs).
 - Hardware: `kicad-cli pcb drc --format json` + `.kicad_dru` waivers; ERC in KiCad with documented exclusions; InteractiveHtmlBom (`Sourced/Placed` checkboxes) for assembly tracking; `hw/SPEC.md` §6 tracks open to-verify items.

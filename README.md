@@ -76,3 +76,29 @@ If another CAN chip is used in your build, *and* MCU hangs in CAN-low condition 
 Note: nothing critical (steering, brake, ignition) is affected.
 
 How to fix this if it ever happens? Power cycle will most likely help. If it doesn't then disconnect the device. That's why the device should be connected with a detachable connector rather than wired in directly.
+
+Firmware updates
+----------------
+
+Two ways, neither needs an ESP-IDF install:
+
+**OTA (in the car):** hold the left knob's button while switching ignition on.
+The display shows an AP name, a password and `192.168.4.1`. Join the
+`ButtHeat-OTA` Wi-Fi from a phone or laptop (password is on the display), open
+<http://192.168.4.1> and upload the `buttheat.bin` from the
+[releases page](https://github.com/MarSoft/Haval-ButtHeat/releases).
+The page is served by the device, so the phone needs no internet during the
+upload — but download the `.bin` beforehand (Android keeps LTE alive on this
+AP; iPhones go offline). Power-cycle to leave OTA mode.
+
+**USB (first flash / recovery):** open the
+[web installer](https://marsoft.github.io/Haval-ButtHeat/) in desktop
+Chrome/Edge/Firefox or Chrome on Android, connect the board over USB, click
+Install. iOS browsers have no USB-serial access — use OTA there. The installer
+reflashes bootloader + partition table + app in one go.
+
+Safety net: an update is written to the inactive slot, and the bootloader
+rolls back to the previous image unless the new one runs for 5 seconds after a
+normal boot. Every release contains the OTA code itself, so an update can't
+lock you out of updating again. Versioning: `v0.9.x` pre-release, `v1.0.0` =
+first hardware/PCB generation (prototype hardware = `v0.1`).
