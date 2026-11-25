@@ -27,12 +27,9 @@ jobs:
       - name: Assemble release artifacts
         run: |
           . $IDF_PATH/export.sh
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           VERSION="${GITHUB_REF_NAME}"
-          if [ "${GITHUB_REF_TYPE}" != "tag" ]; then
-            VERSION="$(git describe --tags --always)"
-          fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-
           # Full-flash image (bootloader + partition table + otadata + app):
           # offsets from the partition table, flash params from flasher_args.
           mkdir -p dist/gh-pages

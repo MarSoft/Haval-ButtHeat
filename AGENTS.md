@@ -35,7 +35,7 @@ Known quirks (leave alone unless asked): `done_sem` never given → `app_main` t
 
 | Path | Purpose |
 |---|---|
-| `main/` | All first-party firmware: `buttheat.c`, `can.c`, `controls.c`, `display.c`, `ota.c` + `ota_page.html` (embedded upload page), `buttheat.h`, `codec.h`, `Kconfig.projbuild` (12 GPIO pins + `TX_SETTLE_TIMEOUT_MS`), generated `font16x28.h` |
+| `main/` | All first-party firmware: `buttheat.c`, `can.c`, `controls.c`, `display.c`, `ota.c` + `ota_page.html` (embedded upload page), `buttheat.h`, `Kconfig.projbuild` (12 GPIO pins + `TX_SETTLE_TIMEOUT_MS`), generated `font16x28.h` |
 | `libs/ssd1306/` | git submodule (nopnop2002); only its `components/ssd1306` is built, via `EXTRA_COMPONENT_DIRS` |
 | `managed_components/` | idf.py-managed (`esp-idf-lib__encoder`), gitignored — never edit |
 | `ButtHeatCarrier/` | KiCad project (root): root schematic + 5 sheets (`power`, `mcu`, `can`, `display`, `controls`), `.kicad_pcb` (routed, fab-ready), `ButtHeat.kicad_sym` + `ButtHeat.pretty/` custom libs, `.kicad_dru` waivers, `ibom.config.ini`, `bom/ibom.html` |
