@@ -1,0 +1,93 @@
+name: release
+
+# Tag vX.Y.Z -> build in the espressif/idf container, publish the ESP-Web-Tools
+# installer to gh-pages (latest only) and create a GitHub release.
+# workflow_dispatch -> build-only dry run (no Pages deploy, no release).
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:v5.5.2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Build firmware
+        run: |
+          . $IDF_PATH/export.sh
+          idf.py build
+
+      - name: Assemble release artifacts
+        run: |
+          . $IDF_PATH/export.sh
+          VERSION="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" != "tag" ]; then
+            VERSION="$(git describe --tags --always)"
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+          # Full-flash image (bootloader + partition table + otadata + app):
+          # offsets from the partition table, flash params from flasher_args.
+          mkdir -p dist/gh-pages
+          cp tools/installer/index.html dist/gh-pages/
+          cp build/buttheat.bin dist/
+          cp build/buttheat.bin dist/gh-pages/
+          cp build/flasher_args.json dist/
+
+          esptool.py --chip esp32c3 merge_bin \
+            -o dist/buttheat-factory.bin \
+            --flash_mode dio --flash_freq 80m --flash_size 4MB \
+            0x0 build/bootloader/bootloader.bin \
+            0x8000 build/partition_table/partition-table.bin \
+            0xd000 build/ota_data_initial.bin \
+            0x10000 build/buttheat.bin
+          cp dist/buttheat-factory.bin dist/gh-pages/
+
+          MD5=$(md5sum build/buttheat.bin | cut -d' ' -f1)
+          sed -e "s/__VERSION__/$VERSION/" -e "s/__MD5__/$MD5/" \
+            tools/installer/manifest.template.json > dist/gh-pages/manifest.json
+
+          cat dist/gh-pages/manifest.json
+          ls -la dist dist/gh-pages
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: buttheat-${{ env.VERSION }}
+          path: dist/*
+
+      - name: Deploy installer to GitHub Pages
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist/gh-pages
+          force_orphan: true
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/buttheat.bin
+            dist/buttheat-factory.bin
+          body: |
+            ## ButtHeat ${{ env.VERSION }}
+
+            **Install over USB (any OS, no toolchain):**
+            open the [web installer](https://marsoft.github.io/Haval-ButtHeat/),
+            connect the board, click Connect. Full image — bootloader, partition
+            table and app; erases the device.
+
+            **Update in the car (no cable):** hold the left knob's button while
+            switching ignition on → join `ButtHeat-OTA` (password on the display)
+            → http://192.168.4.1 → upload `buttheat.bin` below.
+
+            Manual flashing: `buttheat-factory.bin` at offset 0, or
+            [esptool with these args](https://github.com/MarSoft/Haval-ButtHeat#firmware-updates).

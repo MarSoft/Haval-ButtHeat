@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ButtHeat firmware installer</title>
+<script
+  type="module"
+  src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
+></script>
+<style>
+body{font-family:sans-serif;max-width:36em;margin:2em auto;padding:0 1em}
+esp-web-install-button{--esp-tools-button-color:#2a6}
+</style>
+</head>
+<body>
+<h1>ButtHeat firmware installer</h1>
+<p>Connect the ButtHeat board (or any ESP32-C3 dev board flashed for it) over
+USB, then click <em>Connect</em>. This installs the latest release: bootloader,
+partition table and application in one image. Existing device data is erased.</p>
+<esp-web-install-button manifest="./manifest.json"></esp-web-install-button>
+<p>Requires a browser with Web-Serial support: desktop Chrome, Edge or Firefox
+(not iOS — on iPhones use the device's Wi-Fi OTA update mode instead).</p>
+<p>Firmware files for manual <code>esptool</code> flashing are on the
+<a href="https://github.com/MarSoft/Haval-ButtHeat/releases">releases page</a>.
+After installing, you can update in the car without a cable: hold the left
+knob's button while switching ignition on and follow the display.</p>
+</body>
+</html>

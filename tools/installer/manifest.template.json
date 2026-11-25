@@ -1,0 +1,18 @@
+{
+  "name": "ButtHeat",
+  "version": "__VERSION__",
+  "new_install_prompt_erase": true,
+  "new_install_improv_wait_time": 0,
+  "builds": [
+    {
+      "chipFamily": "ESP32-C3",
+      "parts": [
+        { "path": "buttheat-factory.bin", "offset": 0 }
+      ],
+      "ota": {
+        "path": "buttheat.bin",
+        "md5": "__MD5__"
+      }
+    }
+  ]
+}
