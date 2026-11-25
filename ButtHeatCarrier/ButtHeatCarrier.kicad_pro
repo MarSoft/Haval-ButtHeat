@@ -80,10 +80,6 @@
         [
           "courtyards_overlap|79755000|74955000|1c52ec24-abce-45ae-a1d3-aa662a0083a9|711e6b91-ad16-4464-a621-314231c59caf",
           ""
-        ],
-        [
-          "items_not_allowed|165309792|83335000|034fe8da-c754-4d79-ac07-2f3d20e9f827|00000000-0000-0000-0000-000000000000",
-          "J1 is unsoldered if WROOM-with-antenna is used"
         ]
       ],
       "meta": {
