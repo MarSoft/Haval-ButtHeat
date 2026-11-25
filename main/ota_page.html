@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ButtHeat firmware update</title>
+<style>
+body{font-family:sans-serif;max-width:30em;margin:2em auto;padding:0 1em}
+#bar{background:#ddd;height:1.2em;margin:1em 0;display:none}
+#fill{background:#2a6;height:100%;width:0%}
+button{font-size:1.1em;padding:.4em 1.2em}
+</style>
+</head>
+<body>
+<h1>ButtHeat firmware update</h1>
+<p>Select the <code>buttheat.bin</code> file you downloaded from the
+<a href="https://github.com/MarSoft/Haval-ButtHeat/releases">GitHub releases page</a>.</p>
+<p><input type="file" id="file" accept=".bin">
+<button id="btn" disabled>Upload</button></p>
+<div id="bar"><div id="fill"></div></div>
+<p id="status"></p>
+<script>
+var file=document.getElementById('file'),btn=document.getElementById('btn'),
+    status=document.getElementById('status'),bar=document.getElementById('bar'),
+    fill=document.getElementById('fill');
+file.addEventListener('change',function(){btn.disabled=!file.files.length;});
+btn.addEventListener('click',function(){
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST','/update');
+  xhr.upload.addEventListener('progress',function(e){
+    if(e.lengthComputable)fill.style.width=(e.loaded/e.total*100).toFixed(0)+'%';
+  });
+  xhr.addEventListener('load',function(){
+    status.textContent=xhr.status==200
+      ? 'Upload complete, device is rebooting. Power-cycle to leave OTA mode.'
+      : 'Update failed ('+xhr.status+'). Device still runs the old firmware.';
+  });
+  xhr.addEventListener('error',function(){status.textContent='Network error.';});
+  bar.style.display='block';btn.disabled=true;
+  status.textContent='Uploading\u2026';
+  xhr.send(file.files[0]);
+});
+</script>
+</body>
+</html>

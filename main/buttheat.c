@@ -11,6 +11,7 @@
 
 #include "esp_err.h"
 #include "esp_log.h"
+#include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/queue.h"
@@ -22,6 +23,7 @@
 #include "can.h"
 #include "controls.h"
 #include "display.h"
+#include "ota.h"
 
 #define TAG "ButtHeat"
 
@@ -195,6 +197,22 @@ static void generic_handler_task(void *ctx) {
 
 void app_main(void)
 {
+    // OTA mode: hold the left encoder button (BTN_LEFT, active-low, internal
+    // pull-up — same as the encoder driver uses) while powering on. Checked
+    // before any task or TWAI init so the CAN bus stays silent.
+    const gpio_config_t ota_btn = {
+        .pin_bit_mask = 1ULL << CONFIG_BTN_LEFT,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+    };
+    ESP_ERROR_CHECK(gpio_config(&ota_btn));
+    vTaskDelay(pdMS_TO_TICKS(50));  // settle + debounce
+    if(gpio_get_level(CONFIG_BTN_LEFT) == 0) {
+        ota_mode();  // never returns; exit by power cycle
+    }
+
+    // Fresh OTA image: mark valid after surviving 5 s of normal operation.
+    ota_boot_watchdog();
     //Create handler queues and semaphores
     left_ac_handler.control_queue = xQueueCreate(8, sizeof(rotary_value_t));
     left_ac_handler.can_queue = xQueueCreate(1, sizeof(ac_temp_t));

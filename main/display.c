@@ -336,13 +336,17 @@ static void draw_active_display(SSD1306_t *dev,
 
 /* ------------------------------ Display task ------------------------------ */
 
+void display_hw_init(SSD1306_t *dev) {
+    i2c_master_init(dev, CONFIG_SDA_GPIO, CONFIG_SCL_GPIO, -1);
+    ssd1306_init(dev, 128, 32);
+    ssd1306_clear_screen(dev, false);
+    ssd1306_contrast(dev, 0xff);
+}
+
 static void display_task(void *arg) {
     SSD1306_t dev;
     ESP_LOGI(TAG, "Disp task start");
-    i2c_master_init(&dev, CONFIG_SDA_GPIO, CONFIG_SCL_GPIO, -1);
-    ssd1306_init(&dev, 128, 32);
-    ssd1306_clear_screen(&dev, false);
-    ssd1306_contrast(&dev, 0xff);
+    display_hw_init(&dev);
 
     bool active = false;
     bool need_redraw = true;

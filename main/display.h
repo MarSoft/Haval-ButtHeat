@@ -13,5 +13,10 @@
 
 // data_update_t queue consumed by the display task.
 extern QueueHandle_t display_queue;
+#include "ssd1306.h"
+
+// Bring up the SSD1306 panel (I2C + init + clear). Used by display_init()
+// and by OTA mode, which renders directly without the display task.
+void display_hw_init(SSD1306_t *dev);
 
 void display_init(void); // queue + display task

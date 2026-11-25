@@ -1,0 +1,9 @@
+# Name,   Type, SubType, Offset,  Size,     Flags
+# Two OTA slots, no factory app: USB flashing targets ota_0 (first app slot,
+# otadata erased/initialized state boots it). 1.5 MB per app; the radio-off
+# build is ~245 KB, the SoftAP OTA build ~1 MB. NVS is required by the Wi-Fi
+# driver even though the app itself stores nothing.
+nvs,      data, nvs,     0x9000,  0x4000,
+otadata,  data, ota,     0xd000,  0x2000,
+ota_0,    app,  ota_0,   0x10000, 0x180000,
+ota_1,    app,  ota_1,   0x190000,0x180000,
